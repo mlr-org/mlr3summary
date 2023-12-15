@@ -1,0 +1,35 @@
+Package: mlr3summary
+Title: Model and learner summaries for 'mlr3'
+Version: 0.1.0
+Authors@R: c(
+    person("Susanne", "Dandl", , "dandls.datascience@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-4324-4163")),
+    person("Marc", "Becker", , "marcbecker@posteo.de", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-8115-0400")),
+    person("Ludwig", "Bothmann", , "ludwig.bothmann@stat.uni-muenchen.de", role = "aut",
+           comment = c(ORCID = "0000-0002-1471-6582")),
+    person("Giuseppe", "Casalicchio", , "giuseppe.casalicchio@stat.uni-muenchen.de", role = "aut",
+           comment = c(ORCID = "0000-0001-5324-5966")),
+    person("Bernd", "Bischl", , "bernd_bischl@gmx.net", role = "aut",
+           comment = c(ORCID = "0000-0001-6002-6980"))
+  )
+Description: Summary package for learners and models of the 'mlr3' ecosystem. 
+    Returns a summary table that provides an overview of a model at one glance.
+    It works for single models but also resampling results.
+License: LGPL-3
+Depends:
+    mlr3 (>= 0.12.0),
+    R (>= 3.1.0)
+Imports:
+    checkmate (>= 2.0.0), 
+    data.table
+Suggests:
+    testthat (>= 3.1.0)
+Config/testthat/edition: 3
+Config/testthat/parallel: true
+Language: en-US
+NeedsCompilation: no
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
