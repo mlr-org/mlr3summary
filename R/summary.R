@@ -26,17 +26,22 @@ summary.Learner = function(model, resample_result, control = summary_control(), 
 
   ## residuals
   # <FIXME:> add for class & regression
-  rs = NULL
+  res = resample_result$prediction()
+  rs = res[["truth"]] - res[["response"]]
 
   ## performance
-  pf = NULL
+  pf = resample_result$aggregate(measures = control$measures)
+  sc = resample_result$score()
+  ## <FIXME:> by name!
+  sd = sd(sc[,ncol(sc)])
 
   ans = list(
     task_type = tt,
     feature_names = fn,
     pipeline = pp,
     residuals = rs,
-    performance = pf
+    performance = pf,
+    performance_sd = sd
   )
 
   # convert list to summary.Learner such that right printer is called
@@ -57,11 +62,10 @@ summary_control = function(measures = NULL, importance_measures = importance_cho
   importance_measures = match.arg(importance_measures)
   checkmate::assert_choice(importance_measures, importance_choices, null.ok = TRUE)
   checkmate::assert_int(n_important, lower = 1L, null.ok = TRUE)
-  checkmate::assert_int(digits, null.ok = TRUE)
 
   # create list
   list(measures = measures, importance_measures = importance_measures,
-    n_important = n_important, digits = digits)
+    n_important = n_important)
 
 }
 
@@ -73,26 +77,24 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
   cat("\nFeature names:", paste(x$feature_names, collapse = ", "))
   cat("\nPipeline:\n", x$pipeline)
 
+  cat("\n")
+  cat("\nResiduals:\n")
+  resid <- x$residuals
+  nam <- c("Min", "1Q", "Median", "3Q", "Max")
+  zz = zapsmall(quantile(resid), digits + 1L)
+  rq = structure(zz, names = nam)
+  print(rq, digits = digits, ...)
+  cat("Residual Standard Error:", round(sd(x$resid), digits))
 
-  # resid <- x$residuals
-  # df <- x$df
-  # rdf <- df[2L]
-  # cat(if (!is.null(x$weights) && diff(range(x$weights)))
-  #   "Weighted ", "Residuals:\n", sep = "")
-  # if (rdf > 5L) {
-  #   nam <- c("Min", "1Q", "Median", "3Q", "Max")
-  #   rq <- if (length(dim(resid)) == 2L)
-  #     structure(apply(t(resid), 1L, quantile), dimnames = list(nam,
-  #       dimnames(resid)[[2L]]))
-  #   else {
-  #     zz <- zapsmall(quantile(resid), digits + 1L)
-  #     structure(zz, names = nam)
-  #   }
-  #   print(rq, digits = digits, ...)
-  # }
-  # else if (rdf > 0L) {
-  #   print(resid, digits = digits, ...)
-  # }
+  ## <FIXME:> allow multiple performance measures!
+  cat("\n")
+  namp = sub(".*\\.", "", names(x$performance))
+  namp = paste(toupper(substr(namp, 1, 1)), substr(namp, 2, nchar(namp)), sep="")
+  cat(paste0("\nPerformance\n", namp, ": ", round(x$performance, digits)))
+
+
+
+
   # else {
   #   cat("ALL", df[1L], "residuals are 0: no residual degrees of freedom!")
   #   cat("\n")

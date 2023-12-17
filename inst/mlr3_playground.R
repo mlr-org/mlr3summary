@@ -36,6 +36,41 @@ sm = summary(mod_rpart, rrcv3)
 sm
 
 #----------------------
+# REGRESSION ------
+
+tsk_cars = tsk("mtcars")
+lrn_rpart = lrn("regr.rpart")
+mod_rpart = lrn_rpart$train(task = tsk_cars) # final model!
+
+# With preprocessing
+graph = po("filter", filter = flt("importance"), filter.frac = 0.5) %>>%
+  po("learner", mlr3::lrn("classif.rpart"))
+graph$train(tsk_penguins)
+print(graph)
+
+# Complex graph
+graph_complex = po("scale", center = TRUE, scale = FALSE) %>>%
+  gunion(list(
+    po("missind"),
+    po("imputemedian")
+  )) %>>%
+  po("featureunion") %>>%
+  po("learner", mlr3::lrn("classif.rpart"))
+print(graph_complex)
+
+
+# Different resampling strategies
+# 3-fold CV
+cv3 = rsmp("cv", folds = 3)
+rrcv3 = resample(tsk_cars, lrn_rpart, cv3, store_model = TRUE)
+load_all()
+sm = summary(mod_rpart, rrcv3)
+sm
+
+
+
+
+
 
 # Subsampling with 3 repeats and 9/10 ratio
 ss390 = rsmp("subsampling", repeats = 3, ratio = 0.9)
