@@ -11,7 +11,8 @@ set.seed(1812L)
 tsk_cars = tsk("mtcars")
 lrn_rpart = lrn("regr.rpart")
 mod_rpart = lrn_rpart$train(task = tsk_cars) # final model!
-
+sm = summary(mod_rpart)
+sm
 
 # Different resampling strategies
 # 3-fold CV
@@ -23,10 +24,16 @@ sm
 
 
 # With preprocessing
-graph = po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
+# Graph
+mod_graph = po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
   po("learner", mlr3::lrn("regr.rpart"))
-mod_graph = as_learner(graph)
-mod_graph$train(tsk_cars)
+rrcv3g = resample(tsk_cars, mod_graph, cv3, store_model = TRUE)
+load_all()
+sm = summary(mod_graph, rrcv3g)
+sm
+
+# GraphLearner
+mod_graph = as_learner(mod_graph)
 rrcv3g = resample(tsk_cars, mod_graph, cv3, store_model = TRUE)
 load_all()
 sm = summary(mod_graph, rrcv3g)
