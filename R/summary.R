@@ -1,6 +1,5 @@
 #' @export
 summary.Learner = function(model, resample_result, control = summary_control(), ...) {
-
   # input checks
 
   # create information list
@@ -13,9 +12,9 @@ summary.Learner = function(model, resample_result, control = summary_control(), 
 
   ## pipeline
   arr = "  --->  "
-  if ("Graph" %in% class(model)) {
-    if(all(!duplicated(graph_complex$edges[, src_id]))) {
-      ppunit = paste0(model$ids(), collapse = arr)
+  if ("GraphLearner" %in% class(model)) {
+    if(all(!duplicated(model$graph$edges[["src_id"]]))) {
+      ppunit = paste0(model$graph$ids(), collapse = arr)
     } else {
       ppunit = "<complex>"
     }
@@ -27,7 +26,23 @@ summary.Learner = function(model, resample_result, control = summary_control(), 
   ## residuals
   # <FIXME:> add for class & regression
   res = resample_result$prediction()
-  rs = res[["truth"]] - res[["response"]]
+  if (tt == "regr") {
+    rs = res[["truth"]] - res[["response"]]
+  } else if (tt == "classif") {
+    if (model$predict_type == "response") {
+      rs = as.numeric(res$truth == res$response)
+    } else {
+      # <FIXME:> to add
+      truth = as.character(res$truth)
+      res = res$data$prob
+      rs = vector(length = nrow(res))
+      for (i in 1:nrow(res)) {
+          rs[i] <- 1 - res[i, truth[i]]
+        }
+    }
+  } else {
+    stop()
+  }
 
   ## performance
   pf = resample_result$aggregate(measures = control$measures)
@@ -90,9 +105,12 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
   cat("\n")
   namp = sub(".*\\.", "", names(x$performance))
   namp = paste(toupper(substr(namp, 1, 1)), substr(namp, 2, nchar(namp)), sep="")
-  cat(paste0("\nPerformance\n", namp, ": ", round(x$performance, digits)))
-
-
+  cat(paste0("\nPerformance [sd]\n", namp, ": ",
+    paste0(
+      round(x$performance, digits),
+      " [",
+      round(x$performance_sd, digits),
+      "]")))
 
 
   # else {
