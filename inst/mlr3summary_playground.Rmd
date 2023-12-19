@@ -1,0 +1,97 @@
+---
+title: "mlr3summary playground"
+author: "Susanne Dandl"
+date: "2023-12-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load the necessary packages
+```{r pkg, echo=FALSE}
+library(mlr3)
+library(mlr3learners) 
+library(mlr3filters) 
+library(mlr3pipelines) 
+
+# Developer mode! 
+library(devtools)
+load_all()
+
+set.seed(1812L)
+```
+
+## Regression example 
+
+The first example is based on the `mtcars` task available in `mlr3`. 
+We train a regression tree on it. 
+
+```{r mtcars, echo=FALSE}
+tsk_cars = tsk("mtcars")
+lrn_rpart = lrn("regr.rpart")
+mod_rpart = lrn_rpart$train(task = tsk_cars) # final model!
+```
+
+We can receive an overview of the model with `summary()`. 
+
+```{r summarymodel}
+sm = summary(mod_rpart)
+sm
+```
+
+Because we have no hold-out/test data, performance results, etc. are not 
+shown. This is because performance evaluations on the training data can be 
+biased due to overfitting.
+To receive performance results we conduct resampling to allow for evaluations 
+based on hold-out data. We use the generated `ResampleResult` (here `rrcv3`) 
+as an additional input to `summary()`. 
+
+```{r resampling}
+cv3 = rsmp("cv", folds = 3)
+rrcv3 = resample(tsk_cars, lrn_rpart, cv3, store_model = TRUE)
+sm = summary(mod_rpart, rrcv3)
+sm
+```
+
+The model can also comprise multiple pre-processing steps, these will also 
+be shown in the `summary()` output. In the following, feature filtering is conducted
+based on the feature importance. Please note that now a paragraph on the 
+pipeline structure was added to the `summary()` output. 
+
+```{r graph}
+mod_graph = po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
+  po("learner", mlr3::lrn("regr.rpart"))
+rrcv3g = resample(tsk_cars, mod_graph, cv3, store_model = TRUE)
+sm = summary(mod_graph, rrcv3g)
+sm
+```
+
+Here, `model_graph` is a `Graph` object. It is also possible to display a 
+`summary()` after converting it to a `GraphLearner`. 
+
+```{r graphlearner}
+mod_graph = as_learner(mod_graph)
+rrcv3g = resample(tsk_cars, mod_graph, cv3, store_model = TRUE)
+sm = summary(mod_graph, rrcv3g)
+sm
+```
+
+Currently only linear pipelines can be displayed in `summary()`, more complex
+non-linear structures are only displayed by `<complex>`. 
+
+
+```{r complexgraph}
+graph_complex = po("scale", center = TRUE, scale = FALSE) %>>%
+  gunion(list(
+    po("missind"),
+    po("imputemedian")
+  )) %>>%
+  po("featureunion") %>>%
+  po("learner", mlr3::lrn("regr.rpart"))
+rrcv3gc = resample(tsk_cars, graph_complex, cv3, store_model = TRUE)
+sm = summary(graph_complex, rrcv3gc)
+sm
+```
+

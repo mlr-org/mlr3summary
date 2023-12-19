@@ -21,3 +21,9 @@
 
 # RStudio files
 .Rproj.user/
+
+# mlr3 playground
+inst/mlr3_playground.R
+
+# htmls
+inst/mlr3summary_playground.html
