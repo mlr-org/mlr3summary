@@ -2,7 +2,7 @@
 summary.Learner = function(model, resample_result = NULL, control = summary_control(), ...) {
 
   # input checks
-  #<FIXME:> allow only trained model??
+
 
   ans = list()
 
@@ -22,6 +22,8 @@ summary.Learner = function(model, resample_result = NULL, control = summary_cont
   fn = model$state$train_task$feature_names
   ans[["feature_names"]] = fn
 
+  ### performance only if hold-out data available!
+  ## <FIXME:> also allow extra data???
   if (!is.null(resample_result)) {
     ## residuals
     res = resample_result$prediction()
@@ -40,17 +42,17 @@ summary.Learner = function(model, resample_result = NULL, control = summary_cont
       }
     }
 
-
     ## performance
     pf = resample_result$aggregate(measures = control$measures)
-    sc = resample_result$score()
-    ## <FIXME:> by name!
-    sd = sd(sc[,ncol(sc)])
+    sc = resample_result$score(measures = control$measures)
+    nam_multimeas = names(sc)[grep(tt, names(sc))]
+    sc = data.table(sc[,nam_multimeas])
+    stdt = apply(sc, MARGIN = 2L, sd)
 
     ans = c(ans, list(
       residuals = rs,
       performance = pf,
-      performance_sd = sd))
+      performance_sd = stdt))
 
   }
 
@@ -111,9 +113,11 @@ importance_choices = c("pdp", "pfi", "loco")
 summary_control = function(measures = NULL, importance_measures = importance_choices,
   n_important = 50L) {
 
-
   # input checks
-  checkmate::assert_class(measures, "Measure",null.ok = TRUE)
+  if (!is.null(measures)) {
+    measures = mlr3::as_measures(measures)
+  }
+  mlr3::assert_measures(measures)
   importance_measures = match.arg(importance_measures)
   checkmate::assert_choice(importance_measures, importance_choices, null.ok = TRUE)
   checkmate::assert_int(n_important, lower = 1L, null.ok = TRUE)
@@ -146,17 +150,17 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
     cat("Residual Standard Error:", round(sd(x$residuals), digits))
   }
 
-  ## <FIXME:> allow multiple performance measures!
   if (!is.null(x$performance)) {
     cat("\n")
-    namp = sub(".*\\.", "", names(x$performance))
-    namp = paste(toupper(substr(namp, 1, 1)), substr(namp, 2, nchar(namp)), sep="")
-    cat(paste0("\nPerformance [sd]\n", namp, ": ",
-      paste0(
-        round(x$performance, digits),
-        " [",
-        round(x$performance_sd, digits),
-        "]")))
+    namp = names(x$performance)
+    # namp = sub(".*\\.", "", names(x$performance))
+    # namp = paste(toupper(substr(namp, 1, 1)), substr(namp, 2, nchar(namp)), sep="")
+    cat("\nPerformance [sd]:\n")
+    cat(paste0(namp, ": ",
+      round(x$performance, digits),
+      " [",
+      round(x$performance_sd, digits),
+      "]", collapse = "\n"))
   }
 
 
@@ -213,6 +217,6 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
   #     }
   #   }
   # }
-  cat("\n")
+  # cat("\n")
   invisible(x)
 }

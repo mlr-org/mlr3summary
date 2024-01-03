@@ -1,7 +1,7 @@
 ---
 title: "mlr3summary playground"
 author: "Susanne Dandl"
-date: "2023-12-18"
+date: "`r Sys.Date()`"
 output: html_document
 ---
 
@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Load the necessary packages
-```{r pkg, echo=FALSE}
+```{r pkg, echo=TRUE, results='hide'}
 library(mlr3)
 library(mlr3learners) 
 library(mlr3filters) 
@@ -28,10 +28,10 @@ set.seed(1812L)
 The first example is based on the `mtcars` task available in `mlr3`. 
 We train a regression tree on it. 
 
-```{r mtcars, echo=FALSE}
+```{r mtcars}
 tsk_cars = tsk("mtcars")
 lrn_rpart = lrn("regr.rpart")
-mod_rpart = lrn_rpart$train(task = tsk_cars) # final model!
+mod_rpart = lrn_rpart$train(task = tsk_cars)
 ```
 
 We can receive an overview of the model with `summary()`. 
@@ -55,10 +55,17 @@ sm = summary(mod_rpart, rrcv3)
 sm
 ```
 
-The model can also comprise multiple pre-processing steps, these will also 
-be shown in the `summary()` output. In the following, feature filtering is conducted
-based on the feature importance. Please note that now a paragraph on the 
-pipeline structure was added to the `summary()` output. 
+Multiple performance measures are also possible to display via `mlr3::msrs`
+
+```{r multimeas}
+summary(mod_rpart, rrcv3, control = summary_control(measures =msrs(c("regr.bias", "regr.mae"))))
+```
+
+The model can also comprise multiple pre-processing steps conducted via the 
+package `mlr3pipelines`, these will also be shown in the `summary()` output. 
+In the following, feature filtering is conducted based on the feature importance. 
+Please note that now a paragraph on the pipeline structure was added to the 
+`summary()` output. 
 
 ```{r graph}
 mod_graph = po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
@@ -94,4 +101,6 @@ rrcv3gc = resample(tsk_cars, graph_complex, cv3, store_model = TRUE)
 sm = summary(graph_complex, rrcv3gc)
 sm
 ```
+
+
 
