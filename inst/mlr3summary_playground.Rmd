@@ -15,10 +15,11 @@ library(mlr3)
 library(mlr3learners) 
 library(mlr3filters) 
 library(mlr3pipelines) 
+library(mlr3summary)
 
-# Developer mode! 
-library(devtools)
-load_all()
+# # Developer mode! 
+# library(devtools)
+# load_all()
 
 set.seed(1812L)
 ```

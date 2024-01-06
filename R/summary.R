@@ -1,25 +1,19 @@
 #' @export
-summary.Learner = function(model, resample_result = NULL, control = summary_control(), ...) {
+summary.Learner = function(object, resample_result = NULL, control = summary_control(), ...) {
 
   # input checks
-
+  ## <FIXME:> to add
 
   ans = list()
-
-  # resampling
-  # <FIXME:> task not saved in model, model$task does not exist, only via resample_result
-  # if (is.null(resample_result) & !is.null(resampling)) {
-  #   resample(model$task??, model, resampling, store_model = TRUE)
-  # }
 
   # create information list
 
   ## task type
-  tt = model$task_type
+  tt = object$task_type
   ans[["task_type"]] = tt
 
   ## feature names
-  fn = model$state$train_task$feature_names
+  fn = object$state$train_task$feature_names
   ans[["feature_names"]] = fn
 
   ### performance only if hold-out data available!
@@ -30,7 +24,7 @@ summary.Learner = function(model, resample_result = NULL, control = summary_cont
     if (tt == "regr") {
       rs = res[["truth"]] - res[["response"]]
     } else if (tt == "classif") {
-      if (model$predict_type == "response") {
+      if (object$predict_type == "response") {
         rs = NULL
       } else {
         truth = as.character(res$truth)
@@ -46,8 +40,8 @@ summary.Learner = function(model, resample_result = NULL, control = summary_cont
     pf = resample_result$aggregate(measures = control$measures)
     sc = resample_result$score(measures = control$measures)
     nam_multimeas = names(sc)[grep(tt, names(sc))]
-    sc = data.table(sc[,nam_multimeas])
-    stdt = apply(sc, MARGIN = 2L, sd)
+    sc = data.table::data.table(sc[,nam_multimeas])
+    stdt = apply(sc, MARGIN = 2L, stats::sd)
 
     ans = c(ans, list(
       residuals = rs,
@@ -64,18 +58,19 @@ summary.Learner = function(model, resample_result = NULL, control = summary_cont
 }
 
 #' @export
-summary.GraphLearner = function(model, resample_result = NULL, control = summary_control(), ...) {
+summary.GraphLearner = function(object, resample_result = NULL, control = summary_control(), ...) {
 
   # input checks
+  ## <FIXME:> to add
 
   # get all info as Learner
-  ans = summary.Learner(model = model, resample_result = resample_result, control = control, ...)
+  ans = summary.Learner(object = object, resample_result = resample_result, control = control, ...)
 
   # pipeline
   arr = "  --->  "
-  if ("GraphLearner" %in% class(model)) {
-    if(all(!duplicated(model$graph$edges[["src_id"]]))) {
-      ppunit = paste0(model$graph$ids(), collapse = arr)
+  if ("GraphLearner" %in% class(object)) {
+    if(all(!duplicated(object$graph$edges[["src_id"]]))) {
+      ppunit = paste0(object$graph$ids(), collapse = arr)
     } else {
       ppunit = "<complex>"
     }
@@ -88,27 +83,31 @@ summary.GraphLearner = function(model, resample_result = NULL, control = summary
 
 
 #' @export
-summary.Graph = function(model, resample_result = NULL, control = summary_control(), ...) {
+summary.Graph = function(object, resample_result = NULL, control = summary_control(), ...) {
 
   # input checks
+  ## <FIXME:> to add
 
   # convert to GraphLearner and run summary
-  summary(as_learner(model), resample_result = resample_result, control = control, ...)
+  summary(mlr3::as_learner(object), resample_result = resample_result, control = control, ...)
 
 }
 
-summary.ResampleResult = function(model, resample_result = NULL, control = summary_control(), ...) {
-  # input checks
-
-  # pipeline
-}
-
-helper_summary = function() {
-
-}
 
 importance_choices = c("pdp", "pfi", "loco")
 
+#' @title Control for model summaries
+#'
+#' @description Various parameters that control aspect of the model summaries.
+#'
+#' @param measures ([mlr3::Measure] | list of [mlr3::Measure])\cr
+#'   Measure(s) to calculate performance on.
+#' @param importance_measures (character())\cr
+#'   To Do.
+#' @param n_important (numeric(1))\cr
+#'   To Do.
+#' @return [list]
+#'
 #' @export
 summary_control = function(measures = NULL, importance_measures = importance_choices,
   n_important = 50L) {
@@ -129,8 +128,7 @@ summary_control = function(measures = NULL, importance_measures = importance_cho
 }
 
 #' @export
-print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), ...)
-{
+print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), ...) {
 
   cat("\nTask type:", x$task_type)
   cat("\nFeature names:", paste(x$feature_names, collapse = ", "))
@@ -144,10 +142,10 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
     cat("\nResiduals:\n")
     resid <- x$residuals
     nam <- c("Min", "1Q", "Median", "3Q", "Max")
-    zz = zapsmall(quantile(resid), digits + 1L)
+    zz = zapsmall(stats::quantile(resid), digits + 1L)
     rq = structure(zz, names = nam)
     print(rq, digits = digits, ...)
-    cat("Residual Standard Error:", round(sd(x$residuals), digits))
+    cat("Residual Standard Error:", round(stats::sd(x$residuals), digits))
   }
 
   if (!is.null(x$performance)) {
@@ -164,6 +162,7 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
   }
 
 
+  ### Copied from summary.lm()
   # else {
   #   cat("ALL", df[1L], "residuals are 0: no residual degrees of freedom!")
   #   cat("\n")
