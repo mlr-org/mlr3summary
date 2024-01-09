@@ -43,11 +43,55 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     sc = data.table::data.table(sc[, nam_multimeas, with = FALSE])
     stdt = apply(sc, MARGIN = 2L, stats::sd)
 
+    ## importance
+    imps = c()
+    models = resample_result$learners
+    num_models = length(models)
+    dt_row_ids = resample_result$task$row_ids
+    for (i in 1:num_models) {
+      test_ids = setdiff(dt_row_ids, resample_result$resampling$train_set(i = i))
+      assert_true(all(test_ids, resample_result$predictions()[[i]]$data$row_ids))
+      test_dt = resample_result$task$clone()$filter(test_ids)$data()
+      if (any(c("pfi", "pdp") %in% control$importance_measures)) {
+        require("iml")
+        pred = iml::Predictor$new(model = models[[i]]$model, data = test_dt,
+          y = test_dt[, resample_result$task$target_names])
+        ## <FIXME:> allow more losses: currently available in IML,
+        ## "ce", "f1", "logLoss", "mae", "mse", "rmse", "mape", "mdae", "msle",
+        ## "percent_bias", "rae", "rmse", "rmsle", "rse", "rrse" and "smape"
+        if ("pfi" %in% control$importance_measures) {
+          imp = iml::FeatureImp$new(predictor = pred, loss = "mse")$results
+          imps[["pfi"]] = data.table(rbind(imps[["pfi"]], imp))
+        }
+        if ("pdp" %in% control$importance_measures) {
+
+          pdp = iml::FeatureEffects$new(predictor = pred, method = "pdp")
+          imp = lapply(pdp$results, FUN = function(dt) var(dt$.value))
+          imp = data.table(feature = names(pdp$results),
+            importance = as.vector(unlist(imp), "numeric"))
+          imps[["pdp"]] = data.table(rbind(imps[["pdp"]], imp))
+        }
+      }
+    }
+    browser()
+    compute_importance_measures = function(dt) {
+      mm = dt[, mean(importance), by = feature]
+      setnames(mm, "V1", "mean")
+      var = dt[, var(importance), by = feature]
+      corr = 1/num_models + length(test_ids)/(length(dt_row_ids) - length(test_ids))
+      var$corrvar = corr * var$V1
+      setnames(var, "V1", "var")
+      merge(mm, var, by = "feature")
+    }
+
+    imps_res = lapply(imps, compute_importance_measures)
+
     ans = c(ans, list(
       residuals = rs,
       performance = pf,
-      performance_sd = stdt))
-
+      performance_sd = stdt,
+      importance = imps_res)
+    )
   }
 
   # convert list to summary.Learner such that right printer is called
@@ -116,8 +160,10 @@ summary_control = function(measures = NULL, importance_measures = importance_cho
     measures = mlr3::as_measures(measures)
   }
   mlr3::assert_measures(measures)
-  importance_measures = match.arg(importance_measures)
-  checkmate::assert_choice(importance_measures, importance_choices, null.ok = TRUE)
+  importance_measures = match.arg(importance_measures, several.ok = TRUE)
+  for (imp_measure in importance_measures) {
+    checkmate::assert_choice(imp_measure, importance_choices, null.ok = TRUE)
+  }
   checkmate::assert_int(n_important, lower = 1L, null.ok = TRUE)
 
   # create list
@@ -131,6 +177,10 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
 
   cat("\nTask type:", x$task_type)
   cat("\nFeature names:", paste(x$feature_names, collapse = ", "))
+
+  if (!is.null(x$model_type)) {
+    cat("\nModel type:", x$model_type)
+  }
 
   if (!is.null(x$pipeline)) {
     cat("\nPipeline:\n", x$pipeline)
@@ -160,19 +210,56 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
       "]", collapse = "\n"))
   }
 
+  browser()
+
+  if (!is.null(x$importance)) {
+    cat("\nImportances:\n")
+
+    tquant = 1.96 #t(1-alpha)
+    ## create imp [l, u]
+
+    compute_imp_summary = function(imp) {
+      ## <FIXME:> order by first imp measure
+      imp[, mean := round(mean, digits)]
+      imp[, lower := round(mean - tquant * sqrt(corrvar), digits)]
+      imp[, upper := round(mean + tquant * sqrt(corrvar), digits)]
+      imp[, res:=paste0(mean, " [", lower, ",", upper, "]")]
+      imp[, c("feature", "res")]
+    }
+
+    # rr = mapply(function(imp, nam) {
+    #   res = compute_imp_summary(imp)
+    #   setnames(res, "res", nam)
+    # }, x$importance, names(x$importance))
+    #
+
+    rr = lapply(x$importance, compute_imp_summary)
+    rr = Reduce(merge,rr)
+    names(rr) = c("feature", names(x$importance))
+    col = names(x$importance)[[1]]
+
+    ## <FIXME:> nice print out
+
+
+    # cbind(Estimate = est, `Std. Error` = se,
+    #   `t value` = tval, `Pr(>|t|)` = 2 * pt(abs(tval), rdf,
+    #     lower.tail = FALSE))
+
+    # Browse[2]> coefs
+    # Estimate Std. Error  t value     Pr(>|t|)
+    # (Intercept)    5.032  0.2202177 22.85012 9.547128e-15
+    # groupTrt      -0.371  0.3114349 -1.19126 2.490232e-01
+    #
+    # printCoefmat(coefs, digits = digits, signif.stars = signif.stars,
+    #   na.print = "NA", ...)
+  }
 
   ### Copied from summary.lm()
   # else {
   #   cat("ALL", df[1L], "residuals are 0: no residual degrees of freedom!")
   #   cat("\n")
   # }
-  # if (length(x$aliased) == 0L) {
-  #   cat("\nNo Coefficients\n")
-  # }
-  # else {
-  #   if (nsingular <- df[3L] - df[1L])
-  #     cat("\nCoefficients: (", nsingular, " not defined because of singularities)\n",
-  #       sep = "")
+
   #   else cat("\nCoefficients:\n")
   #   coefs <- x$coefficients
   #   if (any(aliased <- x$aliased)) {
