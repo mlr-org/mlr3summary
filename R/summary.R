@@ -39,7 +39,6 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     ## performance
     pf = resample_result$aggregate(measures = control$measures)
     sc = resample_result$score(measures = control$measures)
-    browser()
     nam_multimeas = names(sc)[grep(tt, names(sc))]
     sc = data.table::data.table(sc[, nam_multimeas, with = FALSE])
     stdt = apply(sc, MARGIN = 2L, stats::sd)
