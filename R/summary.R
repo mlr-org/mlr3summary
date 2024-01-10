@@ -54,7 +54,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       test_dt = resample_result$task$clone()$filter(test_ids)$data()
       if (any(c("pfi", "pdp") %in% control$importance_measures)) {
         require("iml")
-        pred = iml::Predictor$new(model = models[[i]]$model, data = test_dt,
+        pred = iml::Predictor$new(model = models[[i]], data = test_dt,
           y = test_dt[, resample_result$task$target_names])
         ## <FIXME:> allow more losses: currently available in IML,
         ## "ce", "f1", "logLoss", "mae", "mse", "rmse", "mape", "mdae", "msle",
@@ -73,7 +73,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
         }
       }
     }
-    browser()
+
     compute_importance_measures = function(dt) {
       mm = dt[, mean(importance), by = feature]
       setnames(mm, "V1", "mean")
@@ -90,12 +90,14 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       residuals = rs,
       performance = pf,
       performance_sd = stdt,
-      importance = imps_res)
+      importance = imps_res,
+      control = control)
     )
   }
 
   # convert list to summary.Learner such that right printer is called
   class(ans) <- "summary.Learner"
+
   ans
 
 }
@@ -105,6 +107,7 @@ summary.GraphLearner = function(object, resample_result = NULL, control = summar
 
   # input checks
   ## <FIXME:> to add
+  ## <FIXME:> store_model must be set to true in resample_result!!
 
   # get all info as Learner
   ans = summary.Learner(object = object, resample_result = resample_result, control = control, ...)
@@ -152,8 +155,8 @@ importance_choices = c("pdp", "pfi", "loco")
 #' @return [list]
 #'
 #' @export
-summary_control = function(measures = NULL, importance_measures = importance_choices,
-  n_important = 50L) {
+summary_control = function(measures = NULL, importance_measures = "pdp",
+  n_important = NULL) {
 
   # input checks
   if (!is.null(measures)) {
@@ -210,16 +213,19 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
       "]", collapse = "\n"))
   }
 
-  browser()
-
   if (!is.null(x$importance)) {
+    cat("\n")
     cat("\nImportances:\n")
 
     tquant = 1.96 #t(1-alpha)
     ## create imp [l, u]
 
+    # featnams = as.data.frame(lapply(x$importance, function(dt) dt$feature))
+    # assert_true(all(apply(featnams, MARGIN = 1, FUN = function(row) length(unique(row)) == 1)))
+
+    featorder = x$importance[[1]][order(mean, decreasing = TRUE), feature]
+
     compute_imp_summary = function(imp) {
-      ## <FIXME:> order by first imp measure
       imp[, mean := round(mean, digits)]
       imp[, lower := round(mean - tquant * sqrt(corrvar), digits)]
       imp[, upper := round(mean + tquant * sqrt(corrvar), digits)]
@@ -227,81 +233,21 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
       imp[, c("feature", "res")]
     }
 
-    # rr = mapply(function(imp, nam) {
-    #   res = compute_imp_summary(imp)
-    #   setnames(res, "res", nam)
-    # }, x$importance, names(x$importance))
-    #
-
     rr = lapply(x$importance, compute_imp_summary)
     rr = Reduce(merge,rr)
+    rr = rr[order(match(feature, featorder))]
     names(rr) = c("feature", names(x$importance))
+    rownames(rr) = rr$feature
+    rr[,feature:=NULL]
     col = names(x$importance)[[1]]
 
-    ## <FIXME:> nice print out
+    if (!is.null(x$control$n_important) && nrow(rr) > x$control$n_important) {
+      rr = rr[1:x$control$n_important,]
+      featorder = featorder[1:x$control$n_important]
+    }
+    rr = as.matrix(rr, rownames = featorder)
+    print.default(rr, quote = FALSE, right = TRUE, ...)
 
-
-    # cbind(Estimate = est, `Std. Error` = se,
-    #   `t value` = tval, `Pr(>|t|)` = 2 * pt(abs(tval), rdf,
-    #     lower.tail = FALSE))
-
-    # Browse[2]> coefs
-    # Estimate Std. Error  t value     Pr(>|t|)
-    # (Intercept)    5.032  0.2202177 22.85012 9.547128e-15
-    # groupTrt      -0.371  0.3114349 -1.19126 2.490232e-01
-    #
-    # printCoefmat(coefs, digits = digits, signif.stars = signif.stars,
-    #   na.print = "NA", ...)
   }
-
-  ### Copied from summary.lm()
-  # else {
-  #   cat("ALL", df[1L], "residuals are 0: no residual degrees of freedom!")
-  #   cat("\n")
-  # }
-
-  #   else cat("\nCoefficients:\n")
-  #   coefs <- x$coefficients
-  #   if (any(aliased <- x$aliased)) {
-  #     cn <- names(aliased)
-  #     coefs <- matrix(NA, length(aliased), 4, dimnames = list(cn,
-  #       colnames(coefs)))
-  #     coefs[!aliased, ] <- x$coefficients
-  #   }
-  #   printCoefmat(coefs, digits = digits, signif.stars = signif.stars,
-  #     na.print = "NA", ...)
-  # }
-  # cat("\nResidual standard error:", format(signif(x$sigma,
-  #   digits)), "on", rdf, "degrees of freedom")
-  # cat("\n")
-  # if (nzchar(mess <- naprint(x$na.action)))
-  #   cat("  (", mess, ")\n", sep = "")
-  # if (!is.null(x$fstatistic)) {
-  #   cat("Multiple R-squared: ", formatC(x$r.squared, digits = digits))
-  #   cat(",\tAdjusted R-squared: ", formatC(x$adj.r.squared,
-  #     digits = digits), "\nF-statistic:", formatC(x$fstatistic[1L],
-  #       digits = digits), "on", x$fstatistic[2L], "and",
-  #     x$fstatistic[3L], "DF,  p-value:", format.pval(pf(x$fstatistic[1L],
-  #       x$fstatistic[2L], x$fstatistic[3L], lower.tail = FALSE),
-  #       digits = digits))
-  #   cat("\n")
-  # }
-  # correl <- x$correlation
-  # if (!is.null(correl)) {
-  #   p <- NCOL(correl)
-  #   if (p > 1L) {
-  #     cat("\nCorrelation of Coefficients:\n")
-  #     if (is.logical(symbolic.cor) && symbolic.cor) {
-  #       print(symnum(correl, abbr.colnames = NULL))
-  #     }
-  #     else {
-  #       correl <- format(round(correl, 2), nsmall = 2,
-  #         digits = digits)
-  #       correl[!lower.tri(correl)] <- ""
-  #       print(correl[-1, -p, drop = FALSE], quote = FALSE)
-  #     }
-  #   }
-  # }
-  # cat("\n")
   invisible(x)
 }
