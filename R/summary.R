@@ -11,6 +11,10 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     feature_names = fn
   )
 
+  if (!"GraphLearner" %in% class(object)) {
+      ans[["model_type"]] = object$id
+  }
+
   ### performance only if hold-out data available!
   ## <FIXME:> also allow extra data???
   if (!is.null(resample_result)) {
@@ -26,7 +30,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
         res = res$data$prob
         rs = vector(length = nrow(res))
         for (i in 1:nrow(res)) {
-          rs[i] <- 1 - res[i, truth[i]]
+          rs[i] = 1 - res[i, truth[i]]
         }
       }
     }
@@ -95,8 +99,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
   }
 
   # convert list to summary.Learner such that right printer is called
-  class(ans) <- "summary.Learner"
-
+  class(ans) = "summary.Learner"
   ans
 }
 
@@ -173,26 +176,30 @@ summary_control = function(measures = NULL, importance_measures = "pdp",
 #' @export
 print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), ...) {
 
-  catn("Task type:", x$task_type)
-  cat("\nFeature names:", paste(x$feature_names, collapse = ", "))
+  catn("Task type: ", x$task_type)
+  catn("Feature names: ", paste(x$feature_names, collapse = ", "))
+
+  if (!is.null(x$model_type)) {
+    catn("Model type: ", x$model_type)
+  }
 
   if (!is.null(x$model_type)) {
     cat("\nModel type:", x$model_type)
   }
 
   if (!is.null(x$pipeline)) {
-    cat("\nPipeline:\n", x$pipeline)
+    catn("Pipeline:\n", x$pipeline)
   }
 
   if (!is.null(x$residuals)) {
     cat("\n")
-    cat("\nResiduals:\n")
+    catn("Residuals:")
     resid = x$residuals
     nam = c("Min", "1Q", "Median", "3Q", "Max")
     zz = zapsmall(stats::quantile(resid), digits + 1L)
     rq = structure(zz, names = nam)
     print(rq, digits = digits, ...)
-    cat("Residual Standard Error:", round(stats::sd(x$residuals), digits))
+    cat("Residual Standard Error:", round(stats::sd(x$residuals), digits), "\n")
   }
 
   if (!is.null(x$performance)) {
@@ -200,7 +207,7 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
     namp = names(x$performance)
     # namp = sub(".*\\.", "", names(x$performance))
     # namp = paste(toupper(substr(namp, 1, 1)), substr(namp, 2, nchar(namp)), sep="")
-    cat("\nPerformance [sd]:\n")
+    catn("Performance [sd]:")
     cat(paste0(namp, ": ",
       round(x$performance, digits),
       " [",
