@@ -65,6 +65,7 @@ Please note that now a paragraph on the pipeline structure was added to the `sum
 ```{r graph}
 graph = po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
   po("learner", mlr3::lrn("regr.rpart"))
+graph$train(tsk_cars)
 rr_2 = resample(tsk_cars, graph, rsmp_cv3, store_model = TRUE)
 summary(graph, rr_2)
 ```
@@ -73,6 +74,7 @@ Here, `graph` is a `Graph` object. It is also possible to display a `summary()` 
 
 ```{r graphlearner}
 graph_learner = as_learner(graph)
+graph_learner$train(tsk_cars)
 rr_3 = resample(tsk_cars, graph_learner, rsmp_cv3, store_model = TRUE)
 summary(graph_learner, rr_3)
 ```
@@ -87,6 +89,7 @@ graph_complex = po("scale", center = TRUE, scale = FALSE) %>>%
   )) %>>%
   po("featureunion") %>>%
   po("learner", mlr3::lrn("regr.rpart"))
+graph_complex$train(tsk_cars)
 rr_4 = resample(tsk_cars, graph_complex, rsmp_cv3, store_model = TRUE)
 summary(graph_complex, rr_4)
 ```
