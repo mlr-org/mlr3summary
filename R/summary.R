@@ -11,6 +11,10 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     feature_names = fn
   )
 
+  if (!"GraphLearner" %in% class(object)) {
+      ans[["model_type"]] = object$id
+  }
+
   ### performance only if hold-out data available!
   ## <FIXME:> also allow extra data???
   if (!is.null(resample_result)) {
@@ -26,7 +30,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
         res = res$data$prob
         rs = vector(length = nrow(res))
         for (i in 1:nrow(res)) {
-          rs[i] <- 1 - res[i, truth[i]]
+          rs[i] = 1 - res[i, truth[i]]
         }
       }
     }
@@ -45,7 +49,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
   }
 
   # convert list to summary.Learner such that right printer is called
-  class(ans) <- "summary.Learner"
+  class(ans) = "summary.Learner"
   ans
 }
 
@@ -122,16 +126,20 @@ summary_control = function(
 #' @export
 print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), ...) {
 
-  catn("Task type:", x$task_type)
-  cat("\nFeature names:", paste(x$feature_names, collapse = ", "))
+  catn("Task type: ", x$task_type)
+  catn("Feature names: ", paste(x$feature_names, collapse = ", "))
+
+  if (!is.null(x$model_type)) {
+    catn("Model type: ", x$model_type)
+  }
 
   if (!is.null(x$pipeline)) {
-    cat("\nPipeline:\n", x$pipeline)
+    catn("Pipeline:\n", x$pipeline)
   }
 
   if (!is.null(x$residuals)) {
     cat("\n")
-    cat("\nResiduals:\n")
+    catn("Residuals:\n")
     resid = x$residuals
     nam = c("Min", "1Q", "Median", "3Q", "Max")
     zz = zapsmall(stats::quantile(resid), digits + 1L)
@@ -145,69 +153,12 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
     namp = names(x$performance)
     # namp = sub(".*\\.", "", names(x$performance))
     # namp = paste(toupper(substr(namp, 1, 1)), substr(namp, 2, nchar(namp)), sep="")
-    cat("\nPerformance [sd]:\n")
+    catn("Performance [sd]:\n")
     cat(paste0(namp, ": ",
       round(x$performance, digits),
       " [",
       round(x$performance_sd, digits),
       "]", collapse = "\n"))
   }
-
-
-  ### Copied from summary.lm()
-  # else {
-  #   cat("ALL", df[1L], "residuals are 0: no residual degrees of freedom!")
-  #   cat("\n")
-  # }
-  # if (length(x$aliased) == 0L) {
-  #   cat("\nNo Coefficients\n")
-  # }
-  # else {
-  #   if (nsingular <- df[3L] - df[1L])
-  #     cat("\nCoefficients: (", nsingular, " not defined because of singularities)\n",
-  #       sep = "")
-  #   else cat("\nCoefficients:\n")
-  #   coefs <- x$coefficients
-  #   if (any(aliased <- x$aliased)) {
-  #     cn <- names(aliased)
-  #     coefs <- matrix(NA, length(aliased), 4, dimnames = list(cn,
-  #       colnames(coefs)))
-  #     coefs[!aliased, ] <- x$coefficients
-  #   }
-  #   printCoefmat(coefs, digits = digits, signif.stars = signif.stars,
-  #     na.print = "NA", ...)
-  # }
-  # cat("\nResidual standard error:", format(signif(x$sigma,
-  #   digits)), "on", rdf, "degrees of freedom")
-  # cat("\n")
-  # if (nzchar(mess <- naprint(x$na.action)))
-  #   cat("  (", mess, ")\n", sep = "")
-  # if (!is.null(x$fstatistic)) {
-  #   cat("Multiple R-squared: ", formatC(x$r.squared, digits = digits))
-  #   cat(",\tAdjusted R-squared: ", formatC(x$adj.r.squared,
-  #     digits = digits), "\nF-statistic:", formatC(x$fstatistic[1L],
-  #       digits = digits), "on", x$fstatistic[2L], "and",
-  #     x$fstatistic[3L], "DF,  p-value:", format.pval(pf(x$fstatistic[1L],
-  #       x$fstatistic[2L], x$fstatistic[3L], lower.tail = FALSE),
-  #       digits = digits))
-  #   cat("\n")
-  # }
-  # correl <- x$correlation
-  # if (!is.null(correl)) {
-  #   p <- NCOL(correl)
-  #   if (p > 1L) {
-  #     cat("\nCorrelation of Coefficients:\n")
-  #     if (is.logical(symbolic.cor) && symbolic.cor) {
-  #       print(symnum(correl, abbr.colnames = NULL))
-  #     }
-  #     else {
-  #       correl <- format(round(correl, 2), nsmall = 2,
-  #         digits = digits)
-  #       correl[!lower.tri(correl)] <- ""
-  #       print(correl[-1, -p, drop = FALSE], quote = FALSE)
-  #     }
-  #   }
-  # }
-  # cat("\n")
   invisible(x)
 }

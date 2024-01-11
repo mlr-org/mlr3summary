@@ -6,7 +6,7 @@
 \usage{
 summary_control(
   measures = NULL,
-  importance_measures = importance_choices,
+  importance_measures = "pdp",
   n_important = 50L
 )
 }
