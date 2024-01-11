@@ -98,12 +98,12 @@ summary(graph_complex, rr_4)
 Multiple importance measures are also possible: 
 
 ```{r importances}
-sm = summary(lrn_rpart, rr_3, control = summary_control(importance_measures = c("pfi", "pdp")))
+summary(lrn_rpart, rr_3, control = summary_control(importance_measures = c("pfi", "pdp")))
 ```
 
 
 Only display `n_important = 3L` most important features. 
 ```{r n_important}
-summary(lrn_rpart, rr_3, control = summary_control(importance_measures = c("pdp"), n_important = 3L))
+summary(lrn_rpart, rr_3, control = summary_control(importance_measures = c("pdp", "pfi"), n_important = 3L))
 ```
 
