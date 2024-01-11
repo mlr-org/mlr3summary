@@ -139,13 +139,13 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
 
   if (!is.null(x$residuals)) {
     cat("\n")
-    catn("Residuals:\n")
+    catn("Residuals:")
     resid = x$residuals
     nam = c("Min", "1Q", "Median", "3Q", "Max")
     zz = zapsmall(stats::quantile(resid), digits + 1L)
     rq = structure(zz, names = nam)
     print(rq, digits = digits, ...)
-    cat("Residual Standard Error:", round(stats::sd(x$residuals), digits))
+    cat("Residual Standard Error:", round(stats::sd(x$residuals), digits), "\n")
   }
 
   if (!is.null(x$performance)) {
@@ -153,7 +153,7 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
     namp = names(x$performance)
     # namp = sub(".*\\.", "", names(x$performance))
     # namp = paste(toupper(substr(namp, 1, 1)), substr(namp, 2, nchar(namp)), sep="")
-    catn("Performance [sd]:\n")
+    catn("Performance [sd]:")
     cat(paste0(namp, ": ",
       round(x$performance, digits),
       " [",
