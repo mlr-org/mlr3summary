@@ -1,20 +1,15 @@
 #' @export
 summary.Learner = function(object, resample_result = NULL, control = summary_control(), ...) {
+  # FIXME: assertions
 
-  # input checks
-  ## <FIXME:> to add
-
-  ans = list()
-
-  # create information list
-
-  ## task type
+  # assignment to shorter names
   tt = object$task_type
-  ans[["task_type"]] = tt
-
-  ## feature names
   fn = object$state$train_task$feature_names
-  ans[["feature_names"]] = fn
+
+  ans = list(
+    task_type = tt,
+    feature_names = fn
+  )
 
   ### performance only if hold-out data available!
   ## <FIXME:> also allow extra data???
@@ -40,20 +35,18 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     pf = resample_result$aggregate(measures = control$measures)
     sc = resample_result$score(measures = control$measures)
     nam_multimeas = names(sc)[grep(tt, names(sc))]
-    sc = data.table::data.table(sc[, nam_multimeas, with = FALSE])
+    sc = sc[, nam_multimeas, with = FALSE]
     stdt = apply(sc, MARGIN = 2L, stats::sd)
 
     ans = c(ans, list(
       residuals = rs,
       performance = pf,
       performance_sd = stdt))
-
   }
 
   # convert list to summary.Learner such that right printer is called
   class(ans) <- "summary.Learner"
   ans
-
 }
 
 #' @export
@@ -63,11 +56,11 @@ summary.GraphLearner = function(object, resample_result = NULL, control = summar
   ## <FIXME:> to add
 
   # get all info as Learner
-  ans = summary.Learner(object = object, resample_result = resample_result, control = control, ...)
+  ans = NextMethod()
 
   # pipeline
   arr = "  --->  "
-  if ("GraphLearner" %in% class(object)) {
+  if (inherits(object, "GraphLearner")) {
     if(all(!duplicated(object$graph$edges[["src_id"]]))) {
       ppunit = paste0(object$graph$ids(), collapse = arr)
     } else {
@@ -89,11 +82,8 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 
   # convert to GraphLearner and run summary
   summary(mlr3::as_learner(object), resample_result = resample_result, control = control, ...)
-
 }
 
-
-importance_choices = c("pdp", "pfi", "loco")
 
 #' @title Control for model summaries
 #'
@@ -108,16 +98,19 @@ importance_choices = c("pdp", "pfi", "loco")
 #' @return [list]
 #'
 #' @export
-summary_control = function(measures = NULL, importance_measures = importance_choices,
-  n_important = 50L) {
+summary_control = function(
+  measures = NULL,
+  importance_measures = "pdp",
+  n_important = 50L
+  ) {
 
   # input checks
   if (!is.null(measures)) {
-    measures = mlr3::as_measures(measures)
+    measures = as_measures(measures)
   }
   mlr3::assert_measures(measures)
   importance_measures = match.arg(importance_measures)
-  checkmate::assert_choice(importance_measures, importance_choices, null.ok = TRUE)
+  checkmate::assert_choice(importance_measures, c("pdp", "pfi", "loco"), null.ok = TRUE)
   checkmate::assert_int(n_important, lower = 1L, null.ok = TRUE)
 
   # create list
@@ -129,7 +122,7 @@ summary_control = function(measures = NULL, importance_measures = importance_cho
 #' @export
 print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), ...) {
 
-  cat("\nTask type:", x$task_type)
+  catn("Task type:", x$task_type)
   cat("\nFeature names:", paste(x$feature_names, collapse = ", "))
 
   if (!is.null(x$pipeline)) {
@@ -139,8 +132,8 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
   if (!is.null(x$residuals)) {
     cat("\n")
     cat("\nResiduals:\n")
-    resid <- x$residuals
-    nam <- c("Min", "1Q", "Median", "3Q", "Max")
+    resid = x$residuals
+    nam = c("Min", "1Q", "Median", "3Q", "Max")
     zz = zapsmall(stats::quantile(resid), digits + 1L)
     rq = structure(zz, names = nam)
     print(rq, digits = digits, ...)
