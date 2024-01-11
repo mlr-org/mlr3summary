@@ -161,7 +161,6 @@ summary_control = function(measures = NULL, importance_measures = "pdp",
     measures = as_measures(measures)
   }
   mlr3::assert_measures(measures)
-  importance_measures = match.arg(importance_measures, several.ok = TRUE)
   for (imp_measure in importance_measures) {
     checkmate::assert_choice(imp_measure, c("pdp", "pfi", "loco"), null.ok = TRUE)
   }
