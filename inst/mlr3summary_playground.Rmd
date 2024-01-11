@@ -15,11 +15,11 @@ library(mlr3)
 library(mlr3learners) 
 library(mlr3filters) 
 library(mlr3pipelines) 
-library(mlr3summary)
+# library(mlr3summary)
 
-# # Developer mode! 
-# library(devtools)
-# load_all()
+# Developer mode!
+library(devtools)
+load_all()
 
 set.seed(1812L)
 ```
@@ -104,4 +104,14 @@ sm
 ```
 
 
+Multiple importance measures are also possible: 
 
+```{r importances}
+sm = summary(mod_rpart, rrcv3, control = summary_control(importance_measures = c("pfi", "pdp")))
+```
+
+
+Only display `n_important = 3L` most important features. 
+```{r n_important}
+summary(mod_rpart, rrcv3, control = summary_control(importance_measures = c("pdp"), n_important = 3L))
+```

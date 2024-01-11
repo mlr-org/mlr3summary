@@ -6,8 +6,8 @@
 \usage{
 summary_control(
   measures = NULL,
-  importance_measures = importance_choices,
-  n_important = 50L
+  importance_measures = "pdp",
+  n_important = NULL
 )
 }
 \arguments{
