@@ -18,13 +18,20 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
   ### performance only if hold-out data available!
   ## <FIXME:> also allow extra data???
   if (!is.null(resample_result)) {
+
+    ## ResampleResult info
+    ans[["resample_info"]] = paste(resample_result$resampling$id, "with",
+      as_short_string(resample_result$resampling$param_set$values, 1000L))
+    ## <FIXME:> input checks
+    ## - resample_result model must match object/model type!!
+    ## - also trained on same task!
     ## residuals
     res = resample_result$prediction()
     if (tt == "regr") {
-      rs = res[["truth"]] - res[["response"]]
+      ans[["residuals"]] = res[["truth"]] - res[["response"]]
     } else if (tt == "classif") {
       if (object$predict_type == "response") {
-        rs = NULL
+        ans[["confusion_matrix"]] = resample_result$prediction()$confusion
       } else {
         truth = as.character(res$truth)
         res = res$data$prob
@@ -32,8 +39,10 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
         for (i in 1:nrow(res)) {
           rs[i] = 1 - res[i, truth[i]]
         }
+        ans[["residuals"]] = rs
       }
     }
+
 
     ## performance
     pf = resample_result$aggregate(measures = control$measures)
@@ -43,7 +52,6 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     stdt = apply(sc, MARGIN = 2L, stats::sd)
 
     ans = c(ans, list(
-      residuals = rs,
       performance = pf,
       performance_sd = stdt))
   }
@@ -63,12 +71,12 @@ summary.GraphLearner = function(object, resample_result = NULL, control = summar
   ans = NextMethod()
 
   # pipeline
-  arr = "  --->  "
+  arr = "  ->  "
   if (inherits(object, "GraphLearner")) {
     if(all(!duplicated(object$graph$edges[["src_id"]]))) {
       ppunit = paste0(object$graph$ids(), collapse = arr)
     } else {
-      ppunit = "<complex>"
+      ppunit = "<SUPPRESSED>"
     }
   }
   pp = paste0(c("<INPUT>", ppunit, "<OUTPUT>"), collapse = arr)
@@ -137,6 +145,10 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
     catn("Pipeline:\n", x$pipeline)
   }
 
+  if (!is.null(x$resample_info)) {
+    catn("Resampling: ", x$resample_info)
+  }
+
   if (!is.null(x$residuals)) {
     cat("\n")
     catn("Residuals:")
@@ -145,7 +157,22 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
     zz = zapsmall(stats::quantile(resid), digits + 1L)
     rq = structure(zz, names = nam)
     print(rq, digits = digits, ...)
-    cat("Residual Standard Error:", round(stats::sd(x$residuals), digits), "\n")
+  }
+
+  if (!is.null(x$confusion_matrix)) {
+    cat("\n")
+    catn("Confusion matrix:")
+    max_cols = 8L
+    browser()
+    if (ncol(x$confusion_matrix) >= max_cols) {
+      conf = x$confusion_matrix[1:(max_cols + 1), 1:(max_cols + 1)]
+      conf[max_cols+1,] = "..."
+      conf[,max_cols+1] = "..."
+      rownames(conf)[max_cols + 1] = "..."
+      colnames(conf)[max_cols + 1] = "..."
+    } else {
+     print(x$confusion_matrix)
+    }
   }
 
   if (!is.null(x$performance)) {
