@@ -1,6 +1,21 @@
 #' @export
 summary.Learner = function(object, resample_result = NULL, control = summary_control(), ...) {
-  # FIXME: assertions
+
+  # input checks
+  assert_learner(object)
+  if (is.null(object$state$train_task)) {
+    stopf("Learner '%s' has not been trained yet", object$id)
+  }
+  if (!is.null(resample_result)) {
+    assert_resample_result(resample_result)
+    # assert that store_model = TRUE
+    if (is.null(resample_result$learners[[1]]$model)) {
+      stop("resample_result does not contain trained models, ensure resample() was run with 'store_models = TRUE'")
+    }
+    # assert object and resample_result same learner & task
+
+  }
+  assert_list(control, null.ok = FALSE)
 
   # assignment to shorter names
   tt = object$task_type
@@ -73,9 +88,6 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 #' @export
 summary.GraphLearner = function(object, resample_result = NULL, control = summary_control(), ...) {
 
-  # input checks
-  ## <FIXME:> to add
-
   # get all info as Learner
   ans = NextMethod()
 
@@ -99,10 +111,11 @@ summary.GraphLearner = function(object, resample_result = NULL, control = summar
 summary.Graph = function(object, resample_result = NULL, control = summary_control(), ...) {
 
   # input checks
-  ## <FIXME:> to add
+  assert_graph(object)
 
-  # convert to GraphLearner and run summary
-  summary(as_learner(object), resample_result = resample_result, control = control, ...)
+  stop("object of type 'Graph' cannot be processed, convert 'Graph' to 'GraphLearner' via mlr3::as_learner() and retrain.")
+  # # convert to GraphLearner and run summary
+  # summary(as_learner(object), resample_result = resample_result, control = control, ...)
 }
 
 
@@ -140,8 +153,10 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
 #' @export
 print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
 
-  checkmate::assert_int(n_important, lower = 1L, null.ok = TRUE)
+  # input checks
+  checkmate::assert_true(length(x) > 0)
   checkmate::assert_int(digits, lower = 0L, null.ok = TRUE)
+  checkmate::assert_int(n_important, lower = 1L, null.ok = TRUE)
 
   if (!is.null(digits)) {
     x$control$digits = digits

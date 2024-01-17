@@ -15,11 +15,16 @@ library(mlr3)
 library(mlr3learners)
 library(mlr3filters)
 library(mlr3pipelines)
-library(mlr3summary)
 
-# # Developer mode!
-# library(devtools)
-# load_all()
+DEVELOP = TRUE
+
+# # Developer mode?
+if (!DEVELOP) {
+  library(mlr3summary)
+} else {
+  library(devtools)
+  load_all()
+}
 
 set.seed(1812L)
 ```
@@ -63,21 +68,23 @@ In the following, feature filtering is conducted based on the feature importance
 Please note that now a paragraph on the pipeline structure was added to the `summary()` output.
 
 ```{r graph}
+graph_learner = as_learner(po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
+  po("learner", mlr3::lrn("regr.rpart")))
+graph_learner$train(tsk_cars)
+rr_2 = resample(tsk_cars, graph_learner, rsmp_cv3, store_model = TRUE)
+summary(graph_learner, rr_2)
+```
+
+Here, `graph_learner` is a `GraphLearner` object after transforming it with `as_learner()`. 
+Calling `as_learner()` is strictly necessary, trained `Graphs` currently cannot be processed.
+```{r graphlearner, error=TRUE}
 graph = po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
   po("learner", mlr3::lrn("regr.rpart"))
 graph$train(tsk_cars)
-rr_2 = resample(tsk_cars, graph, rsmp_cv3, store_model = TRUE)
-summary(graph, rr_2)
+rr_3 = resample(tsk_cars, graph, rsmp_cv3, store_model = TRUE)
+summary(graph, rr_3)
 ```
 
-Here, `graph` is a `Graph` object. It is also possible to display a `summary()` after converting it to a `GraphLearner`.
-
-```{r graphlearner}
-graph_learner = as_learner(graph)
-graph_learner$train(tsk_cars)
-rr_3 = resample(tsk_cars, graph_learner, rsmp_cv3, store_model = TRUE)
-summary(graph_learner, rr_3)
-```
 
 Currently only linear pipelines can be displayed in `summary()`, more complex non-linear structures are only displayed by `<suppressed>`.
 
@@ -89,6 +96,7 @@ graph_complex = po("scale", center = TRUE, scale = FALSE) %>>%
   )) %>>%
   po("featureunion") %>>%
   po("learner", mlr3::lrn("regr.rpart"))
+graph_complex = as_learner(graph_complex)
 graph_complex$train(tsk_cars)
 rr_4 = resample(tsk_cars, graph_complex, rsmp_cv3, store_model = TRUE)
 summary(graph_complex, rr_4)
