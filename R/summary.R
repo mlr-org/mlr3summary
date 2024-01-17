@@ -12,7 +12,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
   )
 
   if (!"GraphLearner" %in% class(object)) {
-      ans[["model_type"]] = object$id
+    ans[["model_type"]] = object$id
   }
 
   ### performance only if hold-out data available!
@@ -102,7 +102,7 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
   ## <FIXME:> to add
 
   # convert to GraphLearner and run summary
-  summary(mlr3::as_learner(object), resample_result = resample_result, control = control, ...)
+  summary(as_learner(object), resample_result = resample_result, control = control, ...)
 }
 
 
@@ -125,7 +125,7 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
   if (!is.null(measures)) {
     measures = as_measures(measures)
   }
-  mlr3::assert_measures(measures)
+  assert_measures(measures)
   importance_measures = match.arg(importance_measures)
   checkmate::assert_choice(importance_measures, c("pdp", "pfi", "loco"), null.ok = TRUE)
   checkmate::assert_int(n_important, lower = 1L, null.ok = TRUE)
@@ -185,15 +185,13 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
       rownames(conf)[max_cols + 1] = "..."
       colnames(conf)[max_cols + 1] = "..."
     } else {
-     print(x$confusion_matrix)
+      print(x$confusion_matrix)
     }
   }
 
   if (!is.null(x$performance)) {
     cat("\n")
     namp = names(x$performance)
-    # namp = sub(".*\\.", "", names(x$performance))
-    # namp = paste(toupper(substr(namp, 1, 1)), substr(namp, 2, nchar(namp)), sep="")
     catn("Performance [sd]:")
     cat(paste0(namp, ": ",
       round(x$performance, x$control$digits),
