@@ -12,8 +12,14 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     if (is.null(resample_result$learners[[1]]$model)) {
       stop("resample_result does not contain trained models, ensure resample() was run with 'store_models = TRUE'")
     }
-    # assert object and resample_result same learner & task
-
+    # ensure underlying algo and task of object and resample_result match
+    if (!(object$base_learner()$id == resample_result$learner$base_learner()$id)) {
+      stopf("learning algorithm for object is %s and for resample_result it is %s. Model types need to match.",
+        object$base_learner()$id, resample_result$learner$base_learner()$id)
+    }
+    if (!all.equal(object$state$train_task$col_info, resample_result$task$col_info)) {
+      stop("object and resample_result seem to be trained on differing tasks. Ensure equality.")
+    }
   }
   assert_list(control, null.ok = FALSE)
 
@@ -37,9 +43,6 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     ## ResampleResult info
     ans[["resample_info"]] = paste(resample_result$resampling$id, "with",
       as_short_string(resample_result$resampling$param_set$values, 1000L))
-    ## <FIXME:> input checks
-    ## - resample_result model must match object/model type!!
-    ## - also trained on same task!
     ## residuals
     res = resample_result$prediction()
     if (tt == "regr") {

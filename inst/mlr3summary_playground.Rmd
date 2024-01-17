@@ -75,7 +75,7 @@ rr_2 = resample(tsk_cars, graph_learner, rsmp_cv3, store_model = TRUE)
 summary(graph_learner, rr_2)
 ```
 
-Here, `graph_learner` is a `GraphLearner` object after transforming it with `as_learner()`. 
+Here, `graph_learner` is a `GraphLearner` object after transforming it with `as_learner()`.
 Calling `as_learner()` is strictly necessary, trained `Graphs` currently cannot be processed.
 ```{r graphlearner, error=TRUE}
 graph = po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
@@ -127,4 +127,14 @@ rr_5 = resample(tsk_peng, lrn_xgboost, rsmp_bs, store_model = TRUE)
 summary(lrn_xgboost, rr_5)
 ```
 
+## Error handling 
+
+Input checks ensure that the ML algorithm and task for the model/`object` and 
+`resample_result` must match. 
+As an example, we try to summarize `lrn_xgboost` trained on `tsk_peng`, using 
+`rr_1` as an additional input, which however is based on `lrn_rpart` trained on `tsk_cars`. 
+
+```{r wrongmodel, error=TRUE}
+summary(lrn_xgboost, rr_1)
+```
 
