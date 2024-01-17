@@ -45,6 +45,14 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
 
     ## performance
+
+    # Set default measures if no measures specified
+    if (is.null(control$measures)) {
+      control$measures = get_default_measures(task_type = object$task_type,
+        properties = object$state$train_task$properties,
+        predict_type = object$predict_type)
+    }
+
     pf = resample_result$aggregate(measures = control$measures)
     sc = resample_result$score(measures = control$measures)
     nam_multimeas = names(sc)[grep(tt, names(sc))]
@@ -56,6 +64,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       performance_sd = stdt))
   }
 
+  ans$control = control
   # convert list to summary.Learner such that right printer is called
   class(ans) = "summary.Learner"
   ans
@@ -110,11 +119,7 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @return [list]
 #'
 #' @export
-summary_control = function(
-  measures = NULL,
-  importance_measures = "pdp",
-  n_important = 50L
-  ) {
+summary_control = function(measures = NULL, importance_measures = "pdp", n_important = 15L, digits = max(3L, getOption("digits") - 3L)) {
 
   # input checks
   if (!is.null(measures)) {
@@ -124,18 +129,28 @@ summary_control = function(
   importance_measures = match.arg(importance_measures)
   checkmate::assert_choice(importance_measures, c("pdp", "pfi", "loco"), null.ok = TRUE)
   checkmate::assert_int(n_important, lower = 1L, null.ok = TRUE)
+  checkmate::assert_int(digits, lower = 0L, null.ok = FALSE)
 
   # create list
   list(measures = measures, importance_measures = importance_measures,
-    n_important = n_important)
+    n_important = n_important, digits = digits)
 
 }
 
 #' @export
-print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), ...) {
+print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
+
+  checkmate::assert_int(n_important, lower = 1L, null.ok = TRUE)
+  checkmate::assert_int(digits, lower = 0L, null.ok = TRUE)
+
+  if (!is.null(digits)) {
+    x$control$digits = digits
+    x$control$n_important = n_important
+  }
 
   catn("Task type: ", x$task_type)
-  catn("Feature names: ", paste(x$feature_names, collapse = ", "))
+
+  catn(str_indent("Feature names: ", str_collapse(x$feature_names), exdent = 4L))
 
   if (!is.null(x$model_type)) {
     catn("Model type: ", x$model_type)
@@ -146,7 +161,7 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
   }
 
   if (!is.null(x$resample_info)) {
-    catn("Resampling: ", x$resample_info)
+    catn(str_indent("Resampling: ", x$resample_info, exdent = 4L))
   }
 
   if (!is.null(x$residuals)) {
@@ -154,16 +169,15 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
     catn("Residuals:")
     resid = x$residuals
     nam = c("Min", "1Q", "Median", "3Q", "Max")
-    zz = zapsmall(stats::quantile(resid), digits + 1L)
+    zz = zapsmall(stats::quantile(resid), x$control$digits + 1L)
     rq = structure(zz, names = nam)
-    print(rq, digits = digits, ...)
+    print(rq, digits = x$control$digits, ...)
   }
 
   if (!is.null(x$confusion_matrix)) {
     cat("\n")
     catn("Confusion matrix:")
     max_cols = 8L
-    browser()
     if (ncol(x$confusion_matrix) >= max_cols) {
       conf = x$confusion_matrix[1:(max_cols + 1), 1:(max_cols + 1)]
       conf[max_cols+1,] = "..."
@@ -182,9 +196,9 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
     # namp = paste(toupper(substr(namp, 1, 1)), substr(namp, 2, nchar(namp)), sep="")
     catn("Performance [sd]:")
     cat(paste0(namp, ": ",
-      round(x$performance, digits),
+      round(x$performance, x$control$digits),
       " [",
-      round(x$performance_sd, digits),
+      round(x$performance_sd, x$control$digits),
       "]", collapse = "\n"))
   }
   invisible(x)
