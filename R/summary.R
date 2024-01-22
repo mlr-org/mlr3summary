@@ -114,7 +114,7 @@ summary.GraphLearner = function(object, resample_result = NULL, control = summar
 summary.Graph = function(object, resample_result = NULL, control = summary_control(), ...) {
 
   # input checks
-  assert_graph(object)
+  mlr3pipelines::assert_graph(object)
 
   stop("object of type 'Graph' cannot be processed, convert 'Graph' to 'GraphLearner' via mlr3::as_learner() and retrain.")
   # # convert to GraphLearner and run summary
@@ -132,6 +132,8 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #'   To Do.
 #' @param n_important (numeric(1))\cr
 #'   To Do.
+#' @param digits (numeric(1))\cr
+#'   To Do.
 #' @return [list]
 #'
 #' @export
@@ -143,9 +145,9 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
   }
   assert_measures(measures)
   importance_measures = match.arg(importance_measures)
-  checkmate::assert_choice(importance_measures, c("pdp", "pfi", "loco"), null.ok = TRUE)
-  checkmate::assert_int(n_important, lower = 1L, null.ok = TRUE)
-  checkmate::assert_int(digits, lower = 0L, null.ok = FALSE)
+  assert_choice(importance_measures, c("pdp", "pfi", "loco"), null.ok = TRUE)
+  assert_int(n_important, lower = 1L, null.ok = TRUE)
+  assert_int(digits, lower = 0L, null.ok = FALSE)
 
   # create list
   list(measures = measures, importance_measures = importance_measures,
@@ -157,9 +159,9 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
 print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
 
   # input checks
-  checkmate::assert_true(length(x) > 0)
-  checkmate::assert_int(digits, lower = 0L, null.ok = TRUE)
-  checkmate::assert_int(n_important, lower = 1L, null.ok = TRUE)
+  assert_true(length(x) > 0)
+  assert_int(digits, lower = 0L, null.ok = TRUE)
+  assert_int(n_important, lower = 1L, null.ok = TRUE)
 
   if (!is.null(digits)) {
     x$control$digits = digits
