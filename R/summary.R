@@ -13,15 +13,15 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       stop("resample_result does not contain trained models, ensure resample() was run with 'store_models = TRUE'")
     }
     # ensure underlying algo and task of object and resample_result match
-    if (!(object$base_learner()$id == resample_result$learner$base_learner()$id)) {
-      stopf("learning algorithm for object is %s and for resample_result it is %s. Model types need to match.",
-        object$base_learner()$id, resample_result$learner$base_learner()$id)
+    if (!(object$base_learner()$hash == resample_result$learner$base_learner()$hash)) {
+      stop("Learning algorithm of object does not match algorithm used for resampling. Ensure equality.")
+
     }
-    if (!all.equal(object$state$train_task$col_info, resample_result$task$col_info)) {
+    if (!all.equal(object$state$train_task$hash, resample_result$task$hash)) {
       stop("object and resample_result seem to be trained on differing tasks. Ensure equality.")
     }
   }
-  assert_list(control, null.ok = FALSE)
+  assert_class(control, classes = "summary_control", null.ok = FALSE)
 
   # assignment to shorter names
   tt = object$task_type
@@ -113,9 +113,6 @@ summary.GraphLearner = function(object, resample_result = NULL, control = summar
 #' @export
 summary.Graph = function(object, resample_result = NULL, control = summary_control(), ...) {
 
-  # input checks
-  mlr3pipelines::assert_graph(object)
-
   stop("object of type 'Graph' cannot be processed, convert 'Graph' to 'GraphLearner' via mlr3::as_learner() and retrain.")
   # # convert to GraphLearner and run summary
   # summary(as_learner(object), resample_result = resample_result, control = control, ...)
@@ -150,16 +147,17 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
   assert_int(digits, lower = 0L, null.ok = FALSE)
 
   # create list
-  list(measures = measures, importance_measures = importance_measures,
+  ctrlist = list(measures = measures, importance_measures = importance_measures,
     n_important = n_important, digits = digits)
 
+  class(ctrlist) = "summary_control"
+  ctrlist
 }
 
 #' @export
 print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
 
   # input checks
-  assert_true(length(x) > 0)
   assert_int(digits, lower = 0L, null.ok = TRUE)
   assert_int(n_important, lower = 1L, null.ok = TRUE)
 
