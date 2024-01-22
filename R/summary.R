@@ -32,7 +32,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     feature_names = fn
   )
 
-  if (!"GraphLearner" %in% class(object)) {
+  if (!inherits(object, "GraphLearner")) {
     ans[["model_type"]] = object$id
   }
 
