@@ -43,6 +43,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     stdt = apply(sc, MARGIN = 2L, stats::sd)
 
     ## importance
+    ## <FIXME:> This should be rather exported into own R6 classes??
     imps = c()
     models = resample_result$learners
     num_models = length(models)
@@ -177,10 +178,6 @@ print.summary.Learner = function(x, digits = max(3L, getOption("digits") - 3L), 
 
   catn("Task type: ", x$task_type)
   catn("Feature names: ", paste(x$feature_names, collapse = ", "))
-
-  if (!is.null(x$model_type)) {
-    catn("Model type: ", x$model_type)
-  }
 
   if (!is.null(x$model_type)) {
     cat("\nModel type:", x$model_type)
