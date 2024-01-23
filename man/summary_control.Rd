@@ -7,7 +7,8 @@
 summary_control(
   measures = NULL,
   importance_measures = "pdp",
-  n_important = NULL
+  n_important = 15L,
+  digits = max(3L, getOption("digits") - 3L)
 )
 }
 \arguments{
@@ -18,6 +19,9 @@ Measure(s) to calculate performance on.}
 To Do.}
 
 \item{n_important}{(numeric(1))\cr
+To Do.}
+
+\item{digits}{(numeric(1))\cr
 To Do.}
 }
 \value{
