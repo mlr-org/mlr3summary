@@ -15,11 +15,16 @@ library(mlr3)
 library(mlr3learners)
 library(mlr3filters)
 library(mlr3pipelines)
-library(mlr3summary)
 
-# # Developer mode!
-# library(devtools)
-# load_all()
+DEVELOP = TRUE
+
+# # Developer mode?
+if (!DEVELOP) {
+  library(mlr3summary)
+} else {
+  library(devtools)
+  load_all()
+}
 
 set.seed(1812L)
 ```
@@ -63,23 +68,25 @@ In the following, feature filtering is conducted based on the feature importance
 Please note that now a paragraph on the pipeline structure was added to the `summary()` output.
 
 ```{r graph}
+graph_learner = as_learner(po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
+  po("learner", mlr3::lrn("regr.rpart")))
+graph_learner$train(tsk_cars)
+rr_2 = resample(tsk_cars, graph_learner, rsmp_cv3, store_model = TRUE)
+summary(graph_learner, rr_2)
+```
+
+Here, `graph_learner` is a `GraphLearner` object after transforming it with `as_learner()`.
+Calling `as_learner()` is strictly necessary, trained `Graphs` currently cannot be processed.
+```{r graphlearner, error=TRUE}
 graph = po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
   po("learner", mlr3::lrn("regr.rpart"))
 graph$train(tsk_cars)
-rr_2 = resample(tsk_cars, graph, rsmp_cv3, store_model = TRUE)
-summary(graph, rr_2)
+rr_3 = resample(tsk_cars, graph, rsmp_cv3, store_model = TRUE)
+summary(graph, rr_3)
 ```
 
-Here, `graph` is a `Graph` object. It is also possible to display a `summary()` after converting it to a `GraphLearner`.
 
-```{r graphlearner}
-graph_learner = as_learner(graph)
-graph_learner$train(tsk_cars)
-rr_3 = resample(tsk_cars, graph_learner, rsmp_cv3, store_model = TRUE)
-summary(graph_learner, rr_3)
-```
-
-Currently only linear pipelines can be displayed in `summary()`, more complex non-linear structures are only displayed by `<complex>`.
+Currently only linear pipelines can be displayed in `summary()`, more complex non-linear structures are only displayed by `<suppressed>`.
 
 ```{r complexgraph}
 graph_complex = po("scale", center = TRUE, scale = FALSE) %>>%
@@ -89,7 +96,45 @@ graph_complex = po("scale", center = TRUE, scale = FALSE) %>>%
   )) %>>%
   po("featureunion") %>>%
   po("learner", mlr3::lrn("regr.rpart"))
+graph_complex = as_learner(graph_complex)
 graph_complex$train(tsk_cars)
 rr_4 = resample(tsk_cars, graph_complex, rsmp_cv3, store_model = TRUE)
 summary(graph_complex, rr_4)
 ```
+
+## Classification example
+The second example is based on the `penguins` task available in `mlr3`.
+We train an xgboost model on it. 
+
+```{r iris}
+tsk_peng = tsk("iris")
+lrn_xgboost = lrn("classif.xgboost")
+lrn_xgboost$train(task = tsk_peng)
+```
+
+We can receive an overview of the model with `summary()`.
+
+```{r summarymodel_2}
+summary(lrn_xgboost)
+```
+
+To receive performance results we conduct resampling to allow for evaluations based on hold-out data, here we use bootstrap resampling.
+We use the generated `ResampleResult` (here `rr_5`) as an additional input to `summary()`.
+
+```{r resampling_2}
+rsmp_bs = rsmp("bootstrap", repeats = 5L)
+rr_5 = resample(tsk_peng, lrn_xgboost, rsmp_bs, store_model = TRUE)
+summary(lrn_xgboost, rr_5)
+```
+
+## Error handling 
+
+Input checks ensure that the ML algorithm and task for the model/`object` and 
+`resample_result` must match. 
+As an example, we try to summarize `lrn_xgboost` trained on `tsk_peng`, using 
+`rr_1` as an additional input, which however is based on `lrn_rpart` trained on `tsk_cars`. 
+
+```{r wrongmodel, error=TRUE}
+summary(lrn_xgboost, rr_1)
+```
+
