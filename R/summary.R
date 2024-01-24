@@ -33,7 +33,8 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
   )
 
   if (!inherits(object, "GraphLearner")) {
-    ans[["model_type"]] = object$id
+    ans[["model_type"]] = paste(object$id, "with",
+      as_short_string(object$param_set$values, 1000L))
   }
 
   ### performance only if hold-out data available!
@@ -186,8 +187,8 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
     cat("\n")
     catn("Residuals:")
     resid = x$residuals
-    nam = c("Min", "1Q", "Median", "3Q", "Max")
-    zz = zapsmall(stats::quantile(resid), x$control$digits + 1L)
+    zz = zapsmall(summary(resid), x$control$digits + 1L)
+    nam = c("Min", "1Q", "Median", "Mean", "3Q", "Max")
     rq = structure(zz, names = nam)
     print(rq, digits = x$control$digits, ...)
   }
