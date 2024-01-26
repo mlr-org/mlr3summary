@@ -186,8 +186,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
   if (!is.null(x$residuals)) {
     cat("\n")
     catn("Residuals:")
-    resid = x$residuals
-    zz = zapsmall(summary(resid), x$control$digits + 1L)
+    zz = zapsmall(summary(x$residuals), x$control$digits + 1L)
     nam = c("Min", "1Q", "Median", "Mean", "3Q", "Max")
     rq = structure(zz, names = nam)
     print(rq, digits = x$control$digits, ...)
