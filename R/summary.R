@@ -72,6 +72,11 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
         predict_type = object$predict_type)
     }
 
+    control$measures = lapply(control$measures, FUN = function(pmsr) {
+      pmsr = pmsr$clone()
+      pmsr$id = paste0(pmsr$id, " (", pmsr$average, ")")
+      pmsr
+    })
     pf = resample_result$aggregate(measures = control$measures)
     sc = resample_result$score(measures = control$measures)
     nam_multimeas = names(sc)[grep(tt, names(sc))]
