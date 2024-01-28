@@ -158,7 +158,6 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
 
 #' @export
 print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
-  browser()
   # input checks
   assert_int(digits, lower = 0L, null.ok = TRUE)
   assert_int(n_important, lower = 1L, null.ok = TRUE)
