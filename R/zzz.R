@@ -3,6 +3,7 @@
 #' @import mlr3
 #' @import mlr3misc
 #' @import backports
+#' @import cli
 "_PACKAGE"
 
 .onLoad = function(libname, pkgname) {
