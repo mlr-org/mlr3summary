@@ -4,7 +4,6 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
   # input checks
   assert_learner(object)
   if (is.null(object$state$train_task)) {
-    cli_err
     stopf("Learner '%s' has not been trained yet", object$id)
   }
   if (!is.null(resample_result)) {
