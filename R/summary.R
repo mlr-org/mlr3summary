@@ -153,7 +153,7 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
   iml_pfi_losses = c("ce", "f1", "logLoss", "mae", "mse", "rmse", "mape", "mdae",
     "msle", "percent_bias", "rae", "rmse", "rmsle", "rse", "rrse", "smape")
   for (imp_measure in importance_measures) {
-    assert_choice(imp_measure, c("pdp", paste("pfi", iml_pfi_losses, sep = ".")), null.ok = TRUE)
+    assert_choice(imp_measure, c("pdp", "shap", paste("pfi", iml_pfi_losses, sep = ".")), null.ok = TRUE)
   }
   assert_int(n_important, lower = 1L, null.ok = TRUE)
   assert_int(digits, lower = 0L, null.ok = FALSE)
