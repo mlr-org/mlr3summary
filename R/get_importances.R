@@ -121,6 +121,7 @@ get_shap_importance = function(learner, test_tsk, loss) {
 }
 
 aggregate_importance = function(dt, correction_factor) {
+  # based on Molnar et al. (2023), p. 468-469
   mm = dt[, mean(importance), by = feature]
   setnames(mm, "V1", "mean")
   vardt = dt[, stats::var(importance), by = feature]

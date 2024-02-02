@@ -15,6 +15,12 @@
 #' Greenwell, B. M., Boehmke, B. C., & McCarthy, A. J. (2018).
 #' A simple and effective model-based variable importance measure.
 #' arXiv preprint arXiv:1805.04755.
+#'
+#' Molnar, C. et al. (2023). Relating the Partial Dependence Plot and Permutation
+#' Feature Importance to the Data Generating Process.
+#' In: Longo, L. (eds) Explainable Artificial Intelligence. xAI 2023.
+#' Communications in Computer and Information Science, vol 1901. Springer,
+#' Cham. https://doi.org/10.1007/978-3-031-44064-9_24
 #' @export
 summary.Learner = function(object, resample_result = NULL, control = summary_control(), ...) {
 
