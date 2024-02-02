@@ -105,6 +105,9 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     ## <FIXME:> This should be rather exported into own R6 classes??
     imps_res = get_importances(resample_result, control$importance_measures)
 
+    ## effects
+    effs_res = get_effects(resample_result, control$effect_measures)
+
     ans = c(ans, list(
       performance = pf,
       performance_sd = stdt,
@@ -160,12 +163,14 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #'   To Do.
 #' @param n_important (numeric(1))\cr
 #'   To Do.
+#' @param effect_measures (character)\cr
+#'   To Do.
 #' @param digits (numeric(1))\cr
 #'   To Do.
 #' @return [list]
 #'
 #' @export
-summary_control = function(measures = NULL, importance_measures = "pdp", n_important = 15L, digits = max(3L, getOption("digits") - 3L)) {
+summary_control = function(measures = NULL, importance_measures = "pdp", n_important = 15L, effect_measures = c("pdp", "ale"), digits = max(3L, getOption("digits") - 3L)) {
 
   # input checks
   if (!is.null(measures)) {
@@ -179,11 +184,14 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
     assert_choice(imp_measure, c("pdp", "shap", paste("pfi", iml_pfi_losses, sep = ".")), null.ok = TRUE)
   }
   assert_int(n_important, lower = 1L, null.ok = TRUE)
+  for (eff_measure in effect_measures) {
+    assert_choice(eff_measure, c("pdp", "ale"))
+  }
   assert_int(digits, lower = 0L, null.ok = FALSE)
 
   # create list
   ctrlist = list(measures = measures, importance_measures = importance_measures,
-    n_important = n_important, digits = digits)
+    n_important = n_important, effect_measures = effect_measures, digits = digits)
 
   class(ctrlist) = "summary_control"
   ctrlist
