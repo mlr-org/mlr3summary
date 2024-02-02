@@ -1,1 +1,2 @@
-utils::globalVariables(c("feature", "lower", "corrvar", "upper", "res", "importance"))
+utils::globalVariables(c("feature", "lower", "corrvar", "upper", "res",
+  "importance", ".class", ".value"))

@@ -58,10 +58,16 @@ get_pdp_importance = function(learner, test_tsk) {
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names)
   pdp = iml::FeatureEffects$new(predictor = pred, method = "pdp")
-  browser()
   # <FIXME:> multiclass probabilities --> how to approach this?
   # currently just variance over all values simultaneously
-  imp = lapply(pdp$results, FUN = function(dt) stats::var(dt$.value))
+  imp = lapply(pdp$results, FUN = function(dt) {
+    dt = as.data.table(dt)
+    if (learner$task_type == "regr") {
+      dt[, stats::sd(.value)]
+    } else if (learner$task_type == "classif") {
+      sum(dt[, stats::sd(.value), by = .class]$V1)
+    }
+  })
   data.table(feature = names(pdp$results),
     importance = as.vector(unlist(imp), "numeric"))
 }
@@ -80,25 +86,33 @@ get_shap_importance = function(learner, test_tsk, loss) {
   if (!requireNamespace("fastshap", quietly = TRUE)) {
     stop("Package 'fastshap' needed for this measuring importance. Please install it.", call. = FALSE)
   }
-  pfun = function(object, newdata) {
-    if (object$task_type == "regr") {
+  if (learner$task_type == "regr") {
+    pfun = function(object, newdata) {
       object$predict_newdata(newdata)[["response"]]
-    } else if (object$task_type == "classif") {
-      if (object$predict_type == "response") {
-        stop("Importance measure 'shap' requires a learner with `predict_type = 'prob'")
-      } else{
-        browser()
-        object$predict_newdata(newdata)
-      }
     }
+    shap = fastshap::explain(learner, X = test_tsk$data(),
+      pred_wrapper = pfun, newdata = test_tsk$data(),
+      nsim = 10)
+    imp = colMeans(abs(shap))
+  } else if (learner$task_type == "classif") {
+    temp = sapply(learner$state$train_task$class_names, function(reference) {
+      pfun = function(object, newdata) {
+        if (object$predict_type == "response") {
+          stop("Importance measure 'shap' requires a learner with `predict_type = 'prob'")
+        } else{
+          object$predict_newdata(newdata)$prob[, reference]
+        }
+      }
+      shap = fastshap::explain(learner, X = test_tsk$data(),
+        pred_wrapper = pfun, newdata = test_tsk$data(),
+        nsim = 10)
+      colMeans(abs(shap))
+    })
+    # Sum aggregated shap values over outcome classes
+    # --> inspired by shap python module output for `shap.summary_plot(plot_type = "bar")`
+    # --> See: https://towardsdatascience.com/explainable-ai-xai-with-shap-multi-class-classification-problem-64dd30f97cea
+    imp = rowSums(temp)
   }
-  # <FIXME:> think about good default hyperpara for nsim
-  # parallelization might be possible see ?explain via arg parallel (default:FALSE)
-  browser()
-  shap = fastshap::explain(learner, X = test_tsk$data(),
-    pred_wrapper = pfun, newdata = test_tsk$data(),
-    nsim = 10)
-  imp = colMeans(abs(shap))
   data.table(feature = names(imp),
     importance = as.vector(unlist(imp), "numeric"))
 }

@@ -139,6 +139,17 @@ rr_5 = resample(tsk_peng, lrn_xgboost, rsmp_bs, store_model = TRUE)
 summary(lrn_xgboost, rr_5)
 ```
 
+## Binary classification
+
+```{r bc}
+tsk_bc = tsk("breast_cancer")
+lrn_ranger = lrn("classif.ranger", predict_type = "prob")
+lrn_ranger$train(task = tsk_bc)
+rsmp_cv5 = rsmp("subsampling", repeats = 2L, ratio = 0.5)
+rr_6 = resample(tsk_bc, lrn_ranger, rsmp_cv5, store_model = TRUE)
+summary(lrn_ranger, rr_6, control = summary_control(importance_measures = "shap"))
+```
+
 ## Error handling 
 
 Input checks ensure that the ML algorithm and task for the model/`object` and 
