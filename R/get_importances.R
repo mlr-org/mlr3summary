@@ -90,32 +90,32 @@ get_shap_importance = function(learner, test_tsk, loss) {
     stop("Package 'fastshap' needed for this measuring importance. Please install it.", call. = FALSE)
   }
   if (learner$task_type == "regr") {
-    pfun = function(object, newdata) {
-      object$predict_newdata(newdata)[["response"]]
-    }
-    shap = fastshap::explain(learner, X = test_tsk$data(),
-      pred_wrapper = pfun, newdata = test_tsk$data(),
-      nsim = 10)
-    imp = colMeans(abs(shap))
+    outcome_classes = "response"
   } else if (learner$task_type == "classif") {
-    temp = sapply(learner$state$train_task$class_names, function(reference) {
-      pfun = function(object, newdata) {
+    outcome_classes = learner$state$train_task$class_names
+  }
+  temp = sapply(outcome_classes, function(reference) {
+    pfun = function(object, newdata) {
+      if (object$task_type == "regr") {
+        object$predict_newdata(newdata)[[reference]]
+      } else if (object$task_type == "classif") {
         if (object$predict_type == "response") {
           stop("Importance measure 'shap' requires a learner with `predict_type = 'prob'")
         } else{
           object$predict_newdata(newdata)$prob[, reference]
         }
       }
-      shap = fastshap::explain(learner, X = test_tsk$data(),
-        pred_wrapper = pfun, newdata = test_tsk$data(),
-        nsim = 10)
-      colMeans(abs(shap))
-    })
-    # Sum aggregated shap values over outcome classes
-    # --> inspired by shap python module output for `shap.summary_plot(plot_type = "bar")`
-    # --> See: https://towardsdatascience.com/explainable-ai-xai-with-shap-multi-class-classification-problem-64dd30f97cea
-    imp = rowSums(temp)
-  }
+    }
+    shap = fastshap::explain(learner, X = test_tsk$data(),
+      pred_wrapper = pfun, newdata = test_tsk$data(),
+      nsim = 10)
+    colMeans(abs(shap))
+  })
+  # Sum aggregated shap values over outcome classes
+  # --> inspired by shap python module output for `shap.summary_plot(plot_type = "bar")`
+  # --> See: https://towardsdatascience.com/explainable-ai-xai-with-shap-multi-class-classification-problem-64dd30f97cea
+  browser()
+  imp = rowSums(temp)
   data.table(feature = names(imp),
     importance = as.vector(unlist(imp), "numeric"))
 }
