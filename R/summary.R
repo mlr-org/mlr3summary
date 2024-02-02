@@ -1,3 +1,20 @@
+#' @references
+#'
+#' Breiman, L. (2001) Random Forests. Machine Learning 45, 5–32.
+#' https://doi.org/10.1023/A:1010933404324
+#'
+#' Fisher, A., Rudin, C., & Dominici, F. (2019).
+#' All Models are Wrong, but Many are Useful: Learning a Variable's Importance
+#' by Studying an Entire Class of Prediction Models Simultaneously.
+#' J. Mach. Learn. Res., 20(177), 1-81.
+#'
+#' Lundberg, S. M., and Lee, S. (2017): A unified approach to interpreting model predictions.
+#' In Proceedings of the 31st International Conference on Neural Information Processing Systems (NIPS'17).
+#' Curran Associates Inc., Red Hook, NY, USA, 4768–4777.
+#'
+#' Greenwell, B. M., Boehmke, B. C., & McCarthy, A. J. (2018).
+#' A simple and effective model-based variable importance measure.
+#' arXiv preprint arXiv:1805.04755.
 #' @export
 summary.Learner = function(object, resample_result = NULL, control = summary_control(), ...) {
 

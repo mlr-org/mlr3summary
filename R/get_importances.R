@@ -52,6 +52,7 @@ get_single_importance = function(importance_measure, task, learner, train_set, p
 
 
 get_pdp_importance = function(learner, test_tsk) {
+  # based on Greenwell et al. (2018)
   if (!requireNamespace("iml", quietly = TRUE)) {
     stop("Package 'iml' needed for this function to work. Please install it.", call. = FALSE)
   }
@@ -74,6 +75,7 @@ get_pdp_importance = function(learner, test_tsk) {
 
 
 get_pfi_importance = function(learner, test_tsk, loss) {
+  # based on Breiman (2001) and Fisher et al. (2019)
   if (!requireNamespace("iml", quietly = TRUE)) {
     stop("Package 'iml' needed for this function to work. Please install it.", call. = FALSE)
   }
@@ -83,6 +85,7 @@ get_pfi_importance = function(learner, test_tsk, loss) {
 }
 
 get_shap_importance = function(learner, test_tsk, loss) {
+  # based on Lundberg and Lee (2017)
   if (!requireNamespace("fastshap", quietly = TRUE)) {
     stop("Package 'fastshap' needed for this measuring importance. Please install it.", call. = FALSE)
   }
