@@ -112,6 +112,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       performance = pf,
       performance_sd = stdt,
       importance = imps_res,
+      n_iters = resample_result$iters,
       control = control)
     )
   }
@@ -268,7 +269,8 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
     cat("\n")
     cat("\nImportances:\n")
 
-    tquant = 1.96 #t(1-alpha)
+    alpha = 0.05
+    tquant = qt(1 - alpha / 2, df = x$n_iters - 1)
     ## create imp [l, u]
 
     # featnams = as.data.frame(lapply(x$importance, function(dt) dt$feature))
