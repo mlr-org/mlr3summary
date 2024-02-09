@@ -111,7 +111,8 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     ans = c(ans, list(
       performance = pf,
       performance_sd = stdt,
-      importance = imps_res,
+      importances = imps_res,
+      effects = effs_res,
       n_iters = resample_result$iters,
       control = control)
     )
@@ -265,7 +266,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
       "]", collapse = "\n"))
   }
 
-  if (!is.null(x$importance)) {
+  if (!is.null(x$importances)) {
     cat("\n")
     cat("\nImportances:\n")
 
@@ -273,10 +274,10 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
     tquant = qt(1 - alpha / 2, df = x$n_iters - 1)
     ## create imp [l, u]
 
-    # featnams = as.data.frame(lapply(x$importance, function(dt) dt$feature))
+    # featnams = as.data.frame(lapply(x$importances, function(dt) dt$feature))
     # assert_true(all(apply(featnams, MARGIN = 1, FUN = function(row) length(unique(row)) == 1)))
 
-    featorder = x$importance[[1]][order(mean, decreasing = TRUE), feature]
+    featorder = x$importances[[1]][order(mean, decreasing = TRUE), feature]
 
     compute_imp_summary = function(imp) {
       imp[, mean := round(mean, x$control$digits)]
@@ -286,13 +287,13 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
       imp[, c("feature", "res")]
     }
 
-    rr = lapply(x$importance, compute_imp_summary)
+    rr = lapply(x$importances, compute_imp_summary)
     rr = Reduce(merge,rr)
     rr = rr[order(match(feature, featorder))]
-    names(rr) = c("feature", names(x$importance))
+    names(rr) = c("feature", names(x$importances))
     rownames(rr) = rr$feature
     rr[,feature:=NULL]
-    col = names(x$importance)[[1]]
+    col = names(x$importances)[[1]]
 
     if (!is.null(x$control$n_important) && nrow(rr) > x$control$n_important) {
       rr = rr[1:x$control$n_important,]
@@ -302,5 +303,12 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
     print.default(rr, quote = FALSE, right = TRUE, ...)
 
   }
+
+
+  if (!is.null(x$effects)) {
+
+
+  }
+
   invisible(x)
 }
