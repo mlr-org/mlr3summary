@@ -72,7 +72,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
         predict_type = object$predict_type)
     }
 
-    control$measures = lapply(control$measures, FUN = function(pmsr) {
+    control$measures = map(control$measures, function(pmsr) {
       pmsr = pmsr$clone()
       pmsr$id = paste0(pmsr$id, " (", pmsr$average, ")")
       pmsr
