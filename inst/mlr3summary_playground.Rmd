@@ -102,6 +102,7 @@ rr_4 = resample(tsk_cars, graph_complex, rsmp_cv3, store_model = TRUE)
 summary(graph_complex, rr_4)
 ```
 
+
 Multiple importance measures are also possible: 
 
 ```{r importances}
@@ -113,6 +114,13 @@ Only display `n_important = 3L` most important features.
 summary(lrn_rpart, rr_3, control = summary_control(importance_measures = c("pdp", "pfi.rmse"), n_important = 3L))
 ``` 
 
+Also micro/macro versions of performances can be computed, by updating 
+used `measures` in `summary_control()`. 
+```{r micro}
+perfms = c(msr("regr.bias", id = "regr.bias.mi", average = "micro"),
+  msr("regr.bias", id = "regr.bias.ma", average = "macro"))
+summary(lrn_rpart, rr_3, control = summary_control(measures = perfms))
+```
 
 ## Classification example
 The second example is based on the `penguins` task available in `mlr3`.

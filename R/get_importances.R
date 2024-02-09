@@ -114,7 +114,6 @@ get_shap_importance = function(learner, test_tsk, loss) {
   # Sum aggregated shap values over outcome classes
   # --> inspired by shap python module output for `shap.summary_plot(plot_type = "bar")`
   # --> See: https://towardsdatascience.com/explainable-ai-xai-with-shap-multi-class-classification-problem-64dd30f97cea
-  browser()
   imp = rowSums(temp)
   data.table(feature = names(imp),
     importance = as.vector(unlist(imp), "numeric"))
