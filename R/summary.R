@@ -157,7 +157,6 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
 
 #' @export
 print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
-
   # input checks
   assert_int(digits, lower = 0L, null.ok = TRUE)
   assert_int(n_important, lower = 1L, null.ok = TRUE)
@@ -167,34 +166,35 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
     x$control$n_important = n_important
   }
 
-  catn("Task type: ", x$task_type)
+  cli_div(theme = list(.val = list(digits = x$control$digits)))
 
-  catn(str_indent("Feature names: ", str_collapse(x$feature_names), exdent = 4L))
+  cli_h1("General")
+  cli_text("Task type: {x$task_type}")
+  fn = cli_vec(x$feature_names, list("vec-trunc" = 15))
+  cli_text("Feature names: {fn}.")
 
   if (!is.null(x$model_type)) {
-    catn("Model type: ", x$model_type)
+    cli_text("Model type: {x$model_type}")
   }
 
   if (!is.null(x$pipeline)) {
-    catn("Pipeline:\n", x$pipeline)
+    cli_text("Pipeline: {x$pipeline}")
   }
 
   if (!is.null(x$resample_info)) {
-    catn(str_indent("Resampling: ", x$resample_info, exdent = 4L))
+    cli_text("Resampling: {x$resample_info}")
   }
 
   if (!is.null(x$residuals)) {
-    cat("\n")
-    catn("Residuals:")
+    cli_h1("Residuals")
     zz = zapsmall(summary(x$residuals), x$control$digits + 1L)
     nam = c("Min", "1Q", "Median", "Mean", "3Q", "Max")
-    rq = structure(zz, names = nam)
-    print(rq, digits = x$control$digits, ...)
+    rq = cli_vec(structure(zz, names = nam))
+    print(rq)
   }
 
   if (!is.null(x$confusion_matrix)) {
-    cat("\n")
-    catn("Confusion matrix:")
+    cli_h1("Confusion matrix")
     max_cols = 8L
     if (ncol(x$confusion_matrix) >= max_cols) {
       conf = x$confusion_matrix[1:(max_cols + 1), 1:(max_cols + 1)]
@@ -208,14 +208,11 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
   }
 
   if (!is.null(x$performance)) {
-    cat("\n")
-    namp = names(x$performance)
-    catn("Performance [sd]:")
-    cat(paste0(namp, ": ",
-      round(x$performance, x$control$digits),
-      " [",
-      round(x$performance_sd, x$control$digits),
-      "]", collapse = "\n"))
+    cli_h1("Performance [sd]")
+    namp = structure(paste0(round(x$performance, x$control$digits),
+      " [", round(x$performance_sd, x$control$digits), "]"),
+      names = names(x$performance))
+    cli_dl(cli_vec(namp))
   }
   invisible(x)
 }
