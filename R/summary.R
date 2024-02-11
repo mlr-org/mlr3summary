@@ -108,16 +108,20 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
     ## importance
     ## <FIXME:> This should be rather exported into own R6 classes??
-    imps_res = get_importances(resample_result, control$importance_measures)
+    if (!is.null(control$importance_measures)) {
+      imps_res = get_importances(resample_result, control$importance_measures)
+      ans$importances = imps_res
+    }
 
     ## effects
-    effs_res = get_effects(resample_result, control$effect_measures)
+    if (!is.null(control$effect_measures)) {
+      effs_res = get_effects(resample_result, control$effect_measures)
+      ans$effects = effs_res
+    }
 
     ans = c(ans, list(
       performance = pf,
       performance_sd = stdt,
-      importances = imps_res,
-      effects = effs_res,
       n_iters = resample_result$iters,
       control = control)
     )
@@ -263,7 +267,11 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
     namp = structure(paste0(round(x$performance, x$control$digits),
       " [", round(x$performance_sd, x$control$digits), "]"),
       names = names(x$performance))
-    cli_dl(cli_vec(namp))
+    names(namp) = paste0(names(namp), ":")
+    perf = as.matrix(namp)
+    colnames(perf) = ""
+    print.default(perf, quote = FALSE, right = FALSE, ...)
+
   }
 
   if (!is.null(x$importances)) {
@@ -300,14 +308,51 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
       featorder = featorder[1:x$control$n_important]
     }
     rr = as.matrix(rr, rownames = featorder)
-    print.default(rr, quote = FALSE, right = TRUE, ...)
+    print.default(rr, quote = FALSE, right = FALSE, ...)
 
   }
 
 
   if (!is.null(x$effects)) {
+    scale_values <- function(x, range){(x - range[1])/(range[2] - range[1])*(7) + 1}
 
+    get_effect_plot = function(x, range) {
+      symb = sapply(paste("lower_block", round(scale_values(x, range)), sep = "_"),
+        function(s) symbol[[s]], simplify = TRUE)
+      return(paste0(symb, collapse = ""))
+    }
 
+    if (!is.null(x$importances)) {
+      featorder = rownames(rr)
+    } else {
+      featorder = x$feature_names
+    }
+    effs = imap_dtc(x$effects, function(effs, nams) {
+      range = range(effs$V1)
+      effs = effs[feature %in% featorder]
+      if (!is.null(effs$class)) {
+        groupvars = c("feature", "class")
+      } else {
+        groupvars = "feature"
+      }
+      res = effs[, get_effect_plot(round(V1, digits = x$control$digits), range), by = groupvars]
+      if (!is.null(res$class)) {
+        res = dcast(res, feature ~ class, value.var = "V1")
+        res[, V1:=do.call(paste,.SD), .SDcols=-1]
+        res = res[, list(feature, V1)]
+
+      }
+      setorder(res, feature)
+      res = res[order(match(feature, featorder))]
+      res[, feature := NULL]
+      res
+    })
+
+    cli_h1("Effects")
+
+    names(effs) = gsub("\\.V1", "", names(effs))
+    ef = as.matrix(effs, rownames = featorder)
+    print.default(ef, quote = FALSE, right = FALSE, ...)
   }
 
   invisible(x)

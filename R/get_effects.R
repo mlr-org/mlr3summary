@@ -30,7 +30,12 @@ get_effects = function(obj, effect_measures) {
           prediction, min_val = min_val, max_val = max_val)
       })
     effs = do.call(rbind, effs)
-    effs_list[[eff_msr]] = effs[, mean(value, na.rm = TRUE), by = list(feature, grid)]
+    if (!is.null(effs$class)) {
+      groupvars = c("feature", "grid", "class")
+    } else {
+      groupvars = c("feature", "grid")
+    }
+    effs_list[[eff_msr]] = effs[, mean(value, na.rm = TRUE), by = groupvars]
   }
   effs_list
 }
@@ -62,13 +67,34 @@ get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
   # <FIXME:> what about categorical features
   gridsize = 5L
   eff = lapply(test_tsk$feature_names, function(feature) {
-    grid = seq(from = min_val[[feature]],
-      to   = max_val[[feature]], length.out = gridsize)
+    col_info = test_tsk$col_info[id == feature,]
+    if (!col_info$type %in% c("numeric", "integer")) {
+      if (col_info$type == "ordered" & length(col_info$levels[[1]]) > 5) {
+        levs = col_info$levels[[1]]
+        grid = levs[round(seq(1, length(levs), length.out = gridsize))]
+      } else {
+        grid = NULL
+      }
+    } else {
+      grid = seq(from = min_val[[feature]],
+        to   = max_val[[feature]], length.out = gridsize)
+      # grid2 = seq(from = min_val[[feature]],
+      #   to   = max_val[[feature]], length.out = 50L)
+      # ef2 = iml::FeatureEffect$new(predictor = pred, feature = feature,
+      #   method = method, grid.points = NULL)$results
+      # complexity = round(gam::gam(.value ~ am, data = ef2)$nl.df, 1)
+    }
     ef = iml::FeatureEffect$new(predictor = pred, feature = feature,
       method = method, grid.points = grid)$results
-    ef$feature = feature
-    data.table(feature = ef$feature, grid = 1:gridsize, value = ef$.value)
+    ef = ef[ef[[feature]] %in% grid,]
+    ef$featurenam = feature
+
+
+    dt = data.table(feature = ef$featurenam, grid = ef[[feature]], value = ef$.value, class = ef$.class)
+    # attr(dt, "complexity") = complexity
+    dt
   })
+
   do.call(rbind, eff)
 }
 
