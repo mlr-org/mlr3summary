@@ -279,7 +279,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
     cat("\nImportances:\n")
 
     alpha = 0.05
-    tquant = qt(1 - alpha / 2, df = x$n_iters - 1)
+    tquant = stats::qt(1 - alpha / 2, df = x$n_iters - 1)
     ## create imp [l, u]
 
     # featnams = as.data.frame(lapply(x$importances, function(dt) dt$feature))

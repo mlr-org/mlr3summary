@@ -1,2 +1,2 @@
 utils::globalVariables(c("feature", "lower", "corrvar", "upper", "res",
-  "importance", ".class", ".value"))
+  "importance", ".class", ".value", "V1", "id", "value"))
