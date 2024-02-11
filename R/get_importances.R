@@ -107,6 +107,7 @@ get_shap_importance = function(learner, test_tsk, loss) {
       }
     }
     shap = fastshap::explain(learner, X = test_tsk$data(),
+      feature_names = test_tsk$feature_names,
       pred_wrapper = pfun, newdata = test_tsk$data(),
       nsim = 10)
     colMeans(abs(shap))
