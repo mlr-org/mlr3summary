@@ -70,10 +70,13 @@ get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
     }
     ef = iml::FeatureEffect$new(predictor = pred, feature = feature,
       method = method, grid.points = grid)$results
-    ef = ef[ef[[feature]] %in% grid,]
+    ef = data.table(ef[ef[[feature]] %in% grid,])
     ef$featurenam = feature
 
-
+    if (!is.na(test_tsk$positive)) {
+      ef = ef[.class == test_tsk$positive]
+      ef[, .class := NULL]
+    }
     data.table(feature = ef$featurenam, grid = ef[[feature]], value = ef$.value, class = ef$.class)
   })
 
