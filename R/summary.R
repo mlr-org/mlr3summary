@@ -260,19 +260,12 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
     cat("\n")
     cat("\nImportances:\n")
 
-    tquant = 1.96 #t(1-alpha)
-    ## create imp [l, u]
-
-    # featnams = as.data.frame(lapply(x$importance, function(dt) dt$feature))
-    # assert_true(all(apply(featnams, MARGIN = 1, FUN = function(row) length(unique(row)) == 1)))
-
     featorder = x$importance[[1]][order(mean, decreasing = TRUE), feature]
 
     compute_imp_summary = function(imp) {
       imp[, mean := round(mean, x$control$digits)]
-      imp[, lower := round(mean - tquant * sqrt(corrvar), x$control$digits)]
-      imp[, upper := round(mean + tquant * sqrt(corrvar), x$control$digits)]
-      imp[, res:=paste0(mean, " [", lower, ",", upper, "]")]
+      imp[, sd := round(sd, x$control$digits)]
+      imp[, res:=paste0(mean, " [", sd, "]")]
       imp[, c("feature", "res")]
     }
 

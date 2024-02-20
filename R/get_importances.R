@@ -5,13 +5,6 @@ get_importances = function(obj, importance_measures) {
     reassemble_learners = TRUE, convert_predictions = FALSE)
   tmp = unique(tab, by = c("task_hash", "learner_hash"))[,
     c("task", "learner"), with = FALSE]
-  # correction factor acc. Molnar et al. (2023),
-  # https://doi.org/10.1007/978-3-031-44064-9_24  p. 468,
-  # based on Nadeau, C., Bengio, Y.: Inference for the generalization error. Mach. Learn. 52(3),
-  # 239–281 (2003)
-  correction_factor = 1/obj$iters + mean(sapply(1:obj$iters, FUN = function(i) {
-    length(obj$resampling$test_set(i = i)) / length(obj$resampling$train_set(i = i))
-  }))
 
   imps_list = sapply(importance_measures, function(x) NULL)
 
@@ -26,8 +19,14 @@ get_importances = function(obj, importance_measures) {
           prediction)
       })
 
-    # aggregate results (mean, variance, corrected variance acc. to Molnar et al. (2023), see above)
-    imps_list[[imp_msr]] = aggregate_importance(imps, correction_factor)
+    # aggregate results (mean, sd)
+    mm = imps[, mean(importance), by = feature]
+    setnames(mm, "V1", "mean")
+    varimps = imps[, stats::sd(importance), by = feature]
+    setnames(varimps, "V1", "sd")
+    res = merge(mm, varimps, by = "feature")
+
+    imps_list[[imp_msr]] = res
   }
 
   imps_list
@@ -120,12 +119,3 @@ get_shap_importance = function(learner, test_tsk, loss) {
     importance = as.vector(unlist(imp), "numeric"))
 }
 
-aggregate_importance = function(dt, correction_factor) {
-  # based on Molnar et al. (2023), p. 468-469
-  mm = dt[, mean(importance), by = feature]
-  setnames(mm, "V1", "mean")
-  vardt = dt[, stats::var(importance), by = feature]
-  vardt$corrvar = correction_factor * vardt$V1
-  setnames(vardt, "V1", "var")
-  merge(mm, vardt, by = "feature")
-}
