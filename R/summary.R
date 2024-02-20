@@ -1,26 +1,27 @@
+#' Learner and model summaries
+#'
+#' @param object (`Learner`)
+#'  To Do.
+#' @param resample_result (`Resampling`)
+#'  To Do.
+#' @param control (`summary_control`)
+#'  To Do.
+#'
+#' @param ... (any)
+#'  To Do.
+#'
+#' @return summary.Learner list
+#'
 #' @references
+#' `r format_bib("greenwell_simple_2018")`
 #'
-#' Breiman, L. (2001) Random Forests. Machine Learning 45, 5–32.
-#' https://doi.org/10.1023/A:1010933404324
+#' `r format_bib("fisher_all_2019")`
 #'
-#' Fisher, A., Rudin, C., & Dominici, F. (2019).
-#' All Models are Wrong, but Many are Useful: Learning a Variable's Importance
-#' by Studying an Entire Class of Prediction Models Simultaneously.
-#' J. Mach. Learn. Res., 20(177), 1-81.
+#' `r format_bib("molnar_relating_2023")`
 #'
-#' Lundberg, S. M., and Lee, S. (2017): A unified approach to interpreting model predictions.
-#' In Proceedings of the 31st International Conference on Neural Information Processing Systems (NIPS'17).
-#' Curran Associates Inc., Red Hook, NY, USA, 4768–4777.
+#' `r format_bib("breiman_leo_random_2001")`
 #'
-#' Greenwell, B. M., Boehmke, B. C., & McCarthy, A. J. (2018).
-#' A simple and effective model-based variable importance measure.
-#' arXiv preprint arXiv:1805.04755.
-#'
-#' Molnar, C. et al. (2023). Relating the Partial Dependence Plot and Permutation
-#' Feature Importance to the Data Generating Process.
-#' In: Longo, L. (eds) Explainable Artificial Intelligence. xAI 2023.
-#' Communications in Computer and Information Science, vol 1901. Springer,
-#' Cham. https://doi.org/10.1007/978-3-031-44064-9_24
+#' @importFrom stats sd
 #' @export
 summary.Learner = function(object, resample_result = NULL, control = summary_control(), ...) {
 
@@ -274,24 +275,15 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
 
   }
 
-  if (!is.null(x$importances)) {
-    cat("\n")
-    cat("\nImportances:\n")
 
-    alpha = 0.05
-    tquant = stats::qt(1 - alpha / 2, df = x$n_iters - 1)
-    ## create imp [l, u]
-
-    # featnams = as.data.frame(lapply(x$importances, function(dt) dt$feature))
-    # assert_true(all(apply(featnams, MARGIN = 1, FUN = function(row) length(unique(row)) == 1)))
+  if (!is.null(x$importance)) {
+    cli_h1("Importance [sd]")
 
     featorder = x$importances[[1]][order(mean, decreasing = TRUE), feature]
 
     compute_imp_summary = function(imp) {
-      imp[, mean := round(mean, x$control$digits)]
-      imp[, lower := round(mean - tquant * sqrt(corrvar), x$control$digits)]
-      imp[, upper := round(mean + tquant * sqrt(corrvar), x$control$digits)]
-      imp[, res:=paste0(mean, " [", lower, ",", upper, "]")]
+      imp[, "res" := paste0(round(mean, x$control$digits), " [",
+        round(sd, x$control$digits), "]")]
       imp[, c("feature", "res")]
     }
 
