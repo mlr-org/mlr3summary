@@ -6,29 +6,23 @@ get_importances = function(obj, importance_measures) {
   tmp = unique(tab, by = c("task_hash", "learner_hash"))[,
     c("task", "learner"), with = FALSE]
 
-  imps_list = sapply(importance_measures, function(x) NULL)
-
   # step through importance measures
-  for (imp_msr in importance_measures) {
+  imps_list = mlr3misc::map(importance_measures, function(imp_msr) {
 
     # step through resample folds
-    imps = pmap_dtr(tab[, c("task", "learner", "resampling",
-      "iteration", "prediction"), with = FALSE], function(task,
-        learner, resampling, iteration, prediction) {
-        get_single_importance(imp_msr, task, learner, train_set = resampling$train_set(iteration),
-          prediction)
-      })
+    imps = pmap_dtr(tab, function(task,
+      learner, resampling, iteration, prediction, ...) {
+      get_single_importance(imp_msr, task, learner, train_set = resampling$train_set(iteration),
+        prediction)
+    })
 
     # aggregate results (mean, sd)
-    mm = imps[, mean(importance), by = feature]
-    setnames(mm, "V1", "mean")
-    varimps = imps[, stats::sd(importance), by = feature]
-    setnames(varimps, "V1", "sd")
-    res = merge(mm, varimps, by = "feature")
+    mm = imps[, list(mean = mean(importance)), by = feature]
+    varimps = imps[, list(sd = stats::sd(importance)), by = feature]
+    merge(mm, varimps, by = "feature")
 
-    imps_list[[imp_msr]] = res
-  }
-
+  })
+  names(imps_list) = importance_measures
   imps_list
 }
 
@@ -60,7 +54,7 @@ get_pdp_importance = function(learner, test_tsk) {
   pdp = iml::FeatureEffects$new(predictor = pred, method = "pdp")
   # <FIXME:> multiclass probabilities --> how to approach this?
   # currently just variance over all values simultaneously
-  imp = lapply(pdp$results, FUN = function(dt) {
+  imp = map(pdp$results, function(dt) {
     dt = as.data.table(dt)
     if (learner$task_type == "regr") {
       dt[, stats::sd(.value)]
@@ -69,7 +63,7 @@ get_pdp_importance = function(learner, test_tsk) {
     }
   })
   data.table(feature = names(pdp$results),
-    importance = as.vector(unlist(imp), "numeric"))
+    importance = as.numeric(unlist(imp)))
 }
 
 
@@ -93,7 +87,7 @@ get_shap_importance = function(learner, test_tsk, loss) {
   } else if (learner$task_type == "classif") {
     outcome_classes = learner$state$train_task$class_names
   }
-  temp = sapply(outcome_classes, function(reference) {
+  temp = vapply(outcome_classes, FUN.VALUE = numeric(length(test_tsk$feature_names)), function(reference) {
     pfun = function(object, newdata) {
       if (object$task_type == "regr") {
         object$predict_newdata(newdata)[[reference]]
