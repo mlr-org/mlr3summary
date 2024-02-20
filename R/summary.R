@@ -1,5 +1,17 @@
 #' Learner and model summaries
 #'
+#' @param object (`Learner`)
+#'  To Do.
+#' @param resample_result (`Resampling`)
+#'  To Do.
+#' @param control (`summary_control`)
+#'  To Do.
+#'
+#' @param ... (any)
+#'  To Do.
+#'
+#' @return summary.Learner list
+#'
 #' @references
 #' `r format_bib("greenwell_simple_2018")`
 #'
@@ -8,6 +20,8 @@
 #' `r format_bib("molnar_relating_2023")`
 #'
 #' `r format_bib("breiman_leo_random_2001")`
+#'
+#' @importFrom stats sd
 #' @export
 summary.Learner = function(object, resample_result = NULL, control = summary_control(), ...) {
 
@@ -244,8 +258,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
   }
 
   if (!is.null(x$importance)) {
-    cat("\n")
-    cat("\nImportances:\n")
+    cli_h1("Importance [sd]")
 
     featorder = x$importance[[1]][order(mean, decreasing = TRUE), feature]
 

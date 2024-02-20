@@ -7,7 +7,7 @@ get_importances = function(obj, importance_measures) {
     c("task", "learner"), with = FALSE]
 
   # step through importance measures
-  imps_list = mlr3misc::map(importance_measures, function(imp_msr) {
+  imps_list = map(importance_measures, function(imp_msr) {
 
     # step through resample folds
     imps = pmap_dtr(tab, function(task,
@@ -110,6 +110,6 @@ get_shap_importance = function(learner, test_tsk, loss) {
   # --> See: https://towardsdatascience.com/explainable-ai-xai-with-shap-multi-class-classification-problem-64dd30f97cea
   imp = rowSums(temp)
   data.table(feature = names(imp),
-    importance = as.vector(unlist(imp), "numeric"))
+    importance = as.numeric(unlist(imp)))
 }
 

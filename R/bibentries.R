@@ -8,7 +8,7 @@ bibentries = c(
     institution = "arXiv preprint",
     author = "Greenwell, Brandon M. and Boehmke, Bradley C. and McCarthy, Andrew J.",
     year = "2018",
-    note = "arXiv:1805.04755",
+    note = "arXiv:1805.04755"
   ),
   molnar_relating_2023 = bibentry("inproceedings",
     address = "Cham",
@@ -18,7 +18,7 @@ bibentries = c(
     # doi = "10.1007/978-3-031-44064-9_24",
     booktitle = "Explainable Artificial Intelligence",
     publisher = "Springer Nature Switzerland",
-    author = "Molnar, Christoph and Freiesleben, Timo and König, Gunnar and Herbinger, Julia and Reisinger, Tim and Casalicchio, Giuseppe and Wright, Marvin N. and Bischl, Bernd",
+    author = "Molnar, Christoph and Freiesleben, Timo and Koenig, Gunnar and Herbinger, Julia and Reisinger, Tim and Casalicchio, Giuseppe and Wright, Marvin N. and Bischl, Bernd",
     editor = "Longo, Luca",
     year = "2023",
     keywords = "XAI, Interpretable Machine Learning, Partial Dependence Plot, Permutation Feature Importance, Statistical Inference, Uncertainty Quantification",
