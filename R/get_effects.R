@@ -73,7 +73,7 @@ get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
     ef = data.table(ef[ef[[feature]] %in% grid,])
     ef$featurenam = feature
 
-    if (!is.na(test_tsk$positive)) {
+    if (!is.null(test_tsk$positive) && !is.na(test_tsk$positive)) {
       ef = ef[.class == test_tsk$positive]
       ef[, .class := NULL]
     }

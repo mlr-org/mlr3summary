@@ -128,7 +128,7 @@ We train an xgboost model on it.
 
 ```{r iris}
 tsk_peng = tsk("iris")
-lrn_xgboost = lrn("classif.xgboost")
+lrn_xgboost = lrn("classif.xgboost", predict_type = "prob")
 lrn_xgboost$train(task = tsk_peng)
 ```
 
