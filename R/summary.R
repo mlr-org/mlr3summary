@@ -105,7 +105,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     sc = resample_result$score(measures = control$measures)
     nam_multimeas = names(sc)[grep(tt, names(sc))]
     sc = sc[, nam_multimeas, with = FALSE]
-    stdt = apply(sc, MARGIN = 2L, stats::sd)
+    stdt = map_dbl(sc, stats::sd)
 
     ## importance
     ## <FIXME:> This should be rather exported into own R6 classes??
@@ -287,7 +287,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
       imp[, c("feature", "res")]
     }
 
-    rr = lapply(x$importances, compute_imp_summary)
+    rr = map(x$importance, compute_imp_summary)
     rr = Reduce(merge,rr)
     rr = rr[order(match(feature, featorder))]
     names(rr) = c("feature", names(x$importances))
