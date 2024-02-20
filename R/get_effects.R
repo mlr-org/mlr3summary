@@ -5,38 +5,28 @@ get_effects = function(obj, effect_measures) {
     reassemble_learners = TRUE, convert_predictions = FALSE)
   tmp = unique(tab, by = c("task_hash", "learner_hash"))[,
     c("task", "learner"), with = FALSE]
-  # correction factor acc. Molnar et al. (2023),
-  # https://doi.org/10.1007/978-3-031-44064-9_24  p. 468,
-  # based on Nadeau, C., Bengio, Y.: Inference for the generalization error. Mach. Learn. 52(3),
-  # 239–281 (2003)
-  correction_factor = 1/obj$iters + mean(sapply(1:obj$iters, FUN = function(i) {
-    length(obj$resampling$test_set(i = i)) / length(obj$resampling$train_set(i = i))
-  }))
 
   # get min/max for grid
-  min_val = obj$task$data()[, lapply(.SD, min, na.rm = TRUE), .SDcols = is.numeric]
-  max_val = obj$task$data()[, lapply(.SD, max, na.rm = TRUE), .SDcols = is.numeric]
-
-  effs_list = sapply(effect_measures, function(x) NULL)
+  min_val = obj$task$data()[, map(.SD, min, na.rm = TRUE), .SDcols = is.numeric]
+  max_val = obj$task$data()[, map(.SD, max, na.rm = TRUE), .SDcols = is.numeric]
 
   # step through effect measures
-  for (eff_msr in effect_measures) {
+  effs_list = map(effect_measures, function(eff_msr) {
 
     # step through resample folds
-    effs = pmap(tab[, c("task", "learner", "resampling",
-      "iteration", "prediction"), with = FALSE], function(task,
-        learner, resampling, iteration, prediction) {
-        get_single_effect(eff_msr, task, learner, train_set = resampling$train_set(iteration),
-          prediction, min_val = min_val, max_val = max_val)
-      })
-    effs = do.call(rbind, effs)
+    effs = pmap_dtr(tab, function(task,
+      learner, resampling, iteration, prediction, ...) {
+      get_single_effect(eff_msr, task, learner, train_set = resampling$train_set(iteration),
+        prediction, min_val = min_val, max_val = max_val)
+    })
     if (!is.null(effs$class)) {
       groupvars = c("feature", "grid", "class")
     } else {
       groupvars = c("feature", "grid")
     }
-    effs_list[[eff_msr]] = effs[, mean(value, na.rm = TRUE), by = groupvars]
-  }
+    effs[, mean(value, na.rm = TRUE), by = groupvars]
+  })
+  names(effs_list) = effect_measures
   effs_list
 }
 
@@ -64,9 +54,8 @@ get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names)
 
-  # <FIXME:> what about categorical features
   gridsize = 5L
-  eff = lapply(test_tsk$feature_names, function(feature) {
+  eff = map(test_tsk$feature_names, function(feature) {
     col_info = test_tsk$col_info[id == feature,]
     if (!col_info$type %in% c("numeric", "integer")) {
       if (col_info$type == "ordered" & length(col_info$levels[[1]]) > 5) {
@@ -78,11 +67,6 @@ get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
     } else {
       grid = seq(from = min_val[[feature]],
         to   = max_val[[feature]], length.out = gridsize)
-      # grid2 = seq(from = min_val[[feature]],
-      #   to   = max_val[[feature]], length.out = 50L)
-      # ef2 = iml::FeatureEffect$new(predictor = pred, feature = feature,
-      #   method = method, grid.points = NULL)$results
-      # complexity = round(gam::gam(.value ~ am, data = ef2)$nl.df, 1)
     }
     ef = iml::FeatureEffect$new(predictor = pred, feature = feature,
       method = method, grid.points = grid)$results
@@ -90,48 +74,10 @@ get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
     ef$featurenam = feature
 
 
-    dt = data.table(feature = ef$featurenam, grid = ef[[feature]], value = ef$.value, class = ef$.class)
-    # attr(dt, "complexity") = complexity
-    dt
+    data.table(feature = ef$featurenam, grid = ef[[feature]], value = ef$.value, class = ef$.class)
   })
 
   do.call(rbind, eff)
 }
-
-
-# aggregate_effect = function(ll, min_val, max_val) {
-#   feats = unique(names(ll))
-#   res = pmap_dfr(feats, function(feat) {
-#     range = seq(from = min_val[[feat]], max_val[[feat]], length.out = 5L)
-#     vals = sapply(ll[which(names(ll) == feat)], function(pdp) {
-#       pdp$predict(range, extrapolate = TRUE)
-#     })
-#     rowMeans(vals)
-#   })
-#   names(res) = feats
-#   res
-# }
-#
-#
-# aggregate_effect = function(ll, correction_factor) {
-#   # add feature name to data tables in list
-#
-#   dtl = lapply(ll, function(llsingle) {
-#     featnam = setdiff(names(llsingle), c(".type", ".value"))
-#     llsingle$feat = featnam
-#     names(llsingle)[which(names(llsingle) == featnam)] = "grid"
-#     llsingle
-#   })
-#   # rbind list elements to data.table
-#   dt = data.table(do.call(rbind, dtl))
-#
-#   mean = dt[, mean(.value, na.rm = TRUE), by = list(feat, grid)]
-#   var = dt[, var(.value, na.rm = TRUE), by = list(feat, grid)]
-#
-#   res = merge(mean, var, by = c("feat", "grid"))
-#   setnames(res, c("V1.x", "V1.y"), c("mean", "var"))
-#
-#   res
-# }
 
 

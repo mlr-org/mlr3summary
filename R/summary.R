@@ -307,10 +307,9 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
 
   if (!is.null(x$effects)) {
     scale_values <- function(x, range){(x - range[1])/(range[2] - range[1])*(7) + 1}
-
     get_effect_plot = function(x, range) {
-      symb = sapply(paste("lower_block", round(scale_values(x, range)), sep = "_"),
-        function(s) symbol[[s]], simplify = TRUE)
+      symb = map_chr(paste("lower_block", round(scale_values(x, range)), sep = "_"),
+        function(s) symbol[[s]])
       return(paste0(symb, collapse = ""))
     }
 
@@ -323,28 +322,50 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
       range = range(effs$V1)
       effs = effs[feature %in% featorder]
       if (!is.null(effs$class)) {
-        groupvars = c("feature", "class")
+        groupvars = c("class", "feature")
       } else {
         groupvars = "feature"
       }
       res = effs[, get_effect_plot(round(V1, digits = x$control$digits), range), by = groupvars]
-      if (!is.null(res$class)) {
-        res = dcast(res, feature ~ class, value.var = "V1")
-        res[, V1:=do.call(paste,.SD), .SDcols=-1]
-        res = res[, list(feature, V1)]
-
+      # if (!is.null(res$class)) {
+      #   res = dcast(res, feature ~ class, value.var = "V1")
+      #   res[, V1:=do.call(paste,.SD), .SDcols=-1]
+      #   res = res[, list(feature, V1)]
+      #
+      # }
+      if (!is.null(effs$class)) {
+        res = res[order(class, match(feature, featorder))]
+      } else {
+        res = res[order(match(feature, featorder))]
       }
-      setorder(res, feature)
-      res = res[order(match(feature, featorder))]
-      res[, feature := NULL]
+      # res[, feature := NULL]
       res
     })
 
-    cli_h1("Effects")
+    effs = effs[ , which( !duplicated(t(effs))) , with = FALSE]
 
+    cli_h1("Effects")
+    names(effs)[grepl("class", colnames(effs))] = "class"
+    names(effs)[grepl("feature", colnames(effs))] = "feature"
     names(effs) = gsub("\\.V1", "", names(effs))
-    ef = as.matrix(effs, rownames = featorder)
-    print.default(ef, quote = FALSE, right = FALSE, ...)
+
+    # if multi-class, effects for each class are displayed one below the other
+    if (!is.null(effs$class)) {
+      effs = split(effs, effs$class)
+      for (i in 1:length(effs)) {
+        cat("\n")
+        cli_h2(names(effs[i]))
+        ef = copy(effs[[i]])
+        ef = ef[order(match(feature, featorder))]
+        ef = ef[, !c("class", "feature")]
+        ef = as.matrix(ef, rownames = featorder)
+        print.default(ef, quote = FALSE, right = FALSE, ...)
+      }
+
+    } else {
+      ef = as.matrix(effs, rownames = featorder)
+      print.default(ef, quote = FALSE, right = FALSE, ...)
+    }
   }
 
   invisible(x)
