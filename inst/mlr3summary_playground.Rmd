@@ -102,6 +102,18 @@ rr_4 = resample(tsk_cars, graph_complex, rsmp_cv3, store_model = TRUE)
 summary(graph_complex, rr_4)
 ```
 
+
+Multiple importance measures are also possible: 
+
+```{r importances}
+summary(lrn_rpart, rr_3, control = summary_control(importance_measures = c("pfi.rmse", "pdp")))
+```
+
+Only display `n_important = 3L` most important features. 
+```{r n_important}
+summary(lrn_rpart, rr_3, control = summary_control(importance_measures = c("pdp", "pfi.rmse"), n_important = 3L))
+``` 
+
 Also micro/macro versions of performances can be computed, by updating 
 used `measures` in `summary_control()`. 
 ```{r micro}
@@ -133,6 +145,17 @@ We use the generated `ResampleResult` (here `rr_5`) as an additional input to `s
 rsmp_bs = rsmp("bootstrap", repeats = 5L)
 rr_5 = resample(tsk_peng, lrn_xgboost, rsmp_bs, store_model = TRUE)
 summary(lrn_xgboost, rr_5)
+```
+
+## Binary classification
+
+```{r bc}
+tsk_bc = tsk("breast_cancer")
+lrn_ranger = lrn("classif.ranger", predict_type = "prob")
+lrn_ranger$train(task = tsk_bc)
+rsmp_cv5 = rsmp("subsampling", repeats = 2L, ratio = 0.5)
+rr_6 = resample(tsk_bc, lrn_ranger, rsmp_cv5, store_model = TRUE)
+summary(lrn_ranger, rr_6, control = summary_control(importance_measures = "shap"))
 ```
 
 ## Error handling 

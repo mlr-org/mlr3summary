@@ -1,3 +1,27 @@
+#' Learner and model summaries
+#'
+#' @param object (`Learner`)
+#'  To Do.
+#' @param resample_result (`Resampling`)
+#'  To Do.
+#' @param control (`summary_control`)
+#'  To Do.
+#'
+#' @param ... (any)
+#'  To Do.
+#'
+#' @return summary.Learner list
+#'
+#' @references
+#' `r format_bib("greenwell_simple_2018")`
+#'
+#' `r format_bib("fisher_all_2019")`
+#'
+#' `r format_bib("molnar_relating_2023")`
+#'
+#' `r format_bib("breiman_leo_random_2001")`
+#'
+#' @importFrom stats sd
 #' @export
 summary.Learner = function(object, resample_result = NULL, control = summary_control(), ...) {
 
@@ -83,9 +107,16 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     sc = sc[, nam_multimeas, with = FALSE]
     stdt = apply(sc, MARGIN = 2L, stats::sd)
 
+    ## importance
+    ## <FIXME:> This should be rather exported into own R6 classes??
+    imps_res = get_importances(resample_result, control$importance_measures)
+
     ans = c(ans, list(
       performance = pf,
-      performance_sd = stdt))
+      performance_sd = stdt,
+      importance = imps_res,
+      control = control)
+    )
   }
 
   ans$control = control
@@ -147,8 +178,12 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
     measures = as_measures(measures)
   }
   assert_measures(measures)
-  importance_measures = match.arg(importance_measures)
-  assert_choice(importance_measures, c("pdp", "pfi", "loco"), null.ok = TRUE)
+
+  iml_pfi_losses = c("ce", "f1", "logLoss", "mae", "mse", "rmse", "mape", "mdae",
+    "msle", "percent_bias", "rae", "rmse", "rmsle", "rse", "rrse", "smape")
+  for (imp_measure in importance_measures) {
+    assert_choice(imp_measure, c("pdp", "shap", paste("pfi", iml_pfi_losses, sep = ".")), null.ok = TRUE)
+  }
   assert_int(n_important, lower = 1L, null.ok = TRUE)
   assert_int(digits, lower = 0L, null.ok = FALSE)
 
@@ -168,11 +203,13 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
 
   if (!is.null(digits)) {
     x$control$digits = digits
+  }
+
+  if (!is.null(n_important)) {
     x$control$n_important = n_important
   }
 
   cli_div(theme = list(.val = list(digits = x$control$digits)))
-
   cli_h1("General")
   cli_text("Task type: {x$task_type}")
   fn = cli_vec(x$feature_names, list("vec-trunc" = 15))
@@ -218,6 +255,34 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
       " [", round(x$performance_sd, x$control$digits), "]"),
       names = names(x$performance))
     cli_dl(cli_vec(namp))
+  }
+
+  if (!is.null(x$importance)) {
+    cli_h1("Importance [sd]")
+
+    featorder = x$importance[[1]][order(mean, decreasing = TRUE), feature]
+
+    compute_imp_summary = function(imp) {
+      imp[, "res" := paste0(round(mean, x$control$digits), " [",
+        round(sd, x$control$digits), "]")]
+      imp[, c("feature", "res")]
+    }
+
+    rr = lapply(x$importance, compute_imp_summary)
+    rr = Reduce(merge,rr)
+    rr = rr[order(match(feature, featorder))]
+    names(rr) = c("feature", names(x$importance))
+    rownames(rr) = rr$feature
+    rr[,feature:=NULL]
+    col = names(x$importance)[[1]]
+
+    if (!is.null(x$control$n_important) && nrow(rr) > x$control$n_important) {
+      rr = rr[1:x$control$n_important,]
+      featorder = featorder[1:x$control$n_important]
+    }
+    rr = as.matrix(rr, rownames = featorder)
+    print.default(rr, quote = FALSE, right = TRUE, ...)
+
   }
   invisible(x)
 }
