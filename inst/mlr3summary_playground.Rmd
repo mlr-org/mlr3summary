@@ -7,6 +7,21 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(crayon.enabled = TRUE)
+ansi_aware_handler <- function(x, options) {
+  paste0(
+    "<pre class=\"r-output\"><code>",
+    fansi::sgr_to_html(x = x, warn = FALSE, term.cap = "256"),
+    "</code></pre>"
+  )
+}
+
+knitr::knit_hooks$set(
+  output = ansi_aware_handler, 
+  message = ansi_aware_handler, 
+  warning = ansi_aware_handler,
+  error = ansi_aware_handler
+)
 ```
 
 ## Load the necessary packages
@@ -57,115 +72,115 @@ rr_1 = resample(tsk_cars, lrn_rpart, rsmp_cv3, store_model = TRUE)
 summary(lrn_rpart, rr_1)
 ```
 
-Multiple performance measures are also possible to display via `mlr3::msrs`
+<!-- Multiple performance measures are also possible to display via `mlr3::msrs` -->
 
-```{r multimeas}
-summary(lrn_rpart, rr_1, control = summary_control(measures = msrs(c("regr.bias", "regr.mae"))))
-```
+<!-- ```{r multimeas} -->
+<!-- summary(lrn_rpart, rr_1, control = summary_control(measures = msrs(c("regr.bias", "regr.mae")))) -->
+<!-- ``` -->
 
-The model can also comprise multiple pre-processing steps conducted via the package `mlr3pipelines`, these will also be shown in the `summary()` output.
-In the following, feature filtering is conducted based on the feature importance.
-Please note that now a paragraph on the pipeline structure was added to the `summary()` output.
+<!-- The model can also comprise multiple pre-processing steps conducted via the package `mlr3pipelines`, these will also be shown in the `summary()` output. -->
+<!-- In the following, feature filtering is conducted based on the feature importance. -->
+<!-- Please note that now a paragraph on the pipeline structure was added to the `summary()` output. -->
 
-```{r graph}
-graph_learner = as_learner(po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
-  po("learner", mlr3::lrn("regr.rpart")))
-graph_learner$train(tsk_cars)
-rr_2 = resample(tsk_cars, graph_learner, rsmp_cv3, store_model = TRUE)
-summary(graph_learner, rr_2)
-```
+<!-- ```{r graph} -->
+<!-- graph_learner = as_learner(po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>% -->
+<!--   po("learner", mlr3::lrn("regr.rpart"))) -->
+<!-- graph_learner$train(tsk_cars) -->
+<!-- rr_2 = resample(tsk_cars, graph_learner, rsmp_cv3, store_model = TRUE) -->
+<!-- summary(graph_learner, rr_2) -->
+<!-- ``` -->
 
-Here, `graph_learner` is a `GraphLearner` object after transforming it with `as_learner()`.
-Calling `as_learner()` is strictly necessary, trained `Graphs` currently cannot be processed.
-```{r graphlearner, error=TRUE}
-graph = po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
-  po("learner", mlr3::lrn("regr.rpart"))
-graph$train(tsk_cars)
-rr_3 = resample(tsk_cars, graph, rsmp_cv3, store_model = TRUE)
-summary(graph, rr_3)
-```
-
-
-Currently only linear pipelines can be displayed in `summary()`, more complex non-linear structures are only displayed by `<suppressed>`.
-
-```{r complexgraph}
-graph_complex = po("scale", center = TRUE, scale = FALSE) %>>%
-  gunion(list(
-    po("missind"),
-    po("imputemedian")
-  )) %>>%
-  po("featureunion") %>>%
-  po("learner", mlr3::lrn("regr.rpart"))
-graph_complex = as_learner(graph_complex)
-graph_complex$train(tsk_cars)
-rr_4 = resample(tsk_cars, graph_complex, rsmp_cv3, store_model = TRUE)
-summary(graph_complex, rr_4)
-```
+<!-- Here, `graph_learner` is a `GraphLearner` object after transforming it with `as_learner()`. -->
+<!-- Calling `as_learner()` is strictly necessary, trained `Graphs` currently cannot be processed. -->
+<!-- ```{r graphlearner, error=TRUE} -->
+<!-- graph = po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>% -->
+<!--   po("learner", mlr3::lrn("regr.rpart")) -->
+<!-- graph$train(tsk_cars) -->
+<!-- rr_3 = resample(tsk_cars, graph, rsmp_cv3, store_model = TRUE) -->
+<!-- summary(graph, rr_3) -->
+<!-- ``` -->
 
 
-Multiple importance measures are also possible: 
+<!-- Currently only linear pipelines can be displayed in `summary()`, more complex non-linear structures are only displayed by `<suppressed>`. -->
 
-```{r importances}
-summary(lrn_rpart, rr_3, control = summary_control(importance_measures = c("pfi.rmse", "pdp")))
-```
+<!-- ```{r complexgraph} -->
+<!-- graph_complex = po("scale", center = TRUE, scale = FALSE) %>>% -->
+<!--   gunion(list( -->
+<!--     po("missind"), -->
+<!--     po("imputemedian") -->
+<!--   )) %>>% -->
+<!--   po("featureunion") %>>% -->
+<!--   po("learner", mlr3::lrn("regr.rpart")) -->
+<!-- graph_complex = as_learner(graph_complex) -->
+<!-- graph_complex$train(tsk_cars) -->
+<!-- rr_4 = resample(tsk_cars, graph_complex, rsmp_cv3, store_model = TRUE) -->
+<!-- summary(graph_complex, rr_4) -->
+<!-- ``` -->
 
-Only display `n_important = 3L` most important features. 
-```{r n_important}
-summary(lrn_rpart, rr_3, control = summary_control(importance_measures = c("pdp", "pfi.rmse"), n_important = 3L))
-``` 
 
-Also micro/macro versions of performances can be computed, by updating 
-used `measures` in `summary_control()`. 
-```{r micro}
-perfms = c(msr("regr.bias", id = "regr.bias.mi", average = "micro"),
-  msr("regr.bias", id = "regr.bias.ma", average = "macro"))
-summary(lrn_rpart, rr_3, control = summary_control(measures = perfms))
-```
+<!-- Multiple importance measures are also possible:  -->
 
-## Classification example
-The second example is based on the `penguins` task available in `mlr3`.
-We train an xgboost model on it. 
+<!-- ```{r importances} -->
+<!-- summary(lrn_rpart, rr_3, control = summary_control(importance_measures = c("pfi.rmse", "pdp"))) -->
+<!-- ``` -->
 
-```{r iris}
-tsk_peng = tsk("iris")
-lrn_xgboost = lrn("classif.xgboost")
-lrn_xgboost$train(task = tsk_peng)
-```
+<!-- Only display `n_important = 3L` most important features.  -->
+<!-- ```{r n_important} -->
+<!-- summary(lrn_rpart, rr_3, control = summary_control(importance_measures = c("pdp", "pfi.rmse"), n_important = 3L)) -->
+<!-- ```  -->
 
-We can receive an overview of the model with `summary()`.
+<!-- Also micro/macro versions of performances can be computed, by updating  -->
+<!-- used `measures` in `summary_control()`.  -->
+<!-- ```{r micro} -->
+<!-- perfms = c(msr("regr.bias", id = "regr.bias.mi", average = "micro"), -->
+<!--   msr("regr.bias", id = "regr.bias.ma", average = "macro")) -->
+<!-- summary(lrn_rpart, rr_3, control = summary_control(measures = perfms)) -->
+<!-- ``` -->
 
-```{r summarymodel_2}
-summary(lrn_xgboost)
-```
+<!-- ## Classification example -->
+<!-- The second example is based on the `penguins` task available in `mlr3`. -->
+<!-- We train an xgboost model on it.  -->
 
-To receive performance results we conduct resampling to allow for evaluations based on hold-out data, here we use bootstrap resampling.
-We use the generated `ResampleResult` (here `rr_5`) as an additional input to `summary()`.
+<!-- ```{r iris} -->
+<!-- tsk_peng = tsk("iris") -->
+<!-- lrn_xgboost = lrn("classif.xgboost") -->
+<!-- lrn_xgboost$train(task = tsk_peng) -->
+<!-- ``` -->
 
-```{r resampling_2}
-rsmp_bs = rsmp("bootstrap", repeats = 5L)
-rr_5 = resample(tsk_peng, lrn_xgboost, rsmp_bs, store_model = TRUE)
-summary(lrn_xgboost, rr_5)
-```
+<!-- We can receive an overview of the model with `summary()`. -->
 
-## Binary classification
+<!-- ```{r summarymodel_2} -->
+<!-- summary(lrn_xgboost) -->
+<!-- ``` -->
 
-```{r bc}
-tsk_bc = tsk("breast_cancer")
-lrn_ranger = lrn("classif.ranger", predict_type = "prob")
-lrn_ranger$train(task = tsk_bc)
-rsmp_cv5 = rsmp("subsampling", repeats = 2L, ratio = 0.5)
-rr_6 = resample(tsk_bc, lrn_ranger, rsmp_cv5, store_model = TRUE)
-summary(lrn_ranger, rr_6, control = summary_control(importance_measures = "shap"))
-```
+<!-- To receive performance results we conduct resampling to allow for evaluations based on hold-out data, here we use bootstrap resampling. -->
+<!-- We use the generated `ResampleResult` (here `rr_5`) as an additional input to `summary()`. -->
 
-## Error handling 
+<!-- ```{r resampling_2} -->
+<!-- rsmp_bs = rsmp("bootstrap", repeats = 5L) -->
+<!-- rr_5 = resample(tsk_peng, lrn_xgboost, rsmp_bs, store_model = TRUE) -->
+<!-- summary(lrn_xgboost, rr_5) -->
+<!-- ``` -->
 
-Input checks ensure that the ML algorithm and task for the model/`object` and 
-`resample_result` must match. 
-As an example, we try to summarize `lrn_xgboost` trained on `tsk_peng`, using 
-`rr_1` as an additional input, which however is based on `lrn_rpart` trained on `tsk_cars`. 
+<!-- ## Binary classification -->
 
-```{r wrongmodel, error=TRUE}
-summary(lrn_xgboost, rr_1)
-```
+<!-- ```{r bc} -->
+<!-- tsk_bc = tsk("breast_cancer") -->
+<!-- lrn_ranger = lrn("classif.ranger", predict_type = "prob") -->
+<!-- lrn_ranger$train(task = tsk_bc) -->
+<!-- rsmp_cv5 = rsmp("subsampling", repeats = 2L, ratio = 0.5) -->
+<!-- rr_6 = resample(tsk_bc, lrn_ranger, rsmp_cv5, store_model = TRUE) -->
+<!-- summary(lrn_ranger, rr_6, control = summary_control(importance_measures = "shap")) -->
+<!-- ``` -->
+
+<!-- ## Error handling  -->
+
+<!-- Input checks ensure that the ML algorithm and task for the model/`object` and  -->
+<!-- `resample_result` must match.  -->
+<!-- As an example, we try to summarize `lrn_xgboost` trained on `tsk_peng`, using  -->
+<!-- `rr_1` as an additional input, which however is based on `lrn_rpart` trained on `tsk_cars`.  -->
+
+<!-- ```{r wrongmodel, error=TRUE} -->
+<!-- summary(lrn_xgboost, rr_1) -->
+<!-- ``` -->
 

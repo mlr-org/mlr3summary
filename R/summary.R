@@ -210,29 +210,28 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
   }
 
   cli_div(theme = list(.val = list(digits = x$control$digits)))
-  cli_h1("General")
-  cli_text("Task type: {x$task_type}")
   fn = cli_vec(x$feature_names, list("vec-trunc" = 15))
-  cli_text("Feature names: {fn}.")
 
-  if (!is.null(x$model_type)) {
-    cli_text("Model type: {x$model_type}")
-  }
-
-  if (!is.null(x$pipeline)) {
-    cli_text("Pipeline: {x$pipeline}")
-  }
-
-  if (!is.null(x$resample_info)) {
-    cli_text("Resampling: {x$resample_info}")
-  }
+    cli({
+      cli_h1("General")
+      cli_text("Task type: {x$task_type}")
+      cli_text("Feature names: {fn}.")
+      cli_text("Model type: {x$model_type}")
+      if (!is.null(x$pipeline)) {
+        cli_text("Pipeline: {x$pipeline}")
+      }
+      if (!is.null(x$resampling)) {
+        cli_text("Resampling: {x$resample_info}")
+      }
+    })
 
   if (!is.null(x$residuals)) {
-    cli_h1("Residuals")
     zz = zapsmall(summary(x$residuals), x$control$digits + 1L)
     nam = c("Min", "1Q", "Median", "Mean", "3Q", "Max")
-    rq = cli_vec(structure(zz, names = nam))
-    print(rq)
+    cli({
+      cli_h1("Residuals")
+      cli_dl(structure(zz, names = nam))
+    })
   }
 
   if (!is.null(x$confusion_matrix)) {
@@ -250,11 +249,13 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
   }
 
   if (!is.null(x$performance)) {
-    cli_h1("Performance [sd]")
     namp = structure(paste0(round(x$performance, x$control$digits),
       " [", round(x$performance_sd, x$control$digits), "]"),
       names = names(x$performance))
-    cli_dl(cli_vec(namp))
+    cli({
+      cli_h1("Performance [sd]")
+      cli_dl(cli_vec(namp))
+    })
   }
 
   if (!is.null(x$importance)) {
