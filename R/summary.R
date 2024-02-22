@@ -259,7 +259,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
   }
 
   if (!is.null(x$importance)) {
-    cli_h1("Importance [sd]")
+
 
     featorder = x$importance[[1]][order(mean, decreasing = TRUE), feature]
 
@@ -282,7 +282,10 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
       featorder = featorder[1:x$control$n_important]
     }
     rr = as.matrix(rr, rownames = featorder)
+    # cli({
+      cli_h1("Importance [sd]")
     print.default(rr, quote = FALSE, right = TRUE, ...)
+    # })
 
   }
   invisible(x)
