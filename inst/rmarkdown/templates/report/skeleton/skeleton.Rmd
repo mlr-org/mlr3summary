@@ -1,0 +1,193 @@
+---
+title: Report
+output: html_document
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=FALSE)
+library("mlr3")
+library("mlr3summary")
+library("ggplot2")
+library("kableExtra")
+library("plotly")
+library("ggplot2")
+```
+<!-- This reads in `objects` provided to report_fairness: resample_result, task, ...-->
+
+```{r read, child = 'read_data.Rmd'}
+```
+
+## Audit Report: Summary
+
+This document introduces on how to use `mlr3fairness` to create audit reports with different tasks throughout the fairness exploration process.
+
+There are three main sections for this document. Which describe the details for the task, the model and the interpretability of the parameters.
+
+Jump to section:
+
+- [Task details](#task-details)
+- [Model details](#model-details)
+- [Interpretability](#Interpretability)
+
+## Task details
+
+In this fairness report, we investigate the fairness of the following task:
+
+```{r}
+task = tsk("iris")
+```
+
+### Try out plotly
+
+```{r}
+library(plotly)
+
+p <- ggplot(data = iris, aes(x = Petal.Length, y = Petal.Width)) +
+  geom_point()
+
+ggplotly(p)
+```
+
+```{r}
+iris2 <- mutate(iris, iris.col = factor(Species, label = c("red", "blue", "green")))
+
+plot_ly(data = iris2, x = ~Sepal.Length, y = ~Sepal.Width, marker = list(color = ~iris.col), type ="scatter", mode = "markers",text = ~Species,
+        hovertemplate = paste('<i>Species</i>: %{text}',
+                        '<br><b>X</b>: %{x}<br>',
+                        '<b>Y</b>: %{y}')
+        
+        ) %>%
+  layout(
+    annotations = list(
+      list(
+        text = "<b>X-Axis Variable:</b>", x=0.05, y=1.13, xref='paper', yref='paper',xanchor = "left", showarrow=FALSE
+      )
+    ),
+    updatemenus = list(
+      list(
+        type = "list",
+        x = 0.25,
+        xanchor = "left",
+        y = 1.15,
+        buttons = list(
+          list(
+            method = "update",
+            args = list(list(x = list(iris$Sepal.Length)),
+                        list(xaxis = list(title = "Sepal.Length"))),
+            label = "Sepal.Length"
+          ),
+          list(
+            method = "update",
+            args = list(list(x =list(iris$Sepal.Width)),
+                        list(xaxis = list(title = "Sepal.Width"))),
+            label = "Sepal.Width"
+          ),
+          list(
+            method = "update",
+            args = list(list(x = list(iris$Petal.Length)),
+                        list(xaxis = list(title = "Petal.Length"))),
+            label = "Petal.Length"
+          ),
+          list(
+            method = "update",
+            args = list(list(x = list(iris$Petal.Width)),
+                        list(xaxis = list(title = "Petal.Width"))),
+            label = "Petal.Width"
+          )
+        )
+      )
+    )
+  )
+```
+
+<!-- ### Exploratory Data Analysis:  -->
+
+<!-- We also report the number of missing values, types and the levels for each feature: -->
+
+<!-- ```{r} -->
+<!-- df_summary = data.frame(task$col_info) -->
+<!-- df_summary = df_summary[df_summary$id %in% c(task$feature_names, task$target_names), ] -->
+<!-- df_summary %>% -->
+<!--   cbind(data.frame("Missings (%)" = task$missings() / task$nrow)) %>% -->
+<!--   kbl() %>% -->
+<!--   kable_paper("hover", full_width = F) -->
+<!-- ``` -->
+
+<!-- We first look at the label distribution: -->
+
+<!-- ```{r} -->
+<!-- autoplot(task) + facet_wrap(task$col_roles$pta) -->
+<!-- ``` -->
+
+<!-- ## Model details -->
+
+<!-- We could see the model that has been used in `resample_result`: -->
+
+<!-- ```{r} -->
+<!-- resample_result$learner -->
+<!-- ``` -->
+
+<!-- ### Fairness Metrics -->
+
+<!-- We furthermore report more than one fairness metric.  -->
+<!-- Below metrics are the mean across all the resample results. -->
+
+<!-- ```{r} -->
+<!-- fair_metrics = msrs(c("fairness.acc","fairness.eod","fairness.fnr", "fairness.fpr","fairness.ppv", "fairness.cv")) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- resample_result$aggregate(fair_metrics) %>% -->
+<!--   kbl(col.names = c("value")) %>% -->
+<!--   kable_paper("hover", full_width = F) -->
+<!-- ``` -->
+
+<!-- We can furthermore employ several visualizations to report the fairness. -->
+<!-- For example, the fairness and accuracy trade off, compare metrics visualization and the fairness prediction density of our model. -->
+<!-- For more detailed usage and examples, you may want to check the [visualization vignette](https://mlr3fairness.mlr-org.com/articles/visualization-vignette.html). -->
+
+<!-- ```{r} -->
+<!-- fairness_accuracy_tradeoff(resample_result, msr("fairness.fnr")) -->
+<!-- ``` -->
+
+<!-- ```{r, eval = (resample_result$learner$predict_type == "prob")} -->
+<!-- fairness_prediction_density(resample_result) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- compare_metrics(resample_result, fair_metrics) -->
+<!-- ``` -->
+
+<!-- ## Interpretability -->
+
+<!-- Finally, we use the external package to gain further insight into our model. -->
+<!-- For the following example we use the `iml` package as a demonstration. -->
+<!-- We need first extract the learner from `resample_result` and wrap it in a `Predictor` object. -->
+
+<!-- You could generate the variable importance plot like this -->
+
+<!-- ```{r} -->
+<!-- library("iml") -->
+
+<!-- target = task$target_names -->
+<!-- twocols = task$feature_names[1:2] -->
+<!-- learner = resample_result$learner -->
+<!-- learner$train(task) -->
+
+<!-- model = Predictor$new(model = learner, -->
+<!--                       data = task$data()[,.SD, .SDcols = !target], -->
+<!--                       y = task$data()[, ..target]) -->
+
+<!-- imp <- FeatureImp$new(model, loss = "ce") -->
+<!-- plot(imp) -->
+<!-- ``` -->
+
+<!-- Or generate the feature effects plot: -->
+
+<!-- ```{r, warning = FALSE} -->
+<!-- effect = FeatureEffects$new(model, method = "pdp", grid.size = 10) -->
+<!-- effect$plot(features = twocols) -->
+<!-- ``` -->
+
+<!-- For more details on interpretability, check the documentation of the `iml` package. -->
