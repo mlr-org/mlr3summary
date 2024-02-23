@@ -7,6 +7,22 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+options(crayon.enabled = TRUE)
+ansi_aware_handler <- function(x, options) {
+  paste0(
+    "<pre class=\"r-output\"><code>",
+    fansi::sgr_to_html(x = x, warn = FALSE, term.cap = "256"),
+    "</code></pre>"
+  )
+}
+
+knitr::knit_hooks$set(
+  output = ansi_aware_handler, 
+  message = ansi_aware_handler, 
+  warning = ansi_aware_handler,
+  error = ansi_aware_handler
+)
 ```
 
 ## Load the necessary packages
