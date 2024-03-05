@@ -46,7 +46,7 @@ get_sparsity_or_interaction_strength = function(learner, test_tsk, method) {
   }
 }
 
-#' Get number of used features based on Molnar (2019)
+#' Get number of used features based on Molnar et al. (2020)
 #' A feature is used if its feature effect is not constant.
 #' Feature effects are measured by ALE or PDP.
 #' @param effects (iml::FeatureEffects) \cr
@@ -62,7 +62,7 @@ get_sparsity = function(effects){
   sum(id_used)
 }
 
-#' Compute interaction strength based on Molnar (2019)
+#' Compute interaction strength based on Molnar et al. (2020)
 #' @param predictor (iml::Predictor) \cr
 #' Predictor object.
 #' @param effects (iml::FeatureEffects) \cr
