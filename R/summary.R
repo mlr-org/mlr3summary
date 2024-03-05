@@ -120,6 +120,12 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       ans$effects = effs_res
     }
 
+    if (!is.null(control$complexity_measures)) {
+      comp_res = get_complexity(resample_result, control$complexity_measures)
+
+      ans$complexity = comp_res
+    }
+
     ans = c(ans, list(
       performance = pf,
       performance_sd = stdt,
@@ -182,7 +188,7 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @return [list]
 #'
 #' @export
-summary_control = function(measures = NULL, importance_measures = "pdp", n_important = 15L, effect_measures = c("pdp", "ale"), digits = max(3L, getOption("digits") - 3L)) {
+summary_control = function(measures = NULL, importance_measures = "pdp", n_important = 15L, effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity", "interaction_strength"), digits = max(3L, getOption("digits") - 3L)) {
 
   # input checks
   if (!is.null(measures)) {
@@ -203,7 +209,8 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
 
   # create list
   ctrlist = list(measures = measures, importance_measures = importance_measures,
-    n_important = n_important, effect_measures = effect_measures, digits = digits)
+    n_important = n_important, effect_measures = effect_measures,
+    complexity_measures = complexity_measures, digits = digits)
 
   class(ctrlist) = "summary_control"
   ctrlist
@@ -273,6 +280,20 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
     colnames(perf) = ""
     print.default(perf, quote = FALSE, right = FALSE, ...)
 
+  }
+
+  if (!is.null(x$complexity)) {
+    cli_h1("Complexity [sd]")
+    aggregate_complexity = function(com) {
+      paste0(round(mean(com), x$control$digits),
+        " [", round(sd(com), x$control$digits), "]")
+    }
+    rr = map(x$complexity, aggregate_complexity)
+    res =  Reduce(merge, rr)
+    com = as.matrix(t(res))
+    rownames(com) = paste0(names(rr), ":")
+    colnames(com) = ""
+    print.default(com, quote = FALSE, right = TRUE, ...)
   }
 
 

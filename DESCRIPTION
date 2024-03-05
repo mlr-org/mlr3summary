@@ -32,7 +32,6 @@ Suggests:
     mlr3pipelines,
     fastshap
 Config/testthat/edition: 3
-Config/testthat/parallel: true
 Language: en-US
 NeedsCompilation: no
 Encoding: UTF-8
