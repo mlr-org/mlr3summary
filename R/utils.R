@@ -22,3 +22,14 @@ get_default_measures = function(task_type, properties = NULL, predict_type = NUL
     NA_character_
   }
 }
+
+
+get_default_fairness_measures = function(task_type, properties = NULL, predict_type = NULL) {
+  keys = if (task_type == "classif" & properties == "twoclass") {
+    mlr_measures$mget(c("fairness.cv", "fairness.pp", "fairness.eod"))
+  } else {
+    NA_character_
+  }
+}
+
+

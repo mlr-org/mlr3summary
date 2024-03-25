@@ -107,6 +107,36 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     sc = sc[, nam_multimeas, with = FALSE]
     stdt = map_dbl(sc, stats::sd)
 
+    ans$performance = pf
+    ans$performance_sd = stdt
+
+    # <FIXME:> currently only binary classification metrics available:
+      if (!is.null(control$protected_attributes) | length(object$state$train_task$col_roles$pta) > 0) {
+        if (is.null(control$fairness_measures)) {
+          control$fairness_measures = get_default_fairness_measures(task_type = object$task_type,
+            properties = object$state$train_task$properties,
+            predict_type = object$predict_type)
+        }
+
+        if (!is.null(control$protected_attributes)) {
+          resample_result$task$set_col_roles(control$protected_attribute, roles = "pta")
+        }
+
+        control$fairness_measures = map(control$fairness_measures, function(pmsr) {
+          pmsr = pmsr$clone()
+          pmsr$id = paste0(pmsr$id, " (", pmsr$average, ")")
+          pmsr
+        })
+        fair = resample_result$aggregate(measures = control$fairness_measures)
+        fairscores = resample_result$score(measures = control$fairness_measures)
+        nam_multimeas = names(fairscores)[grep("fairness", names(fairscores))]
+        fairscores = fairscores[, nam_multimeas, with = FALSE]
+        stdfair = map_dbl(fairscores, stats::sd)
+
+        ans$fairness = fair
+        ans$fairness_sd = stdfair
+      }
+
     ## importance
     ## <FIXME:> This should be rather exported into own R6 classes??
     if (!is.null(control$importance_measures)) {
@@ -127,8 +157,6 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     }
 
     ans = c(ans, list(
-      performance = pf,
-      performance_sd = stdt,
       n_iters = resample_result$iters,
       control = control)
     )
@@ -188,14 +216,16 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @return [list]
 #'
 #' @export
-summary_control = function(measures = NULL, importance_measures = "pdp", n_important = 15L, effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity", "interaction_strength"), digits = max(3L, getOption("digits") - 3L)) {
+summary_control = function(measures = NULL, importance_measures = "pdp", n_important = 15L,
+  effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity", "interaction_strength"),
+  fairness_measures = NULL, protected_attribute = NULL,
+  digits = max(3L, getOption("digits") - 3L)) {
 
   # input checks
   if (!is.null(measures)) {
     measures = as_measures(measures)
   }
   assert_measures(measures)
-
   iml_pfi_losses = c("ce", "f1", "logLoss", "mae", "mse", "rmse", "mape", "mdae",
     "msle", "percent_bias", "rae", "rmse", "rmsle", "rse", "rrse", "smape")
   for (imp_measure in importance_measures) {
@@ -205,12 +235,18 @@ summary_control = function(measures = NULL, importance_measures = "pdp", n_impor
   for (eff_measure in effect_measures) {
     assert_choice(eff_measure, c("pdp", "ale"))
   }
+  if (!is.null(fairness_measures)) {
+    fairness_measures = as_measures(fairness_measures)
+  }
+  assert_measures(fairness_measures)
+  assert_character(protected_attribute, null.ok = TRUE, len = 1L)
   assert_int(digits, lower = 0L, null.ok = FALSE)
 
   # create list
   ctrlist = list(measures = measures, importance_measures = importance_measures,
     n_important = n_important, effect_measures = effect_measures,
-    complexity_measures = complexity_measures, digits = digits)
+    complexity_measures = complexity_measures, fairness_measures = fairness_measures,
+    protected_attribute = protected_attribute, digits = digits)
 
   class(ctrlist) = "summary_control"
   ctrlist
@@ -280,6 +316,17 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
     colnames(perf) = ""
     print.default(perf, quote = FALSE, right = FALSE, ...)
 
+  }
+
+  if (!is.null(x$fairness)) {
+    cli_h1("Fairness [sd]")
+    nampf = structure(paste0(round(x$fairness, x$control$digits),
+      " [", round(x$fairness_sd, x$control$digits), "]"),
+      names = names(x$fairness))
+    names(nampf) = paste0(names(nampf), ":")
+    fair = as.matrix(nampf)
+    colnames(fair) = ""
+    print.default(fair, quote = FALSE, right = FALSE, ...)
   }
 
   if (!is.null(x$complexity)) {
