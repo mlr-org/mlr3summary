@@ -306,7 +306,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
 
 
   if (!is.null(x$effects)) {
-    scale_values <- function(x, range){(x - range[1])/(range[2] - range[1])*(7) + 1}
+    scale_values = function(x, range){(x - range[1])/(range[2] - range[1])*(7) + 1}
     get_effect_plot = function(x, range) {
       symb = map_chr(paste("lower_block", round(scale_values(x, range)), sep = "_"),
         function(s) symbol[[s]])
@@ -359,12 +359,13 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
         ef = ef[order(match(feature, featorder))]
         ef = ef[, !c("class", "feature")]
         ef = as.matrix(ef, rownames = featorder)
-        print.default(ef, quote = FALSE, right = FALSE, ...)
+        print(unclass(ef), quote = FALSE, right = FALSE, ...)
       }
 
     } else {
+      effs$feature = NULL
       ef = as.matrix(effs, rownames = featorder)
-      print.default(ef, quote = FALSE, right = FALSE, ...)
+      print(unclass(ef), quote = FALSE, right = FALSE, ...)
     }
   }
 

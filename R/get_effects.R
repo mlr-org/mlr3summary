@@ -48,9 +48,8 @@ get_single_effect = function(effect_measure, task, learner, train_set, predictio
 
 
 get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
-  if (!requireNamespace("iml", quietly = TRUE)) {
-    stop("Package 'iml' needed for this function to work. Please install it.", call. = FALSE)
-  }
+
+  require_namespaces(pkgs = "iml")
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names)
 
