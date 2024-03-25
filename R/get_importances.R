@@ -74,7 +74,7 @@ get_pfi_importance = function(learner, test_tsk, loss) {
   }
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names)
-  imp = iml::FeatureImp$new(predictor = pred, loss = loss)$results[, c("feature", "importance")]
+  imp = iml::FeatureImp$new(predictor = pred, loss = loss, compare = "difference")$results[, c("feature", "importance")]
 }
 
 get_shap_importance = function(learner, test_tsk, loss) {
