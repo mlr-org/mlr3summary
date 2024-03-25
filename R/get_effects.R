@@ -48,9 +48,8 @@ get_single_effect = function(effect_measure, task, learner, train_set, predictio
 
 
 get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
-  if (!requireNamespace("iml", quietly = TRUE)) {
-    stop("Package 'iml' needed for this function to work. Please install it.", call. = FALSE)
-  }
+
+  require_namespaces(pkgs = "iml")
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names)
 
@@ -65,9 +64,17 @@ get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
         grid = NULL
       }
     } else {
+      # ALE and PDP might differ in length because ALE might not find all feature combinations
+      # <FIXME>: not sure how to resolve this, needs to be solved in iml package
+      # For example for a binary variable 0/1, the default grid points are 0, 1, but when
+      # specifying a grid, FeatureEffect returns 0, 0.25, 0.5 values, which are very weird grid values
+      # Strategies tried so far:
+      # If unique length < 5 --> weird output,
+      # cut differ depending on test_tsk data (sometimes length < 5, sometimes > 5)
       grid = seq(from = min_val[[feature]],
         to   = max_val[[feature]], length.out = gridsize)
     }
+
     ef = iml::FeatureEffect$new(predictor = pred, feature = feature,
       method = method, grid.points = grid)$results
     ef = data.table(ef[ef[[feature]] %in% grid,])
