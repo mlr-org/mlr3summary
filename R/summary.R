@@ -384,6 +384,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
       }
 
     } else {
+      effs$feature = NULL
       ef = as.matrix(effs, rownames = featorder)
       print.default(ef, quote = FALSE, right = FALSE, ...)
     }
