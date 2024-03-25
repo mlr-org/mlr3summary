@@ -35,7 +35,6 @@ get_sparsity_or_interaction_strength = function(learner, test_tsk, method) {
   }
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names)
-  browser()
 
   grid.size = switch(method, "sparsity" = 20L, "interaction_strength" = 100L)
   ales = iml::FeatureEffects$new(pred, method = "ale", grid.size = grid.size)
