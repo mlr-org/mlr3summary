@@ -306,6 +306,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
 
 
   if (!is.null(x$effects)) {
+    # Size of effect plots are derived based on ALE/PDP curves
     scale_values = function(x, range){(x - range[1])/(range[2] - range[1])*(7) + 1}
     get_effect_plot = function(x, range) {
       symb = map_chr(paste("lower_block", round(scale_values(x, range)), sep = "_"),
@@ -327,18 +328,11 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
         groupvars = "feature"
       }
       res = effs[, get_effect_plot(round(V1, digits = x$control$digits), range), by = groupvars]
-      # if (!is.null(res$class)) {
-      #   res = dcast(res, feature ~ class, value.var = "V1")
-      #   res[, V1:=do.call(paste,.SD), .SDcols=-1]
-      #   res = res[, list(feature, V1)]
-      #
-      # }
       if (!is.null(effs$class)) {
         res = res[order(class, match(feature, featorder))]
       } else {
         res = res[order(match(feature, featorder))]
       }
-      # res[, feature := NULL]
       res
     })
 
