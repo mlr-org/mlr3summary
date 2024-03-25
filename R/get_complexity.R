@@ -35,6 +35,7 @@ get_sparsity_or_interaction_strength = function(learner, test_tsk, method) {
   }
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names)
+  browser()
 
   grid.size = switch(method, "sparsity" = 20L, "interaction_strength" = 100L)
   ales = iml::FeatureEffects$new(pred, method = "ale", grid.size = grid.size)
@@ -86,12 +87,11 @@ compute_interaction_strength = function(predictor, effects) {
   ssq_bb = ssq(pred - mean_pred)
 
   if(ssq_bb == 0) {
-    r2 = 1
+    is = 0
   } else {
     ssq_1st_order_e = ssq(ale_predictions - pred)
-    r2 = 1 - ssq_1st_order_e/ssq_bb
+    is = ssq_1st_order_e/ssq_bb
   }
-
 }
 
 ssq = function(x) {
