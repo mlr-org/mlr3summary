@@ -109,7 +109,12 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
     control$measures = map(control$measures, function(pmsr) {
       pmsr = pmsr$clone()
-      pmsr$id = paste0(pmsr$id, " (", pmsr$average, ")")
+      if (pmsr$minimize) {
+        arrow = cli::symbol[["arrow_down"]]
+      } else {
+        arrow = cli::symbol[["arrow_up"]]
+      }
+      pmsr$id = sprintf("%s%s (%s)", arrow, pmsr$id, pmsr$average)
       pmsr
     })
     pf = resample_result$aggregate(measures = control$measures)
