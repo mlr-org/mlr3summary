@@ -105,6 +105,7 @@ summary(graph, rr_3)
 Currently only linear pipelines can be displayed in `summary()`, more complex non-linear structures are only displayed by `<suppressed>`.
 
 ```{r complexgraph}
+set.seed(1234L)
 graph_complex = po("scale", center = TRUE, scale = FALSE) %>>%
   gunion(list(
     po("missind"),
@@ -160,7 +161,7 @@ We use the generated `ResampleResult` (here `rr_5`) as an additional input to `s
 ```{r resampling_2}
 rsmp_bs = rsmp("bootstrap", repeats = 5L)
 rr_5 = resample(tsk_peng, lrn_xgboost, rsmp_bs, store_model = TRUE)
-summary(lrn_xgboost, rr_5)
+summary(lrn_xgboost, rr_5, control = summary_control(complexity_measures = NULL))
 ```
 
 ## Binary classification

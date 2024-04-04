@@ -139,6 +139,16 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     }
 
     if (!is.null(control$complexity_measures)) {
+
+
+      # <FIXME:> remove interaction_strength if multi_class
+
+      if (any(object$state$train_task$feature_types$type == "factor") &
+          "interaction_strength" %in% control$complexity_measures) {
+        control$complexity_measures = setdiff(control$complexity_measures, "interaction_strength")
+        messagef("complexity measure 'interaction_strength' is ignored because it cannot handle factor variable(s) %s",
+          object$state$train_task$feature_types[type == "factor", id])
+      }
       comp_res = get_complexity(resample_result, control$complexity_measures)
 
       ans$complexity = comp_res
