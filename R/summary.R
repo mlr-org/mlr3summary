@@ -49,16 +49,27 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
   # assignment to shorter names
   tt = object$task_type
+  tn = object$state$train_task$target_names
   fn = object$state$train_task$feature_names
 
   ans = list(
     task_type = tt,
+    target_name = tn,
     feature_names = fn
   )
 
+  if (tt == "classif") {
+    ans$classes = object$state$train_task$col_info[id == tn,]$levels[[1]]
+  }
+
   if (!inherits(object, "GraphLearner")) {
-    ans[["model_type"]] = paste(object$id, "with",
-      as_short_string(object$param_set$values, 1000L))
+    params = object$param_set$values
+    if (length(params) > 0) {
+      ans[["model_type"]] = paste(object$id, "with",
+        as_short_string(object$param_set$values, 1000L))
+    } else {
+      ans[["model_type"]] = object$id
+    }
   }
 
   ### performance only if hold-out data available!
@@ -98,7 +109,14 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
     control$measures = map(control$measures, function(pmsr) {
       pmsr = pmsr$clone()
-      pmsr$id = paste0(pmsr$id, " (", pmsr$average, ")")
+      if (is.na(pmsr$minimize)) {
+        arrow = ""
+      } else if (pmsr$minimize) {
+        arrow = cli::symbol[["arrow_down"]]
+      } else {
+        arrow = cli::symbol[["arrow_up"]]
+      }
+      pmsr$id = sprintf("%s%s (%s)", arrow, pmsr$id, pmsr$average)
       pmsr
     })
     pf = resample_result$aggregate(measures = control$measures)
@@ -269,8 +287,14 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
   cli_div(theme = list(.val = list(digits = x$control$digits)))
   cli_h1("General")
   cli_text("Task type: {x$task_type}")
+  if (!is.null(x$classes)) {
+    tn = cli_vec(x$classes, list("vec-trunc" = 15))
+    cli_text("Target name: {x$target_name} ({tn})")
+  } else {
+    cli_text("Target name: {x$target_name}")
+  }
   fn = cli_vec(x$feature_names, list("vec-trunc" = 15))
-  cli_text("Feature names: {fn}.")
+  cli_text("Feature names: {fn}")
 
   if (!is.null(x$model_type)) {
     cli_text("Model type: {x$model_type}")
