@@ -138,19 +138,26 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       ans$effects = effs_res
     }
 
-    if (!is.null(control$complexity_measures)) {
-
 
       # <FIXME:> remove interaction_strength if multi_class
-
-      if (any(object$state$train_task$feature_types$type == "factor") &
-          "interaction_strength" %in% control$complexity_measures) {
-        control$complexity_measures = setdiff(control$complexity_measures, "interaction_strength")
-        messagef("complexity measure 'interaction_strength' is ignored because it cannot handle factor variable(s) %s",
-          object$state$train_task$feature_types[type == "factor", id])
+      if ("interaction_strength" %in% control$complexity_measures) {
+        factor_var = any(object$state$train_task$feature_types$type == "factor") &
+          "interaction_strength" %in% control$complexity_measures
+        multi_class = object$state$train_task$task_type == "classif" &
+          object$state$train_task$properties == "multiclass"
+        if (factor_var | multi_class) {
+          control$complexity_measures = setdiff(control$complexity_measures, "interaction_strength")
+          if (factor_var) {
+            messagef("complexity measure 'interaction_strength' ignored, not supported for factor variable(s) %s",
+              object$state$train_task$feature_types[type == "factor", id])
+          }
+          if (multi_class) {
+            messagef("complexity measure 'interaction_strenght' is ignored because it does not work for multiClass")
+          }
+        }
       }
+    if (!is.null(control$complexity_measures) & length(control$complexity_measures) > 0) {
       comp_res = get_complexity(resample_result, control$complexity_measures)
-
       ans$complexity = comp_res
     }
 
@@ -216,7 +223,7 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @return [list]
 #'
 #' @export
-summary_control = function(measures = NULL, importance_measures = "pdp", n_important = 15L, effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity", "interaction_strength"), digits = max(3L, getOption("digits") - 3L)) {
+summary_control = function(measures = NULL, importance_measures = "pdp", n_important = 15L, effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity"), digits = max(3L, getOption("digits") - 3L)) {
 
   # input checks
   if (!is.null(measures)) {

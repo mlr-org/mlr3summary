@@ -11,7 +11,7 @@ test_that("Correct output for regression", {
   cv3 = rsmp("cv", folds = 3L)
   rr_reg = resample(tsk, lrn_rr, cv3, store_models = TRUE)
 
-  sm_complex = summary(lrn_rr, rr_reg, summary_control(importance_measures = c("pfi.mse", "pdp"), complexity_measures = NULL))
+  sm_complex = summary(lrn_rr, rr_reg, summary_control(importance_measures = c("pfi.mse", "pdp")))
   expect_true(all(sm_complex$importances$pdp$mean[1:3] > 0.05 &
       sm_complex$importances$pfi.mse$mean[4:6] < 6e-8))
   expect_true(all(sm_complex$importances$pfi.mse$mean[1:3] > 0.05 &
@@ -59,7 +59,7 @@ test_that("Correct output for binary classification", {
   cv3 = rsmp("cv", folds = 3L)
   rr_clas = resample(tsk, lrn_rr, cv3, store_models = TRUE)
 
-  sm_complex = summary(lrn_rr, rr_clas, control = summary_control(complexity_measures = NULL))
+  sm_complex = summary(lrn_rr, rr_clas)
   expect_true(all(order(sm_complex$importances$pdp$mean, decreasing = TRUE)[1:2] %in% 1:2))
 
   expect_true(all(sm_complex$effects$ale$grid %in% sm_complex$effects$pdp$grid))
