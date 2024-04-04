@@ -17,8 +17,6 @@ X = data.table(x1, x2, x3, x4, x5, x6)
 ytrue = 4*x1 + 4*x2 + 4*x5*x3^2
 epsilon = rnorm(n = 100, mean = 0, sd = ytrue*0.1)
 target = ytrue + epsilon
-plot(target, ytrue)
-plot(density(target))
 
 ## regression
 get_regression_task = function() {
