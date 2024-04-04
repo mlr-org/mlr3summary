@@ -49,7 +49,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
   # assignment to shorter names
   tt = object$task_type
-  tn = mod$state$train_task$target_names
+  tn = object$state$train_task$target_names
   fn = object$state$train_task$feature_names
 
   ans = list(
@@ -59,7 +59,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
   )
 
   if (tt == "classif") {
-    ans$classes = mod$state$train_task$col_info[id == tn,]$levels[[1]]
+    ans$classes = object$state$train_task$col_info[id == tn,]$levels[[1]]
   }
 
   if (!inherits(object, "GraphLearner")) {
@@ -109,7 +109,9 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
     control$measures = map(control$measures, function(pmsr) {
       pmsr = pmsr$clone()
-      if (pmsr$minimize) {
+      if (is.na(pmsr$minimize)) {
+        arrow = ""
+      } else if (pmsr$minimize) {
         arrow = cli::symbol[["arrow_down"]]
       } else {
         arrow = cli::symbol[["arrow_up"]]
