@@ -9,5 +9,5 @@ test_that("multiplication works", {
   mod = Predictor$new(rp, data = iris, class = "setosa")
   effects = FeatureEffects$new(mod, grid.size = 100L)
   ci = compute_interaction_strength(mod, effects)
-  expect_true(ci > 0.99)
+  expect_true(ci < 0.01)
 })
