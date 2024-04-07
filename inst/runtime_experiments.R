@@ -8,7 +8,7 @@ library(tictoc)
 load_all()
 
 # n_set = c(50, 100, 500, 1000, 2000)
-# p_set = c(5, 10, 25, 50, 100, 200)
+# p_set = c(5, 10, 25, 50, 100)
 n_set = c(50, 100, 500)
 p_set = c(5, 10, 25)
 setup = data.table(expand.grid(n_set, p_set))
@@ -62,10 +62,15 @@ runtime = pmap_dbl(setup, function(n, p) {
 })
 
 results = cbind(setup, runtime)
+results$n = as.factor(results$n, levels = sort(unique(results$n)))
 
-
-ggplot(data = results, aes(x = p, y = runtime, group = n)) +
+plt = ggplot(data = results, aes(x = p, y = runtime, group = n)) +
   geom_point(aes(colour = n)) +
   geom_line(aes(colour = n)) +
-  theme_bw()
+  theme_bw() +
+  guides(colour = guide_legend(reverse=T)) +
+  scale_colour_grey(start = 0.8, end = 0.2) +
+  ylab("runtime (sec)")
 
+  # scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 2))
+ggsave(plot = plt, filename = "inst/runtime.png", width = 5, height = 2.5)
