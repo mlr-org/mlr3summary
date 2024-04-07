@@ -51,16 +51,29 @@ get_pdp_importance = function(learner, test_tsk) {
   }
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names)
+  if (learner$task_type == "classif") {
+    if (learner$state$train_task$properties == "multiclass") {
+      # get class frequencies for weighting
+      tgtname = test_tsk$target_names
+      weights = test_tsk$data(cols = learner$state$train_task$target_names)[, .N/test_tsk$nrow, by = tgtname]
+      setnames(weights, "V1", "weights")
+    } else {
+      pred$class = test_tsk$positive
+    }
+  }
   pdp = iml::FeatureEffects$new(predictor = pred, method = "pdp")
   # <FIXME:> multiclass probabilities --> how to approach this?
-  # currently just variance over all values simultaneously
+  # currently just sum over variances weighted by class frequencies
   imp = map(pdp$results, function(dt) {
     dt = as.data.table(dt)
-    if (learner$task_type == "regr") {
+  if (learner$task_type == "classif" && learner$state$train_task$properties == "multiclass") {
+      sdvals = dt[, stats::sd(.value), by = .class]
+        sdvals = merge(sdvals, weights, by.x = ".class", by.y = tgtname)
+        sum(sdvals$V1*sdvals$weights)
+      # }
+  } else {
       dt[, stats::sd(.value)]
-    } else if (learner$task_type == "classif") {
-      sum(dt[, stats::sd(.value), by = .class]$V1)
-    }
+  }
   })
   data.table(feature = names(pdp$results),
     importance = as.numeric(unlist(imp)))
