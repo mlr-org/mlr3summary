@@ -22,3 +22,14 @@ get_default_measures = function(task_type, properties = NULL, predict_type = NUL
     NA_character_
   }
 }
+
+get_default_importances = function(task_type, ...) {
+  imp = "pdp"
+  keys = if (task_type == "classif") {
+    c(imp, "pfi.ce")
+  } else if (task_type == "regr") {
+    c(imp, "pfi.mse")
+  } else {
+    NULL
+  }
+}

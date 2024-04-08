@@ -127,6 +127,12 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
     ## importance
     ## <FIXME:> This should be rather exported into own R6 classes??
+
+    if (is.null(control$importance_measures)) {
+      control$importance_measures = get_default_importances(
+        task_type = object$task_type, ...)
+    }
+
     if (!is.null(control$importance_measures)) {
       imps_res = get_importances(resample_result, control$importance_measures)
       ans$importances = imps_res
@@ -223,7 +229,8 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @return [list]
 #'
 #' @export
-summary_control = function(measures = NULL, importance_measures = "pdp", n_important = 15L, effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity"), digits = max(3L, getOption("digits") - 3L)) {
+
+summary_control = function(measures = NULL, importance_measures = NULL, n_important = 15L, effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity"), digits = max(3L, getOption("digits") - 3L)) {
 
   # input checks
   if (!is.null(measures)) {
