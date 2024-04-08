@@ -4,6 +4,7 @@
 library("mlr3")
 library("mlr3learners")
 library("mlr3pipelines")
+library("mlr3fairness")
 library("devtools")
 load_all()
 
@@ -66,6 +67,7 @@ summary(object = mod, resample_result = rsmp,
   control = summary_control(importance_measures = c("pfi.f1", "shap")))
 
 # fairness
+library(mlr3fairness)
 summary(object = mod, resample_result = rsmp, control = summary_control(protected_attribute = "sex",
   importance_measures = NULL, effect_measures = NULL, complexity_measures = NULL))
 

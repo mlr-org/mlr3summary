@@ -166,6 +166,9 @@ summary(lrn_xgboost, rr_5)
 
 ## Binary classification
 
+The third example is based on the `breast_cancer` task available in `mlr3`.
+We train an ranger model on it. 
+
 ```{r bc}
 tsk_bc = tsk("breast_cancer")
 lrn_ranger = lrn("classif.ranger", predict_type = "prob")
@@ -177,16 +180,20 @@ summary(lrn_ranger, rr_6, control = summary_control(importance_measures = "shap"
 
 ## Fairness task 
 
-```{r credit}
-library(mlr3fairness)
-tsk_adult = tsk("adult_train")
-tsk_adult$filter(rows = sample(tsk_adult$row_ids, 1000))
-lrn_ranger = lrn("classif.ranger", predict_type = "prob")
-lrn_ranger$train(task = tsk_adult)
-rsmp_cv5 = rsmp("subsampling", repeats = 2L, ratio = 0.5)
-rr_7 = resample(tsk_adult, lrn_ranger, rsmp_cv5, store_model = TRUE)
-summary(lrn_ranger, rr_7, summary_control(importance_measures = NULL, complexity_measures = NULL, effect_measures = NULL))
+The following, demonstrates how to receive fairness metrics. 
+Therefore, a protected attribute (`pta`) needs to be specified.
+The fairness measure can be adapted in `control`. 
+
+```{r penguins}
+tsk_peng = tsk("penguins")
+tsk_peng$set_col_roles("sex", add_to = "pta")
+lrn_rpart =  lrn("classif.rpart", predict_type = "prob")
+lrn_rpart$train(task = tsk_peng)
+rr_9 = resample(tsk_peng, lrn_rpart, rsmp_cv5, store_model = TRUE)
+summary(lrn_rpart, rr_9, summary_control(complexity_measures = NULL, effect_measures = NULL, fairness_measures = (msr("fairness", operation = groupdiff_absdiff, base_measure = msr("classif.acc")))))
 ```
+
+An additional paragraph was added in the output for fairness assessment.
 
 ## Error handling 
 

@@ -129,15 +129,15 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     ans$performance_sd = stdt
 
     # <FIXME:> currently only binary classification metrics available:
-      if (!is.null(control$protected_attribute) | length(object$state$train_task$col_roles$pta) > 0) {
+      if (!is.null(control$protected_attribute) || length(object$state$train_task$col_roles$pta) > 0) {
         if (is.null(control$fairness_measures)) {
           control$fairness_measures = get_default_fairness_measures(task_type = object$task_type,
             properties = object$state$train_task$properties,
             predict_type = object$predict_type)
         }
-
+        # deep clone required, otherwise hash differs of task in object and task in resample_result
         if (!is.null(control$protected_attribute)) {
-          resample_result$task$set_col_roles(control$protected_attribute, roles = "pta")
+          resample_result$task$set_col_roles(control$protected_attribute, add_to = "pta")
         }
 
         control$fairness_measures = map(control$fairness_measures, function(pmsr) {
@@ -153,6 +153,13 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
         ans$fairness = fair
         ans$fairness_sd = stdfair
+
+        if (!is.null(control$protected_attribute)) {
+          resample_result$task$set_col_roles(control$protected_attribute, remove_from = "pta")
+        }
+        if (length(resample_result$task$col_roles$pta) > 0) {
+          control$protected_attribute = resample_result$task$col_roles$pta
+        }
       }
 
     ## importance
@@ -368,6 +375,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
 
   if (!is.null(x$fairness)) {
     cli_h1("Fairness [sd]")
+    cli_text("Protected attribute: {x$control$protected_attribute}")
     nampf = structure(paste0(round(x$fairness, x$control$digits),
       " [", round(x$fairness_sd, x$control$digits), "]"),
       names = names(x$fairness))
