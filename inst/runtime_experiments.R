@@ -5,12 +5,12 @@ library(mlr3)
 library(mlr3learners)
 library(mlr3misc)
 library(tictoc)
+library(checkmate)
+library(devtools)
 load_all()
 
-# n_set = c(50, 100, 500, 1000, 2000)
-# p_set = c(5, 10, 25, 50, 100)
-n_set = c(50, 100, 500)
-p_set = c(5, 10, 25)
+n_set = c(50, 100, 500, 1000, 2000)
+p_set = c(5, 10, 25, 50, 100)
 setup = data.table(expand.grid(n_set, p_set))
 names(setup) = c("n", "p")
 
@@ -62,6 +62,7 @@ runtime = pmap_dbl(setup, function(n, p) {
 })
 
 results = cbind(setup, runtime)
+lm(runtime ~ n + p, data = results)
 results$n = as.factor(results$n, levels = sort(unique(results$n)))
 
 plt = ggplot(data = results, aes(x = p, y = runtime, group = n)) +
@@ -70,7 +71,6 @@ plt = ggplot(data = results, aes(x = p, y = runtime, group = n)) +
   theme_bw() +
   guides(colour = guide_legend(reverse=T)) +
   scale_colour_grey(start = 0.8, end = 0.2) +
-  ylab("runtime (sec)")
-
-  # scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 2))
+  ylab("runtime (sec)") +
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 2))
 ggsave(plot = plt, filename = "inst/runtime.png", width = 5, height = 2.5)

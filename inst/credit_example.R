@@ -45,7 +45,7 @@ summary(svmmod)
 # summary(rpart)
 
 #----- create task -----
-task = TaskClassif$new(id = "credit", backend = credit, target = "risk")
+task = TaskClassif$new(id = "credit", backend = credit, target = "risk", positive = "good")
 
 #----- summary ranger ----
 mod = lrn("classif.ranger", predict_type = "prob")
