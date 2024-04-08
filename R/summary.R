@@ -144,6 +144,29 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       ans$effects = effs_res
     }
 
+
+      # <FIXME:> remove interaction_strength if multi_class
+      if ("interaction_strength" %in% control$complexity_measures) {
+        factor_var = any(object$state$train_task$feature_types$type == "factor") &&
+          "interaction_strength" %in% control$complexity_measures
+        multi_class = object$state$train_task$task_type == "classif" &&
+          object$state$train_task$properties == "multiclass"
+        if (factor_var || multi_class) {
+          control$complexity_measures = setdiff(control$complexity_measures, "interaction_strength")
+          if (factor_var) {
+            messagef("complexity measure 'interaction_strength' ignored, not supported for factor variable(s) %s",
+              object$state$train_task$feature_types[type == "factor", id])
+          }
+          if (multi_class) {
+            messagef("complexity measure 'interaction_strenght' is ignored because it does not work for multiClass")
+          }
+        }
+      }
+    if (!is.null(control$complexity_measures) & length(control$complexity_measures) > 0) {
+      comp_res = get_complexity(resample_result, control$complexity_measures)
+      ans$complexity = comp_res
+    }
+
     ans = c(ans, list(
       performance = pf,
       performance_sd = stdt,
@@ -206,7 +229,8 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @return [list]
 #'
 #' @export
-summary_control = function(measures = NULL, importance_measures = NULL, n_important = 15L, effect_measures = c("pdp", "ale"), digits = max(3L, getOption("digits") - 3L)) {
+
+summary_control = function(measures = NULL, importance_measures = NULL, n_important = 15L, effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity"), digits = max(3L, getOption("digits") - 3L)) {
 
   # input checks
   if (!is.null(measures)) {
@@ -227,7 +251,8 @@ summary_control = function(measures = NULL, importance_measures = NULL, n_import
 
   # create list
   ctrlist = list(measures = measures, importance_measures = importance_measures,
-    n_important = n_important, effect_measures = effect_measures, digits = digits)
+    n_important = n_important, effect_measures = effect_measures,
+    complexity_measures = complexity_measures, digits = digits)
 
   class(ctrlist) = "summary_control"
   ctrlist
@@ -303,6 +328,20 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
     colnames(perf) = ""
     print.default(perf, quote = FALSE, right = FALSE, ...)
 
+  }
+
+  if (!is.null(x$complexity)) {
+    cli_h1("Complexity [sd]")
+    aggregate_complexity = function(com) {
+      paste0(round(mean(com), x$control$digits),
+        " [", round(sd(com), x$control$digits), "]")
+    }
+    rr = map(x$complexity, aggregate_complexity)
+    res =  Reduce(merge, rr)
+    com = as.matrix(t(res))
+    rownames(com) = paste0(names(rr), ":")
+    colnames(com) = ""
+    print.default(com, quote = FALSE, right = TRUE, ...)
   }
 
 

@@ -105,6 +105,7 @@ summary(graph, rr_3)
 Currently only linear pipelines can be displayed in `summary()`, more complex non-linear structures are only displayed by `<suppressed>`.
 
 ```{r complexgraph}
+set.seed(1234L)
 graph_complex = po("scale", center = TRUE, scale = FALSE) %>>%
   gunion(list(
     po("missind"),
