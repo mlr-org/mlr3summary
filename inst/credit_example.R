@@ -3,7 +3,6 @@
 #--- setup ----
 library("mlr3")
 library("mlr3learners")
-library("iml")
 library("mlr3pipelines")
 library("devtools")
 load_all()
@@ -31,18 +30,8 @@ cols = c("age", "sex", "saving.accounts", "duration", "credit.amount", "risk")
 credit = credit[, cols]
 
 # ---- glm ----
-logreg = glm(risk ~., family = binomial(link = "logit"), data = credit)
+logreg = glm(risk ~., data = credit, family = binomial(link = "logit"))
 summary(logreg)
-
-# ---- svm ----
-library(e1071)
-svmmod = svm(risk ~., data = credit)
-summary(svmmod)
-
-# # ---- rpart ---
-# library(rpart)
-# rpart = rpart(risk~., data = credit)
-# summary(rpart)
 
 #----- create task -----
 task = TaskClassif$new(id = "credit", backend = credit, target = "risk", positive = "good")
@@ -52,23 +41,13 @@ mod = lrn("classif.ranger", predict_type = "prob")
 set.seed(12005L)
 mod$train(task)
 
-pred = mod$predict(task)
-pred$score(msrs(list("classif.acc")))
-
 cv3 = rsmp("cv", folds = 3L)
 rsmp = resample(task = task, learner = mod, resampling = cv3, store_models = TRUE)
 rsmp$aggregate(msrs(list("classif.acc", "classif.auc")))
 
 summary(object = mod, resample_result = rsmp)
 
-
-summary(object = mod, resample_result = rsmp,
-  control = summary_control(measures = msrs(list("classif.acc"))))
-
-summary(object = mod, resample_result = rsmp,
-  control = summary_control(importance_measures = c("pfi.ce", "shap", "pdp")))
-
-
+#--- EXTRAS ----
 # pipeline:
 library(mlr3pipelines)
 
@@ -78,41 +57,15 @@ graphlrn = as_learner(po("scale") %>>%
 graphlrn$train(task)
 summary(graphlrn)
 
-# ---- summary glm -----
-mod = lrn("classif.log_reg", predict_type = "prob")
-set.seed(12005L)
-mod$train(task)
+# performance
+summary(object = mod, resample_result = rsmp,
+  control = summary_control(measures = msrs(list("classif.acc"))))
 
-pred = mod$predict(task)
-pred$score(msrs(list("classif.acc", "classif.auc")))
+# importances
+summary(object = mod, resample_result = rsmp,
+  control = summary_control(importance_measures = c("pfi.f1", "shap")))
 
-cv3 = rsmp("cv", folds = 3L)
-rsmp = resample(task = task, learner = mod, resampling = cv3, store_models = TRUE)
-rsmp$aggregate(msrs(list("classif.acc", "classif.auc")))
-
-summary(object = mod, resample_result = rsmp)
-
-
-### Pipeline
-graphmodel = as_learner(po("scale") %>>%
-    po("learner", mlr3::lrn("classif.ranger", predict_type = "prob")))
-graphmodel$train(task)
-rsmp_gm = resample(task, graphmodel, cv3, store_model = TRUE)
-summary(graphmodel)
-
-
-### summary hard-label
-mod = lrn("classif.ranger")
-set.seed(12005L)
-mod$train(task)
-pred = mod$predict(task)
-pred$score(msrs(list("classif.acc", "classif.auc")))
-cv3 = rsmp("cv", folds = 3L)
-rsmp = resample(task = task, learner = mod, resampling = cv3, store_models = TRUE)
-summary(object = mod, resample_result = rsmp)
-
-
-### fairness
+# fairness
 summary(object = mod, resample_result = rsmp, control = summary_control(protected_attribute = "sex",
   importance_measures = NULL, effect_measures = NULL, complexity_measures = NULL))
 
