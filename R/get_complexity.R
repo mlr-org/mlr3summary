@@ -31,7 +31,7 @@ get_single_complexity = function(complexity_measure, task, learner, train_set, p
 
 get_sparsity_or_interaction_strength = function(learner, test_tsk, method) {
   if (!requireNamespace("iml", quietly = TRUE)) {
-    stop("Package 'iml' needed for this funct{ion to work. Please install it.", call. = FALSE)
+    stop("Package 'iml' needed for this function to work. Please install it.", call. = FALSE)
   }
   if (learner$state$train_task$task_type == "classif" && learner$state$train_task$properties == "twoclass") {
     class = learner$state$train_task$positive
