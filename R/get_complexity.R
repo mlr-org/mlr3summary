@@ -54,7 +54,7 @@ get_sparsity_or_interaction_strength = function(learner, test_tsk, method) {
 #' @param effects (iml::FeatureEffects) \cr
 #' FeatureEffects Object
 get_sparsity = function(effects) {
-  id_used = mlr3misc:::map_lgl(effects$results, .f = function(ef) {
+  id_used = mlr3misc:::map_lgl(effects$results, function(ef) {
     if (var(ef$.value) != 0) {
       return(TRUE)
     } else {
