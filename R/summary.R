@@ -157,6 +157,12 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
     ## importance
     ## <FIXME:> This should be rather exported into own R6 classes??
+
+    if (is.null(control$importance_measures)) {
+      control$importance_measures = get_default_importances(
+        task_type = object$task_type, ...)
+    }
+
     if (!is.null(control$importance_measures)) {
       imps_res = get_importances(resample_result, control$importance_measures)
       ans$importances = imps_res
@@ -171,11 +177,11 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
       # <FIXME:> remove interaction_strength if multi_class
       if ("interaction_strength" %in% control$complexity_measures) {
-        factor_var = any(object$state$train_task$feature_types$type == "factor") &
+        factor_var = any(object$state$train_task$feature_types$type == "factor") &&
           "interaction_strength" %in% control$complexity_measures
-        multi_class = object$state$train_task$task_type == "classif" &
+        multi_class = object$state$train_task$task_type == "classif" &&
           object$state$train_task$properties == "multiclass"
-        if (factor_var | multi_class) {
+        if (factor_var || multi_class) {
           control$complexity_measures = setdiff(control$complexity_measures, "interaction_strength")
           if (factor_var) {
             messagef("complexity measure 'interaction_strength' ignored, not supported for factor variable(s) %s",
@@ -251,7 +257,8 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @return [list]
 #'
 #' @export
-summary_control = function(measures = NULL, importance_measures = "pdp", n_important = 15L,
+
+summary_control = function(measures = NULL, importance_measures = NULL, n_important = 15L,
   effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity"),
   fairness_measures = NULL, protected_attribute = NULL,
   digits = max(3L, getOption("digits") - 3L)) {

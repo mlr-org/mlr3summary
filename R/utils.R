@@ -32,4 +32,14 @@ get_default_fairness_measures = function(task_type, properties = NULL, predict_t
   }
 }
 
+get_default_importances = function(task_type, ...) {
+  imp = "pdp"
+  keys = if (task_type == "classif") {
+    c(imp, "pfi.ce")
+  } else if (task_type == "regr") {
+    c(imp, "pfi.mse")
+  } else {
+    NULL
+  }
+}
 

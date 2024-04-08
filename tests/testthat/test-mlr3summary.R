@@ -47,7 +47,7 @@ test_that("Correct output for binary classification", {
 })
 
 
-test_that("Correct output for binary classification", {
+test_that("Correct output for multiclass classification", {
   set.seed(1003)
   tsk = get_multiclass_task()
   lrn_rr = lrn("classif.ranger", num.trees = 10L, predict_type = "prob")
