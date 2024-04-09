@@ -43,10 +43,10 @@ set.seed(12005L)
 mod$train(task)
 
 cv3 = rsmp("cv", folds = 3L)
-rsmp = resample(task = task, learner = mod, resampling = cv3, store_models = TRUE)
-rsmp$aggregate(msrs(list("classif.acc", "classif.auc")))
+rr = resample(task = task, learner = mod, resampling = cv3, store_models = TRUE)
+rr$aggregate(msrs(list("classif.acc", "classif.auc")))
 
-summary(object = mod, resample_result = rsmp)
+summary(object = mod, resample_result = rr)
 
 #--- EXTRAS ----
 # pipeline:
@@ -59,14 +59,14 @@ graphlrn$train(task)
 summary(graphlrn)
 
 # performance
-summary(object = mod, resample_result = rsmp,
+summary(object = mod, resample_result = rr,
   control = summary_control(measures = msrs(list("classif.acc"))))
 
 # importances
-summary(object = mod, resample_result = rsmp,
+summary(object = mod, resample_result = rr,
   control = summary_control(importance_measures = c("pfi.f1", "shap")))
 
 # fairness
 library(mlr3fairness)
-summary(object = mod, resample_result = rsmp, control = summary_control(protected_attribute = "sex"))
+summary(object = mod, resample_result = rr, control = summary_control(protected_attribute = "sex"))
 
