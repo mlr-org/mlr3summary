@@ -6,9 +6,12 @@
 \usage{
 summary_control(
   measures = NULL,
-  importance_measures = "pdp",
+  importance_measures = NULL,
   n_important = 15L,
   effect_measures = c("pdp", "ale"),
+  complexity_measures = c("sparsity"),
+  fairness_measures = NULL,
+  protected_attribute = NULL,
   digits = max(3L, getOption("digits") - 3L)
 )
 }

@@ -1,4 +1,5 @@
 require("rpart")
+require("mlr3fairness")
 
 test_that("Works for regression", {
   set.seed(1003)

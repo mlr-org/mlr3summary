@@ -68,6 +68,5 @@ summary(object = mod, resample_result = rsmp,
 
 # fairness
 library(mlr3fairness)
-summary(object = mod, resample_result = rsmp, control = summary_control(protected_attribute = "sex",
-  importance_measures = NULL, effect_measures = NULL, complexity_measures = NULL))
+summary(object = mod, resample_result = rsmp, control = summary_control(protected_attribute = "sex"))
 
