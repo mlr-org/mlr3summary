@@ -26,7 +26,9 @@ get_default_measures = function(task_type, properties = NULL, predict_type = NUL
 
 get_default_fairness_measures = function(task_type, properties = NULL, predict_type = NULL) {
   keys = if (task_type == "classif" && properties == "twoclass") {
-    mlr_measures$mget(c("fairness.cv", "fairness.pp", "fairness.eod"))
+    list(msr("fairness.cv", id = "fairness.dp"),
+      msr("fairness.pp", id = "fairness.pp"),
+      msr("fairness.eod", id = "fairness.eod"))
   } else if (task_type == "regr") {
     list(msr("fairness", operation = groupdiff_absdiff, base_measure = msr("regr.rmse")),
       msr("fairness", operation = groupdiff_absdiff, base_measure = msr("regr.mae"))
