@@ -265,7 +265,7 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @export
 
 summary_control = function(measures = NULL, importance_measures = NULL, n_important = 15L,
-  effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity"),
+  effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity", "interaction_strength"),
   fairness_measures = NULL, protected_attribute = NULL,
   digits = max(3L, getOption("digits") - 3L)) {
 
