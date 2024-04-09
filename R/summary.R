@@ -142,7 +142,14 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
         control$fairness_measures = map(control$fairness_measures, function(pmsr) {
           pmsr = pmsr$clone()
-          pmsr$id = sprintf("%s (%s)", pmsr$id, pmsr$average)
+          if (is.na(pmsr$minimize)) {
+            arrow = ""
+          } else if (pmsr$minimize) {
+            arrow = cli::symbol[["arrow_down"]]
+          } else {
+            arrow = cli::symbol[["arrow_up"]]
+          }
+          pmsr$id = sprintf("%s%s (%s)", arrow, pmsr$id, pmsr$average)
           pmsr
         })
         fair = resample_result$aggregate(measures = control$fairness_measures)
