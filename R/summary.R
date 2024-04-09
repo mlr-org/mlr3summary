@@ -142,7 +142,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
         control$fairness_measures = map(control$fairness_measures, function(pmsr) {
           pmsr = pmsr$clone()
-          pmsr$id = paste0(pmsr$id, " (", pmsr$average, ")")
+          pmsr$id = sprintf("%s (%s)", pmsr$id, pmsr$average)
           pmsr
         })
         fair = resample_result$aggregate(measures = control$fairness_measures)
