@@ -376,10 +376,9 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
   if (!is.null(x$fairness)) {
     cli_h1("Fairness [sd]")
     cli_text("Protected attribute: {x$control$protected_attribute}")
-    nampf = structure(paste0(round(x$fairness, x$control$digits),
+    nampf = setNames(paste0(round(x$fairness, x$control$digits),
       " [", round(x$fairness_sd, x$control$digits), "]"),
-      names = names(x$fairness))
-    names(nampf) = paste0(names(nampf), ":")
+      paste0(names(x$fairness), ":"))
     fair = as.matrix(nampf)
     colnames(fair) = ""
     print.default(fair, quote = FALSE, right = FALSE, ...)
