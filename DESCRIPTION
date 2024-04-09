@@ -30,6 +30,7 @@ Suggests:
     testthat (>= 3.1.0),
     iml,
     mlr3pipelines,
+    mlr3fairness,
     fastshap
 Config/testthat/edition: 3
 Language: en-US
