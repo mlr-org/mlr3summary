@@ -129,7 +129,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     ans$performance_sd = stdt
 
     # <FIXME:> currently only binary classification metrics available:
-      if (!is.null(control$protected_attribute) || length(object$state$train_task$col_roles$pta) > 0) {
+      if (!is.null(control$protected_attribute) || length(object$state$train_task$col_roles$pta)) {
         if (is.null(control$fairness_measures)) {
           control$fairness_measures = get_default_fairness_measures(task_type = object$task_type,
             properties = object$state$train_task$properties,
@@ -142,7 +142,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
         control$fairness_measures = map(control$fairness_measures, function(pmsr) {
           pmsr = pmsr$clone()
-          pmsr$id = paste0(pmsr$id, " (", pmsr$average, ")")
+          pmsr$id = sprintf("%s (%s)", pmsr$id, pmsr$average)
           pmsr
         })
         fair = resample_result$aggregate(measures = control$fairness_measures)
@@ -157,7 +157,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
         if (!is.null(control$protected_attribute)) {
           resample_result$task$set_col_roles(control$protected_attribute, remove_from = "pta")
         }
-        if (length(resample_result$task$col_roles$pta) > 0) {
+        if (length(resample_result$task$col_roles$pta)) {
           control$protected_attribute = resample_result$task$col_roles$pta
         }
       }
