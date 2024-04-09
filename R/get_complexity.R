@@ -81,7 +81,11 @@ compute_interaction_strength = function(predictor, effects) {
   }
   mean_pred = mean(pred)
   res = map_dtc(effects$effects, function(eff) {
-    eff$predict(data.frame(dt))
+    if (eff$feature.type == "categorical") {
+      merge(dt[,eff$feature.name,with = FALSE], eff$results, by = eff$feature.name)$.value
+    } else {
+      eff$predict(data.frame(dt))
+    }
   })
   ale_predictions = rowSums(res) + mean_pred
   ssq_bb = ssq(pred - mean_pred)

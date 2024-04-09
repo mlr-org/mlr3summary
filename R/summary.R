@@ -64,7 +64,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
   if (!inherits(object, "GraphLearner")) {
     params = object$param_set$values
-    if (length(params) > 0) {
+    if (length(params)) {
       ans[["model_type"]] = paste(object$id, "with",
         as_short_string(object$param_set$values, 1000L))
     } else {
@@ -191,22 +191,14 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
       # <FIXME:> remove interaction_strength if multi_class
       if ("interaction_strength" %in% control$complexity_measures) {
-        factor_var = any(object$state$train_task$feature_types$type == "factor") &&
-          "interaction_strength" %in% control$complexity_measures
         multi_class = object$state$train_task$task_type == "classif" &&
           object$state$train_task$properties == "multiclass"
-        if (factor_var || multi_class) {
+        if (multi_class) {
           control$complexity_measures = setdiff(control$complexity_measures, "interaction_strength")
-          if (factor_var) {
-            messagef("complexity measure 'interaction_strength' ignored, not supported for factor variable(s) %s",
-              object$state$train_task$feature_types[type == "factor", id])
-          }
-          if (multi_class) {
-            messagef("complexity measure 'interaction_strenght' is ignored because it does not work for multiClass")
-          }
+              messagef("complexity measure 'interaction_strenght' is ignored because it does not work for multiClass")
         }
       }
-    if (!is.null(control$complexity_measures) & length(control$complexity_measures) > 0) {
+    if (!is.null(control$complexity_measures) & length(control$complexity_measures)) {
       comp_res = get_complexity(resample_result, control$complexity_measures)
       ans$complexity = comp_res
     }
@@ -290,6 +282,9 @@ summary_control = function(measures = NULL, importance_measures = NULL, n_import
   assert_int(n_important, lower = 1L, null.ok = TRUE)
   for (eff_measure in effect_measures) {
     assert_choice(eff_measure, c("pdp", "ale"))
+  }
+  for (comp_measure in complexity_measures) {
+    assert_choice(comp_measure, c("sparsity", "interaction_strength"))
   }
   if (!is.null(fairness_measures)) {
     fairness_measures = as_measures(fairness_measures)
