@@ -185,10 +185,12 @@ Therefore, a protected attribute (`pta`) needs to be specified.
 The fairness measure can be adapted in `control`. 
 
 ```{r penguins}
+library("mlr3fairness")
 tsk_peng = tsk("penguins")
 tsk_peng$set_col_roles("sex", add_to = "pta")
 lrn_rpart =  lrn("classif.rpart", predict_type = "prob")
 lrn_rpart$train(task = tsk_peng)
+rsmp_cv5 = rsmp("cv", folds = 5L)
 rr_9 = resample(tsk_peng, lrn_rpart, rsmp_cv5, store_model = TRUE)
 summary(lrn_rpart, rr_9, summary_control(complexity_measures = NULL, effect_measures = NULL, fairness_measures = (msr("fairness", operation = groupdiff_absdiff, base_measure = msr("classif.acc")))))
 ```
