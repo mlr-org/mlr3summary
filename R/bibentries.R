@@ -67,5 +67,18 @@ bibentries = c(
     journal = "ACM Computational Surveys",
     articleno = "115",
     numpages = "35",
+  ), creditdata = bibentry("article",
+    url = "https://doi.org/10.24432/C5NC77",
+    author = "Hofmann,  Hans",
+    title = "Statlog ({G}erman Credit Data)",
+    journal = "{UCI} Machine Learning Repository",
+    year = "1994"
+  ), kaggle16 = bibentry("misc",
+    author = "Leonardo Ferreira",
+    editor = "Kaggle Inc.",
+    title = "{G}erman credit risk",
+    url = "https://www.kaggle.com/datasets/kabure/german-credit-data-with-risk",
+    year = "2018",
+    note = "Last accessed 10.04.2024"
   )
 )
