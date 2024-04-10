@@ -107,34 +107,38 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
         predict_type = object$predict_type)
     }
 
-    control$measures = map(control$measures, function(pmsr) {
-      pmsr = pmsr$clone()
-      if (is.na(pmsr$minimize)) {
-        arrow = ""
-      } else if (pmsr$minimize) {
-        arrow = symbol[["arrow_down"]]
-      } else {
-        arrow = symbol[["arrow_up"]]
-      }
-      pmsr$id = sprintf("%s%s (%s)", arrow, pmsr$id, pmsr$average)
-      pmsr
-    })
-    pf = resample_result$aggregate(measures = control$measures)
-    sc = resample_result$score(measures = control$measures)
-    nam_multimeas = names(sc)[grep(tt, names(sc))]
-    sc = sc[, nam_multimeas, with = FALSE]
-    stdt = map_dbl(sc, sd)
-
-    ans$performance = pf
-    ans$performance_sd = stdt
-
-    # <FIXME:> currently only binary classification metrics available:
-      if (!is.null(control$protected_attribute) || length(object$state$train_task$col_roles$pta)) {
-        if (is.null(control$fairness_measures)) {
-          control$fairness_measures = get_default_fairness_measures(task_type = object$task_type,
-            properties = object$state$train_task$properties,
-            predict_type = object$predict_type)
+    if (is.list(control$measures) | inherits(control$measures, "Measure")) {
+      control$measures = map(control$measures, function(pmsr) {
+        pmsr = pmsr$clone()
+        if (is.na(pmsr$minimize)) {
+          arrow = ""
+        } else if (pmsr$minimize) {
+          arrow = symbol[["arrow_down"]]
+        } else {
+          arrow = symbol[["arrow_up"]]
         }
+        pmsr$id = sprintf("%s%s (%s)", arrow, pmsr$id, pmsr$average)
+        pmsr
+      })
+      pf = resample_result$aggregate(measures = control$measures)
+      sc = resample_result$score(measures = control$measures)
+      nam_multimeas = names(sc)[grep(tt, names(sc))]
+      sc = sc[, nam_multimeas, with = FALSE]
+      stdt = map_dbl(sc, sd)
+
+      ans$performance = pf
+      ans$performance_sd = stdt
+    }
+
+    # Fairness
+    if (is.null(control$fairness_measures)) {
+      control$fairness_measures = get_default_fairness_measures(task_type = object$task_type,
+        properties = object$state$train_task$properties,
+        predict_type = object$predict_type)
+    }
+
+    if (!is.na(control$fairness_measures)) {
+      if (!is.null(control$protected_attribute) || length(object$state$train_task$col_roles$pta)) {
         # deep clone required, otherwise hash differs of task in object and task in resample_result
         if (!is.null(control$protected_attribute)) {
           resample_result$task$set_col_roles(control$protected_attribute, add_to = "pta")
@@ -168,6 +172,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
           control$protected_attribute = resample_result$task$col_roles$pta
         }
       }
+    }
 
     ## importance
     ## <FIXME:> This should be rather exported into own R6 classes??
@@ -177,28 +182,29 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
         task_type = object$task_type, ...)
     }
 
-    if (!is.null(control$importance_measures)) {
+    if (all(!is.na(control$importance_measures))) {
       imps_res = get_importances(resample_result, control$importance_measures)
       ans$importances = imps_res
     }
 
     ## effects
-    if (!is.null(control$effect_measures)) {
+    if (all(!is.na(control$effect_measures))) {
+      control$importance_measures = setdiff(control$importance_measures, NA)
       effs_res = get_effects(resample_result, control$effect_measures)
       ans$effects = effs_res
     }
 
 
-      # <FIXME:> remove interaction_strength if multi_class
-      if ("interaction_strength" %in% control$complexity_measures) {
-        multi_class = object$state$train_task$task_type == "classif" &&
-          object$state$train_task$properties == "multiclass"
-        if (multi_class) {
-          control$complexity_measures = setdiff(control$complexity_measures, "interaction_strength")
-              messagef("complexity measure 'interaction_strenght' is ignored because it does not work for multiClass")
-        }
+    # <FIXME:> remove interaction_strength if multi_class
+    if ("interaction_strength" %in% control$complexity_measures) {
+      multi_class = object$state$train_task$task_type == "classif" &&
+        object$state$train_task$properties == "multiclass"
+      if (multi_class) {
+        control$complexity_measures = setdiff(control$complexity_measures, "interaction_strength")
+        messagef("complexity measure 'interaction_strenght' is ignored because it does not work for multiClass")
       }
-    if (!is.null(control$complexity_measures) & length(control$complexity_measures)) {
+    }
+    if (all(!is.na(control$complexity_measures)) && length(control$complexity_measures)) {
       comp_res = get_complexity(resample_result, control$complexity_measures)
       ans$complexity = comp_res
     }
@@ -270,26 +276,27 @@ summary_control = function(measures = NULL, importance_measures = NULL, n_import
   digits = max(3L, getOption("digits") - 3L)) {
 
   # input checks
-  if (!is.null(measures)) {
+  if (!is.null(measures) && !is.na(measures)) {
     measures = as_measures(measures)
+    assert_measures(measures)
   }
-  assert_measures(measures)
+
   iml_pfi_losses = c("ce", "f1", "logLoss", "mae", "mse", "rmse", "mape", "mdae",
     "msle", "percent_bias", "rae", "rmse", "rmsle", "rse", "rrse", "smape")
   for (imp_measure in importance_measures) {
-    assert_choice(imp_measure, c("pdp", "shap", paste("pfi", iml_pfi_losses, sep = ".")), null.ok = TRUE)
+    assert_choice(imp_measure, c(NA, "pdp", "shap", paste("pfi", iml_pfi_losses, sep = ".")), null.ok = TRUE)
   }
   assert_int(n_important, lower = 1L, null.ok = TRUE)
   for (eff_measure in effect_measures) {
-    assert_choice(eff_measure, c("pdp", "ale"))
+    assert_choice(eff_measure, c(NA, "pdp", "ale"))
   }
   for (comp_measure in complexity_measures) {
-    assert_choice(comp_measure, c("sparsity", "interaction_strength"))
+    assert_choice(comp_measure, c(NA, "sparsity", "interaction_strength"))
   }
-  if (!is.null(fairness_measures)) {
+  if (!is.null(fairness_measures) && !is.na(fairness_measures)) {
     fairness_measures = as_measures(fairness_measures)
+    assert_measures(fairness_measures)
   }
-  assert_measures(fairness_measures)
   assert_character(protected_attribute, null.ok = TRUE, len = 1L)
   assert_int(digits, lower = 0L, null.ok = FALSE)
 
