@@ -31,7 +31,9 @@ Suggests:
     iml,
     mlr3pipelines,
     mlr3fairness,
-    fastshap
+    fastshap, 
+    ranger, 
+    rpart
 Config/testthat/edition: 3
 Language: en-US
 NeedsCompilation: no

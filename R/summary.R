@@ -1,27 +1,43 @@
-#' Learner and model summaries
+#' @rdname summary.Learner
+#' @name summary.Learner
+#' @aliases summary.Learner
+#' @aliases print.summary.Learner
+#' @title Summarizing mlr3 Learners
 #'
-#' @param object (`Learner`)
-#'  To Do.
-#' @param resample_result (`Resampling`)
-#'  To Do.
-#' @param control (`summary_control`)
-#'  To Do.
+#' @description
+#' summary method for class `Learner`.
 #'
-#' @param ... (any)
-#'  To Do.
 #'
-#' @return summary.Learner list
+#' @param object ([mlr3::Learner])\cr
+#'  trained model of class `Learner`.
+#' @param x (`summary.Learner`)\cr
+#'  an object of class "summary.Learner", usually a result of a call to `summary.Learner`.
+#' @param resample_result ([mlr3::ResampleResult])\cr
+#'  outcome of `resample`. If  NULL (default), no residuals, performances, etc.
+#'  are derived.
+#' @param control (`summary_control`)\cr
+#'  a list with control parameters, see `summary_control`.
+#' @param digits (numeric(1))\cr
+#'   the number of digits to use when printing.
+#' @param n_important (numeric(1))\cr
+#'   number of important variables to be displayed.
+#'   If NULL, `x$control$n_important` is used.
+#' @param ... (any)\cr
+#'  further arguments passed to or from other methods.
 #'
-#' @references
-#' `r format_bib("greenwell_simple_2018")`
-#'
-#' `r format_bib("fisher_all_2019")`
-#'
-#' `r format_bib("molnar_relating_2023")`
-#'
-#' `r format_bib("breiman_leo_random_2001")`
-#'
+#' @return summary.Learner returns an object of class "summary.Learner", a [list].
+#' @examples
+#' if (require("mlr3")) {
+#'   tsk_peng = tsk("penguins")
+#'   lrn_rpart =  lrn("classif.rpart", predict_type = "prob")
+#'   lrn_rpart$train(task = tsk_peng)
+#'   rsmp_cv5 = rsmp("cv", folds = 3L)
+#'   rr = resample(tsk_peng, lrn_rpart, rsmp_cv5, store_model = TRUE)
+#'   summary(lrn_rpart, rr)
+#' }
 #' @importFrom stats sd
+#' @importFrom stats setNames
+#' @importFrom stats var
 #' @export
 summary.Learner = function(object, resample_result = NULL, control = summary_control(), ...) {
 
@@ -246,26 +262,49 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 }
 
 
-#' @title Control for model summaries
+#' @title Control for Learner summaries
 #'
-#' @description Various parameters that control aspect of the model summaries.
+#' @description Various parameters that control aspects of `summary.Learner`.
 #'
-#' @param measures ([mlr3::Measure] | list of [mlr3::Measure])\cr
-#'   Measure(s) to calculate performance on.
-#' @param importance_measures (character())\cr
-#'   To Do.
+#' @param measures ([mlr3::Measure] | list of [mlr3::Measure] | NULL)\cr
+#'   measure(s) to calculate performance on. If NULL (default), a set of
+#'   selected measures are calculated (choice depends on Learner type (classif vs. regr)).
+#' @param complexity_measures (character)\cr
+#'   vector of complexity measures. Possible choices are "sparsity" (the number
+#'   of used features) and "interaction_strength" (see Molnar et al. (2020)).
+#'   Both are the default.
+#' @param importance_measures (character()|NULL)\cr
+#'   vector of importance measure names. Possible choices are "pfi.<loss>"
+#'   ([iml::FeatureImp]), "pdp" ([iml::FeatureEffects], see ) and
+#'   "shap" ([fastshap::explain]). Default of NULL results in "pfi.<loss> and
+#'   "pdp", where the <loss> depends on the Learner type (classif vs. regr).
 #' @param n_important (numeric(1))\cr
-#'   To Do.
-#' @param effect_measures (character)\cr
-#'   To Do.
+#'   number of important variables to be displayed. Default is 15L.
+#' @param effect_measures (character | NULL)\cr
+#'   vector of effect method names. Possible choices are "pfi" and "ale"
+#'   (see [iml::FeatureEffects]). Both are the default.
+#' @param fairness_measures ([mlr3fairness::MeasureFairness] |
+#' list of [mlr3fairness::MeasureFairness] | NULL)\cr
+#'  measure(s) to assess fairness. If NULL (default), a set of
+#'  selected measures are calculated (choice depends on Learner type (classif vs. regr)).
+#' @param protected_attribute (character(1))\cr
+#'  name of the binary feature that is used as a protected attribute.
+#'  If no `protected_attribute` is specified (and also no `pta` feature is
+#'  available in the `mlr3::Task` for training the `mlr3::Learner`),
+#'  no fairness metrics are computed.
 #' @param digits (numeric(1))\cr
-#'   To Do.
-#' @return [list]
+#'   the number of digits to use when printing.
+#' @return [list] of class `summary_control`
+#' @references
+#' `r format_bib("molnar_complexity_2020")`
 #'
+#' `r format_bib("greenwell_simple_2018")`
 #' @export
 
-summary_control = function(measures = NULL, importance_measures = NULL, n_important = 15L,
-  effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity", "interaction_strength"),
+summary_control = function(measures = NULL,
+  complexity_measures = c("sparsity", "interaction_strength"),
+  importance_measures = NULL, n_important = 15L,
+  effect_measures = c("pdp", "ale"),
   fairness_measures = NULL, protected_attribute = NULL,
   digits = max(3L, getOption("digits") - 3L)) {
 
@@ -294,9 +333,9 @@ summary_control = function(measures = NULL, importance_measures = NULL, n_import
   assert_int(digits, lower = 0L, null.ok = FALSE)
 
   # create list
-  ctrlist = list(measures = measures, importance_measures = importance_measures,
-    n_important = n_important, effect_measures = effect_measures,
-    complexity_measures = complexity_measures, fairness_measures = fairness_measures,
+  ctrlist = list(measures = measures, complexity_measures = complexity_measures,
+    importance_measures = importance_measures, n_important = n_important,
+    effect_measures = effect_measures, fairness_measures = fairness_measures,
     protected_attribute = protected_attribute, digits = digits)
 
   class(ctrlist) = "summary_control"
@@ -304,6 +343,7 @@ summary_control = function(measures = NULL, importance_measures = NULL, n_import
 }
 
 #' @export
+#' @rdname summary.Learner
 print.summary.Learner = function(x, digits = NULL, n_important = NULL, ...) {
   # input checks
   assert_int(digits, lower = 0L, null.ok = TRUE)

@@ -1,4 +1,5 @@
 require("rpart")
+require("iml")
 
 test_that("multiplication works", {
   # model that has no interaction = single split rpart

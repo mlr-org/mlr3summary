@@ -2,38 +2,70 @@
 % Please edit documentation in R/summary.R
 \name{summary_control}
 \alias{summary_control}
-\title{Control for model summaries}
+\title{Control for Learner summaries}
 \usage{
 summary_control(
   measures = NULL,
+  complexity_measures = c("sparsity", "interaction_strength"),
   importance_measures = NULL,
   n_important = 15L,
   effect_measures = c("pdp", "ale"),
-  complexity_measures = c("sparsity"),
   fairness_measures = NULL,
   protected_attribute = NULL,
   digits = max(3L, getOption("digits") - 3L)
 )
 }
 \arguments{
-\item{measures}{(\link[mlr3:Measure]{mlr3::Measure} | list of \link[mlr3:Measure]{mlr3::Measure})\cr
-Measure(s) to calculate performance on.}
+\item{measures}{(\link[mlr3:Measure]{mlr3::Measure} | list of \link[mlr3:Measure]{mlr3::Measure} | NULL)\cr
+measure(s) to calculate performance on. If NULL (default), a set of
+selected measures are calculated (choice depends on Learner type (classif vs. regr)).}
 
-\item{importance_measures}{(character())\cr
-To Do.}
+\item{complexity_measures}{(character)\cr
+vector of complexity measures. Possible choices are "sparsity" (the number
+of used features) and "interaction_strength" (see Molnar et al. (2020)).
+Both are the default.}
+
+\item{importance_measures}{(character()|NULL)\cr
+vector of importance measure names. Possible choices are "pfi.\if{html}{\out{<loss>}}"
+(\link[iml:FeatureImp]{iml::FeatureImp}), "pdp" (\link[iml:FeatureEffects]{iml::FeatureEffects}, see ) and
+"shap" (\link[fastshap:explain]{fastshap::explain}). Default of NULL results in "pfi.\if{html}{\out{<loss>}} and
+"pdp", where the \if{html}{\out{<loss>}} depends on the Learner type (classif vs. regr).}
 
 \item{n_important}{(numeric(1))\cr
-To Do.}
+number of important variables to be displayed. Default is 15L.}
 
-\item{effect_measures}{(character)\cr
-To Do.}
+\item{effect_measures}{(character | NULL)\cr
+vector of effect method names. Possible choices are "pfi" and "ale"
+(see \link[iml:FeatureEffects]{iml::FeatureEffects}). Both are the default.}
+
+\item{fairness_measures}{(\link[mlr3fairness:MeasureFairness]{mlr3fairness::MeasureFairness} |
+list of \link[mlr3fairness:MeasureFairness]{mlr3fairness::MeasureFairness} | NULL)\cr
+measure(s) to assess fairness. If NULL (default), a set of
+selected measures are calculated (choice depends on Learner type (classif vs. regr)).}
+
+\item{protected_attribute}{(character(1))\cr
+name of the binary feature that is used as a protected attribute.
+If no \code{protected_attribute} is specified (and also no \code{pta} feature is
+available in the \code{mlr3::Task} for training the \code{mlr3::Learner}),
+no fairness metrics are computed.}
 
 \item{digits}{(numeric(1))\cr
-To Do.}
+the number of digits to use when printing.}
 }
 \value{
-\link{list}
+\link{list} of class \code{summary_control}
 }
 \description{
-Various parameters that control aspect of the model summaries.
+Various parameters that control aspects of \code{summary.Learner}.
+}
+\references{
+Molnar, Christoph, Casalicchio, Giuseppe, Bischl, Bernd (2020).
+\dQuote{Quantifying Model Complexity via Functional Decomposition for Better Post-hoc Interpretability.}
+In \emph{Communications in Computer and Information Science}, chapter 1, 193–204.
+Springer International Publishing.
+
+Greenwell, M. B, Boehmke, C. B, McCarthy, J. A (2018).
+\dQuote{A Simple and Effective Model-Based Variable Importance Measure.}
+arXiv preprint.
+arXiv:1805.04755, \url{http://arxiv.org/abs/1805.04755}.
 }
