@@ -50,7 +50,7 @@ rr$aggregate(msrs(list("classif.acc", "classif.auc")))
 ```{r}
 summary(object = rf, resample_result = rr)
 ```
-
+![summary_output](https://github.com/slds-lmu/mlr3summary/assets/25373845/84b6cf8f-72d6-42ae-8218-5df1623008a3)
 
 ## Extension Packages
 
