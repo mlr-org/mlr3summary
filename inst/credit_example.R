@@ -38,15 +38,15 @@ summary(logreg)
 task = TaskClassif$new(id = "credit", backend = credit, target = "risk", positive = "good")
 
 #----- summary ranger ----
-mod = lrn("classif.ranger", predict_type = "prob")
+rf = lrn("classif.ranger", predict_type = "prob")
 set.seed(12005L)
-mod$train(task)
+rf$train(task)
 
 cv3 = rsmp("cv", folds = 3L)
-rr = resample(task = task, learner = mod, resampling = cv3, store_models = TRUE)
+rr = resample(task = task, learner = rf, resampling = cv3, store_models = TRUE)
 rr$aggregate(msrs(list("classif.acc", "classif.auc")))
 
-summary(object = mod, resample_result = rr)
+summary(object = rf, resample_result = rr)
 
 #--- EXTRAS ----
 # pipeline:
@@ -59,14 +59,14 @@ graphlrn$train(task)
 summary(graphlrn)
 
 # performance
-summary(object = mod, resample_result = rr,
+summary(object = rf, resample_result = rr,
   control = summary_control(measures = msrs(list("classif.acc"))))
 
 # importances
-summary(object = mod, resample_result = rr,
+summary(object = rf, resample_result = rr,
   control = summary_control(importance_measures = c("pfi.f1", "shap")))
 
 # fairness
 library(mlr3fairness)
-summary(object = mod, resample_result = rr, control = summary_control(protected_attribute = "sex"))
+summary(object = rf, resample_result = rr, control = summary_control(protected_attribute = "sex"))
 
