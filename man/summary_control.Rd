@@ -9,7 +9,7 @@ summary_control(
   importance_measures = NULL,
   n_important = 15L,
   effect_measures = c("pdp", "ale"),
-  complexity_measures = c("sparsity"),
+  complexity_measures = c("sparsity", "interaction_strength"),
   fairness_measures = NULL,
   protected_attribute = NULL,
   digits = max(3L, getOption("digits") - 3L)

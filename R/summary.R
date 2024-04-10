@@ -112,9 +112,9 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       if (is.na(pmsr$minimize)) {
         arrow = ""
       } else if (pmsr$minimize) {
-        arrow = cli::symbol[["arrow_down"]]
+        arrow = symbol[["arrow_down"]]
       } else {
-        arrow = cli::symbol[["arrow_up"]]
+        arrow = symbol[["arrow_up"]]
       }
       pmsr$id = sprintf("%s%s (%s)", arrow, pmsr$id, pmsr$average)
       pmsr
@@ -123,7 +123,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     sc = resample_result$score(measures = control$measures)
     nam_multimeas = names(sc)[grep(tt, names(sc))]
     sc = sc[, nam_multimeas, with = FALSE]
-    stdt = map_dbl(sc, stats::sd)
+    stdt = map_dbl(sc, sd)
 
     ans$performance = pf
     ans$performance_sd = stdt
