@@ -12,6 +12,7 @@ summary_control(
   complexity_measures = c("sparsity", "interaction_strength"),
   fairness_measures = NULL,
   protected_attribute = NULL,
+  hide = NULL,
   digits = max(3L, getOption("digits") - 3L)
 )
 }
@@ -27,6 +28,11 @@ To Do.}
 
 \item{effect_measures}{(character)\cr
 To Do.}
+
+\item{hide}{(character)\cr
+Names of paragraphs which should not be part of the summary.
+Possible values are "general", "residuals", "performance", "complexity", "fairness",
+"importance", "effect". If NULL, no paragraph is hided.}
 
 \item{digits}{(numeric(1))\cr
 To Do.}
