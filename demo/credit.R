@@ -66,10 +66,28 @@ graph_complex = as_learner(graph_complex)
 graph_complex$train(task)
 summary(graph_complex)
 
+# ----- AutoTuner ---
+library(mlr3tuning)
+tnr_grid_search = tnr("grid_search", resolution = 5, batch_size = 5)
+lrn_svm = po("encode") %>>% lrn("classif.svm",
+  cost  = to_tune(1e-5, 1e5, logscale = TRUE),
+  gamma = to_tune(1e-5, 1e5, logscale = TRUE),
+  kernel = "radial",
+  type = "C-classification"
+)
+cv3 = rsmp("cv", folds = 3)
+msr_ce = msr("classif.ce")
+
+at = auto_tuner(tuner = tnr_grid_search, learner = lrn_svm,
+  resampling = cv3, measure = msr_ce)
+at$train(task)
+summary(at)
+
+rr_at = resample(task = task, learner = at, resampling = cv3, store_models = TRUE)
+summary(at, rr_at)
+
 # ---- getting help ---
 ?summary.Learner
 ?summary_control
 as.data.table(mlr_measures_fairness)
-
-# AutoTuner
 

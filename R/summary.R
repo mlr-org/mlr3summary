@@ -53,9 +53,10 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       stop("resample_result does not contain trained models, ensure resample() was run with 'store_models = TRUE'")
     }
     # ensure underlying algo and task of object and resample_result match
-    if (!(object$base_learner()$hash == resample_result$learner$base_learner()$hash)) {
-      stop("Learning algorithm of object does not match algorithm used for resampling. Ensure equality.")
-
+    if (!inherits(at, "AutoTuner")) {
+      if (!(object$base_learner()$hash == resample_result$learner$base_learner()$hash)) {
+        stop("Learning algorithm of object does not match algorithm used for resampling. Ensure equality.")
+      }
     }
     if (!all.equal(object$state$train_task$hash, resample_result$task$hash)) {
       stop("object and resample_result seem to be trained on differing tasks. Ensure equality.")
