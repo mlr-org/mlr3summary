@@ -27,17 +27,8 @@ rr$aggregate(msrs(list("classif.acc", "classif.auc")))
 summary(object = rf, resample_result = rr)
 
 # ---- fairness assessment ----
-summary(object = rf, resample_result = rr, control = summary_control(protected_attribute = "sex"))
-
-
-# ---- pipelines ----
-library(mlr3pipelines)
-
-graphlrn = as_learner(po("scale") %>>%
-    po("encode") %>>%
-    lrn("classif.ranger", predict_type = "prob"))
-graphlrn$train(task)
-summary(graphlrn)
+summary(object = rf, resample_result = rr,
+  control = summary_control(protected_attribute = "sex"))
 
 # ---- adapt control ----
 summary(object = rf, resample_result = rr,
@@ -45,3 +36,40 @@ summary(object = rf, resample_result = rr,
 
 summary(object = rf, resample_result = rr,
   control = summary_control(importance_measures = c("pfi.f1", "shap")))
+
+# ---- omit certain parts ----
+# summary(object = rf, resample_result = rr,
+#   control = summary_control(measures = msrs(list("classif.acc"))),
+#   hide = c("performance", "residuals", "complexity"))
+
+# ---- pipelines ----
+library(mlr3pipelines)
+
+graphlrn = as_learner(
+  po("scale") %>>%
+    po("encode") %>>%
+    lrn("classif.ranger", predict_type = "prob"))
+graphlrn$train(task)
+summary(graphlrn)
+
+set.seed(1234L)
+graph_complex = as_learner(
+  po("scale", center = TRUE, scale = FALSE) %>>%
+  gunion(list(
+    po("missind"),
+    po("imputemedian")
+  )) %>>%
+  po("featureunion") %>>%
+  po("learner", mlr3::lrn("classif.rpart"))
+)
+graph_complex = as_learner(graph_complex)
+graph_complex$train(task)
+summary(graph_complex)
+
+# ---- getting help ---
+?summary.Learner
+?summary_control
+as.data.table(mlr_measures_fairness)
+
+# AutoTuner
+
