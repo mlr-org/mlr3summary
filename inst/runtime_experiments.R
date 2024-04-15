@@ -93,4 +93,4 @@ plt_lm = ggplot(data = results, aes(x = p, y = runtime2, group = n)) +
 
 plt = ggarrange(plt_rf, plt_lm, ncol=2, common.legend = TRUE, legend="right")
 
-ggsave(plot = plt, filename = "inst/runtimes.png", width = 6, height = 2)
+ggsave(plot = plt, filename = "inst/runtime.png", width = 6, height = 2)
