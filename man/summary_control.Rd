@@ -67,16 +67,23 @@ the measures will be initialized in \code{summary.Learner} with the help of \cod
 The following provides an overview:
 \itemize{
 \item{Regression: }{\link[mlr3::mlr_measures_regr.rmse]{"regr.rmse"},
-\link[mlr3::mlr_measures_regr.rsq]{"regr.rsq"}, \link[mlr3::mlr_measures_regr.mae]{"regr.mae"},
+\link[mlr3::mlr_measures_regr.rsq]{"regr.rsq"},
+\link[mlr3::mlr_measures_regr.mae]{"regr.mae"},
 \link[mlr3::mlr_measures_regr.medae]{"regr.medae"}}
 \item{Binary classification with probabilities: }{
 \link[mlr3::mlr_measures_classif.auc]{"classif.auc"},
 \link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
 \link[mlr3::mlr_measures_classif.bbrier]{"classif.bbrier"},
 \link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
-\item{Binary classification with hard labels: }{Stuff}
-\item{Multi-class classification with probabilities: }{Stuff}
-\item{Multi-class classification with hard labels: }{Stuff}
+\item{Binary classification with hard labels: }{
+\link[mlr3::mlr_measures_classif.acc]{"classif.acc"},
+\link[mlr3::mlr_measures_classif.bacc]{"classif.bacc"},
+\link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
+\link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
+\item{Multi-class classification with probabilities: }{
+\link[mlr3::mlr_measures_classif.mauc_aunp]{"classif.mauc_aunp"},
+\link[mlr3::mlr_measures_classif.mbrier]{"classif.mbrier"}}
+
 }
 }
 \references{
