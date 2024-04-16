@@ -11,21 +11,23 @@ get_effects = function(obj, effect_measures) {
   max_val = obj$task$data()[, map(.SD, max, na.rm = TRUE), .SDcols = is.numeric]
 
   # step through effect measures
-  effs_list = future_Map(function(eff_msr) {
 
-    # step through resample folds
-    effs = pmap_dtr(tab, function(task,
-      learner, resampling, iteration, prediction, ...) {
-      get_single_effect(eff_msr, task, learner, train_set = resampling$train_set(iteration),
-        prediction, min_val = min_val, max_val = max_val)
+    effs_list = map(effect_measures, function(eff_msr) {
+      # step through resample folds
+      effs = data.table::rbindlist(
+        future_mapply(function(task,
+        learner, resampling, iteration, prediction, ...) {
+        get_single_effect(eff_msr, task, learner, train_set = resampling$train_set(iteration),
+          prediction, min_val = min_val, max_val = max_val)
+      },  tab$task, tab$learner, tab$resampling, tab$iteration, tab$prediction,
+          future.seed = NULL, SIMPLIFY = FALSE))
+      if (!is.null(effs$class)) {
+        groupvars = c("feature", "grid", "class")
+      } else {
+        groupvars = c("feature", "grid")
+      }
+      effs[, mean(value, na.rm = TRUE), by = groupvars]
     })
-    if (!is.null(effs$class)) {
-      groupvars = c("feature", "grid", "class")
-    } else {
-      groupvars = c("feature", "grid")
-    }
-    effs[, mean(value, na.rm = TRUE), by = groupvars]
-  }, effect_measures, future.seed = TRUE)
   names(effs_list) = effect_measures
   effs_list
 }
