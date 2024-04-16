@@ -2,6 +2,7 @@
 % Please edit documentation in R/summary.R
 \name{summary.Learner}
 \alias{summary.Learner}
+\alias{summary.GraphLearner}
 \alias{print.summary.Learner}
 \title{Summarizing mlr3 Learners}
 \usage{
@@ -34,18 +35,74 @@ number of important variables to be displayed.
 If NULL, \code{x$control$n_important} is used.}
 }
 \value{
-summary.Learner returns an object of class "summary.Learner", a \link{list}.
+summary.Learner returns an object of class "summary.Learner", a \link{list} with the following entries.
+\itemize{
+\item{task_type: }{The type of task, either \code{classif} (classification) or \code{regr} (regression).}
+\item{target_name: }{The name of the target variable.}
+\item{feature_names: }{The names of the features.}
+\item{classes: }{The classes of the target variable. NULL if regression task.}
+\item{resample_info: }{Information on the resample objects, strategy type and hyperparameters.}
+\item{residuals: }{Vector of hold-out residuals over the resampling iterations of \code{resample_result}.
+For regression models, residuals are difference between true and predicted outcome.
+For classifiers with probabilities, the residuals are the difference
+between predicted probabilities and a one-hot-encoding of the true class.
+For hard-label classifier \code{confusion_matrix} is given instead of \code{residuals}.}
+\item{confusion_matrix: }{Confusion matrix of predicted vs. true classes.
+Alternative to \code{residuals}, in case of hard-label classification.}
+\item{performance: }{Vector of aggregated performance measures over the iterations of \code{resample_result}.
+The arrows display whether lower or higher values are better.
+(micro/macro) displays whether it is a micro or macro measure.
+For macro aggregation measures are computed
+for each iteration separately before averaging.
+For micro, measures are computed across all iterations.
+See Bischl et al. (2024), for details.}
+\item{performance_sd: }{Vector of standard deviations of performance measures
+over the iterations of \code{resample_result}.
+The arrows display whether lower or higher values are better.
+(micro/macro) displays whether it is a micro or macro measure.}
+\item{fairness: }{Vector of aggregated fairness measures over the iterations of \code{resample_result}.
+The arrows display whether lower or higher values are better.
+(micro/macro) displays whether it is a micro or macro measure.}
+\item{fairness_sd: }{Vector of standard deviations of fairness measures
+over the iterations of \code{resample_result}.
+The arrows display whether lower or higher values are better.
+(micro/macro) displays whether it is a micro or macro measure (see details above).}
+\item{importances: }{List of \code{data.table} that display the feature importances
+per importance measure. Given are the means and standard deviations (sd)
+over the resampling iterations of \code{resample_result}.}
+\item{effects: }{List of \code{data.table} that display the feature effects
+per effect method. Given are the mean effects
+over the resampling iterations of \code{resample_result} for a maximum of
+5 grid points. For binary classifiers, effects are only displayed for
+the positively-labeled class.
+For multi-class, effect plots are displayed separately for each class.
+For categorical features, the factor levels of the feature determine
+the ordering of the bars.}
+\item{complexity: }{List of vectors that display the complexity values
+per complexity measure for each resampling iteration.}
+\item{control: }{\link{summary_control} used as an input for \code{summary.Learner}.}
+}
+
+For details on the performance measures, complexity measures, feature
+importance and feature effect methods, see \link{summary_control}.
 }
 \description{
 summary method for class \code{Learner}.
+The output could be tailored via the \code{control} argument, see \link{summary_control}.
 }
 \examples{
 if (require("mlr3")) {
-  tsk_peng = tsk("penguins")
+  tsk_iris = tsk("iris")
   lrn_rpart =  lrn("classif.rpart", predict_type = "prob")
-  lrn_rpart$train(task = tsk_peng)
-  rsmp_cv5 = rsmp("cv", folds = 3L)
-  rr = resample(tsk_peng, lrn_rpart, rsmp_cv5, store_model = TRUE)
+  lrn_rpart$train(task = tsk_iris)
+  rsmp_cv3 = rsmp("cv", folds = 3L)
+  rr = resample(tsk_iris, lrn_rpart, rsmp_cv3, store_model = TRUE)
   summary(lrn_rpart, rr)
 }
+}
+\references{
+Bischl, Bernd, Sonabend, Raphael, Kotthoff, Lars, Lang, Michel (2024).
+\emph{Applied machine learning using mlr3 in R}.
+Chapman and Hall/CRC.
+ISBN 9781003402848, \doi{10.1201/9781003402848}, \url{https://mlr3book.mlr-org.com/}.
 }
