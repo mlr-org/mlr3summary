@@ -26,10 +26,10 @@ of used features) and "interaction_strength" (see Molnar et al. (2020)).
 Both are the default.}
 
 \item{importance_measures}{(character()|NULL)\cr
-vector of importance measure names. Possible choices are "pfi.\if{html}{\out{<loss>}}"
+vector of importance measure names. Possible choices are "pfi.<loss>"
 (\link[iml:FeatureImp]{iml::FeatureImp}), "pdp" (\link[iml:FeatureEffects]{iml::FeatureEffects}, see ) and
-"shap" (\link[fastshap:explain]{fastshap::explain}). Default of NULL results in "pfi.\if{html}{\out{<loss>}} and
-"pdp", where the \if{html}{\out{<loss>}} depends on the Learner type (classif vs. regr).}
+"shap" (\link[fastshap:explain]{fastshap::explain}). Default of NULL results in "pfi.<loss> and
+"pdp", where the <loss> depends on the Learner type (classif vs. regr).}
 
 \item{n_important}{(numeric(1))\cr
 number of important variables to be displayed. Default is 15L.}
@@ -57,6 +57,27 @@ the number of digits to use when printing.}
 }
 \description{
 Various parameters that control aspects of \code{summary.Learner}.
+}
+\details{
+The following provides some details on the different paragraphs in the summary output.
+
+\strong{Performance}
+The default performance measures depend on the type of task. Therefore, NULL is displayed and
+the measures will be initialized in \code{summary.Learner} with the help of \code{mlr3::msr}.
+The following provides an overview:
+\itemize{
+\item{Regression: }{\link[mlr3::mlr_measures_regr.rmse]{"regr.rmse"},
+\link[mlr3::mlr_measures_regr.rsq]{"regr.rsq"}, \link[mlr3::mlr_measures_regr.mae]{"regr.mae"},
+\link[mlr3::mlr_measures_regr.medae]{"regr.medae"}}
+\item{Binary classification with probabilities: }{
+\link[mlr3::mlr_measures_classif.auc]{"classif.auc"},
+\link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
+\link[mlr3::mlr_measures_classif.bbrier]{"classif.bbrier"},
+\link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
+\item{Binary classification with hard labels: }{Stuff}
+\item{Multi-class classification with probabilities: }{Stuff}
+\item{Multi-class classification with hard labels: }{Stuff}
+}
 }
 \references{
 Molnar, Christoph, Casalicchio, Giuseppe, Bischl, Bernd (2020).

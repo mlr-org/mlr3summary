@@ -2,10 +2,13 @@
 % Please edit documentation in R/summary.R
 \name{summary.Learner}
 \alias{summary.Learner}
+\alias{summary.GraphLearner}
 \alias{print.summary.Learner}
 \title{Summarizing mlr3 Learners}
 \usage{
 \method{summary}{Learner}(object, resample_result = NULL, control = summary_control(), ...)
+
+\method{summary}{GraphLearner}(object, resample_result = NULL, control = summary_control(), ...)
 
 \method{print}{summary.Learner}(x, digits = NULL, n_important = NULL, ...)
 }
@@ -38,6 +41,12 @@ summary.Learner returns an object of class "summary.Learner", a \link{list}.
 }
 \description{
 summary method for class \code{Learner}.
+}
+\details{
+This function can be parallelized with the \CRANpkg{future} package.
+One job is one resampling iteration, and all jobs are send to an apply function
+from \CRANpkg{future.apply} in a single batch.
+To select a parallel backend, use \code{\link[future:plan]{future::plan()}}.
 }
 \examples{
 if (require("mlr3")) {

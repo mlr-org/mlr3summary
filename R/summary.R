@@ -1,11 +1,19 @@
 #' @rdname summary.Learner
 #' @name summary.Learner
 #' @aliases summary.Learner
+#' @aliases summary.GraphLearner
 #' @aliases print.summary.Learner
 #' @title Summarizing mlr3 Learners
 #'
 #' @description
 #' summary method for class `Learner`.
+#'
+#' @details
+#'
+#' This function can be parallelized with the \CRANpkg{future} package.
+#' One job is one resampling iteration, and all jobs are send to an apply function
+#' from \CRANpkg{future.apply} in a single batch.
+#' To select a parallel backend, use [future::plan()].
 #'
 #'
 #' @param object ([mlr3::Learner])\cr
@@ -233,6 +241,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 }
 
 #' @export
+#' @rdname summary.Learner
 summary.GraphLearner = function(object, resample_result = NULL, control = summary_control(), ...) {
 
   # get all info as Learner
@@ -266,6 +275,37 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @title Control for Learner summaries
 #'
 #' @description Various parameters that control aspects of `summary.Learner`.
+#'
+#' @details
+#'
+#' The following provides some details on the different paragraphs in the summary output.
+#'
+#' \strong{Performance}
+#' The default performance measures depend on the type of task. Therefore, NULL is displayed and
+#' the measures will be initialized in `summary.Learner` with the help of `mlr3::msr`.
+#' The following provides an overview:
+#' \itemize{
+#'  \item{Regression: }{\link[mlr3::mlr_measures_regr.rmse]{"regr.rmse"},
+#'  \link[mlr3::mlr_measures_regr.rsq]{"regr.rsq"},
+#'  \link[mlr3::mlr_measures_regr.mae]{"regr.mae"},
+#'  \link[mlr3::mlr_measures_regr.medae]{"regr.medae"}}
+#'  \item{Binary classification with probabilities: }{
+#'  \link[mlr3::mlr_measures_classif.auc]{"classif.auc"},
+#'  \link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
+#'  \link[mlr3::mlr_measures_classif.bbrier]{"classif.bbrier"},
+#'  \link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
+#'  \item{Binary classification with hard labels: }{
+#'  \link[mlr3::mlr_measures_classif.acc]{"classif.acc"},
+#'  \link[mlr3::mlr_measures_classif.bacc]{"classif.bacc"},
+#'  \link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
+#'  \link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
+
+#'  \item{Multi-class classification with probabilities: }{
+#'  \link[mlr3::mlr_measures_classif.mauc_aunp]{"classif.mauc_aunp"},
+#'  \link[mlr3::mlr_measures_classif.mbrier]{"classif.mbrier"}}
+#'
+#' }
+#'
 #'
 #' @param measures ([mlr3::Measure] | list of [mlr3::Measure] | NULL)\cr
 #'   measure(s) to calculate performance on. If NULL (default), a set of
