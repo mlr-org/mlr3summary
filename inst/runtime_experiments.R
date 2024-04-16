@@ -7,7 +7,8 @@ library(mlr3misc)
 library(tictoc)
 library(checkmate)
 library(devtools)
-library(patchwork)
+library(ggpubr)
+library(future)
 load_all()
 
 n_set = c(50, 100, 500, 1000, 2000)
@@ -60,6 +61,8 @@ run_experiment = function(n, p, mod, print = FALSE) {
 
 }
 
+
+
 runtime1 = pmap_dbl(setup, function(n, p) {
   run_experiment(n, p,mod1)
 })
@@ -68,18 +71,14 @@ runtime2 =  pmap_dbl(setup, function(n, p) {
   run_experiment(n, p,mod2)
 })
 
-results = cbind(setup, runtime1, runtime2)
-results$n = as.factor(results$n, levels = sort(unique(results$n)))
+plan("multisession")
 
-plt_rf = ggplot(data = results, aes(x = p, y = runtime1, group = n)) +
-  geom_point(aes(colour = n)) +
-  geom_line(aes(colour = n)) +
-  theme_bw() +
-  guides(colour = guide_legend(reverse=T)) +
-  scale_colour_grey(start = 0.8, end = 0.2) +
-  ylab("runtime (sec)")
-  # ylim(c(0, 1100))
-  #  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 2))
+runtime3 = pmap_dbl(setup, function(n, p) {
+  run_experiment(n, p, mod1)
+})
+
+results = cbind(setup, runtime1, runtime2, runtime3)
+results$n = as.factor(results$n, levels = sort(unique(results$n)))
 
 plt_lm = ggplot(data = results, aes(x = p, y = runtime2, group = n)) +
   geom_point(aes(colour = n)) +
@@ -87,10 +86,31 @@ plt_lm = ggplot(data = results, aes(x = p, y = runtime2, group = n)) +
   theme_bw() +
   guides(colour = guide_legend(reverse=T)) +
   scale_colour_grey(start = 0.8, end = 0.2) +
+  ylab("runtime (sec)")
+# scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 2))
+# ylim(c(0, 1100))
+
+
+plt_rf = ggplot(data = results, aes(x = p, y = runtime1, group = n)) +
+  geom_point(aes(colour = n)) +
+  geom_line(aes(colour = n)) +
+  theme_bw() +
+  guides(colour = guide_legend(reverse=T)) +
+  scale_colour_grey(start = 0.8, end = 0.2) +
   ylab("")
- # scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 2))
   # ylim(c(0, 1100))
+  #  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 2))
 
-plt = ggarrange(plt_rf, plt_lm, ncol=2, common.legend = TRUE, legend="right")
 
-ggsave(plot = plt, filename = "inst/runtime.png", width = 6, height = 2)
+plt_rf_para = ggplot(data = results, aes(x = p, y = runtime3, group = n)) +
+  geom_point(aes(colour = n)) +
+  geom_line(aes(colour = n)) +
+  theme_bw() +
+  guides(colour = guide_legend(reverse=T)) +
+  scale_colour_grey(start = 0.8, end = 0.2) +
+  ylab("")
+
+
+plt = ggarrange(plt_lm, plt_rf, plt_rf_para, ncol=3, common.legend = TRUE, legend="right")
+
+ggsave(plot = plt, filename = "inst/runtime.png", width = 9, height = 1.5)
