@@ -14,7 +14,7 @@ get_effects = function(obj, effect_measures) {
 
     effs_list = map(effect_measures, function(eff_msr) {
       # step through resample folds
-      effs = data.table::rbindlist(
+      effs = rbindlist(
         future_mapply(function(task,
         learner, resampling, iteration, prediction, ...) {
         get_single_effect(eff_msr, task, learner, train_set = resampling$train_set(iteration),

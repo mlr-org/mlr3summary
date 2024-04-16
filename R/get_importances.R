@@ -10,7 +10,7 @@ get_importances = function(obj, importance_measures) {
   imps_list = map(importance_measures, function(imp_msr) {
 
     # step through resample folds
-    imps = data.table::rbindlist(
+    imps = rbindlist(
       future_mapply(function(task,
       learner, resampling, iteration, prediction, ...) {
       get_single_importance(imp_msr, task, learner, train_set = resampling$train_set(iteration),
