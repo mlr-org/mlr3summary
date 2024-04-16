@@ -7,7 +7,7 @@ get_importances = function(obj, importance_measures) {
     c("task", "learner"), with = FALSE]
 
   # step through importance measures
-  imps_list = map(importance_measures, function(imp_msr) {
+  imps_list = future_Map(function(imp_msr) {
 
     # step through resample folds
     imps = pmap_dtr(tab, function(task,
@@ -21,7 +21,8 @@ get_importances = function(obj, importance_measures) {
     varimps = imps[, list(sd = stats::sd(importance)), by = feature]
     merge(mm, varimps, by = "feature")
 
-  })
+  }, importance_measures, future.seed = TRUE)
+
   names(imps_list) = importance_measures
   imps_list
 }

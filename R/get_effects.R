@@ -11,7 +11,7 @@ get_effects = function(obj, effect_measures) {
   max_val = obj$task$data()[, map(.SD, max, na.rm = TRUE), .SDcols = is.numeric]
 
   # step through effect measures
-  effs_list = map(effect_measures, function(eff_msr) {
+  effs_list = future_Map(function(eff_msr) {
 
     # step through resample folds
     effs = pmap_dtr(tab, function(task,
@@ -25,7 +25,7 @@ get_effects = function(obj, effect_measures) {
       groupvars = c("feature", "grid")
     }
     effs[, mean(value, na.rm = TRUE), by = groupvars]
-  })
+  }, effect_measures, future.seed = TRUE)
   names(effs_list) = effect_measures
   effs_list
 }

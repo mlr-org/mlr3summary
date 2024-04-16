@@ -4,6 +4,7 @@
 #' @import mlr3misc
 #' @import backports
 #' @import cli
+#' @importFrom future.apply future_Map
 "_PACKAGE"
 
 .onLoad = function(libname, pkgname) {

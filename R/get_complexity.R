@@ -7,7 +7,7 @@ get_complexity = function(obj, complexity_measures) {
     c("task", "learner"), with = FALSE]
 
   # step through complexity measures
-  comps_list = map(complexity_measures, function(comp_msr) {
+  comps_list = future_Map(function(comp_msr) {
     # step through resample folds
     comps = pmap_dbl(tab, function(task,
       learner, resampling, iteration, prediction, ...) {
@@ -15,7 +15,7 @@ get_complexity = function(obj, complexity_measures) {
         prediction)
     })
     comps
-  })
+  }, complexity_measures, future.seed = TRUE)
   names(comps_list) = complexity_measures
   comps_list
 }
