@@ -9,6 +9,7 @@ library(checkmate)
 library(devtools)
 library(ggpubr)
 library(future)
+library(future.apply)
 load_all()
 
 n_set = c(50, 100, 500, 1000, 2000)
