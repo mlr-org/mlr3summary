@@ -45,16 +45,16 @@ summary.Learner returns an object of class "summary.Learner", a \link{list} with
 \item{classes: }{The classes of the target variable. NULL if regression task.}
 \item{resample_info: }{Information on the resample objects, strategy type and hyperparameters.}
 \item{residuals: }{Vector of hold-out residuals over the resampling iterations of \code{resample_result}.
-For regression models, residuals are difference between true and predicted outcome.
+For regression models, residuals are the difference between true and predicted outcome.
 For classifiers with probabilities, the residuals are the difference
 between predicted probabilities and a one-hot-encoding of the true class.
-For hard-label classifier \code{confusion_matrix} is given instead of \code{residuals}.}
+For hard-label classifier, a \code{confusion_matrix} is shown instead of \code{residuals}.}
 \item{confusion_matrix: }{Confusion matrix of predicted vs. true classes.
 Alternative to \code{residuals}, in case of hard-label classification.}
 \item{performance: }{Vector of aggregated performance measures over the iterations of \code{resample_result}.
 The arrows display whether lower or higher values are better.
 (micro/macro) displays whether it is a micro or macro measure.
-For macro aggregation measures are computed
+For macro aggregation, measures are computed
 for each iteration separately before averaging.
 For micro, measures are computed across all iterations.
 See Bischl et al. (2024), for details.}
@@ -70,10 +70,10 @@ over the iterations of \code{resample_result}.
 The arrows display whether lower or higher values are better.
 (micro/macro) displays whether it is a micro or macro measure (see details above).}
 \item{importances: }{List of \code{data.table} that display the feature importances
-per importance measure. Given are the means and standard deviations (sd)
+per importance measure. Given are the means and standard deviations
 over the resampling iterations of \code{resample_result}.
 Higher average values display higher importance of a feature.}
-\item{effects: }{List of \code{data.table} that display the feature effects
+\item{effects: }{List of \code{data.table}s that display the feature effects
 per effect method. Given are the mean effects
 over the resampling iterations of \code{resample_result} for a maximum of
 5 grid points. For binary classifiers, effects are only displayed for
@@ -90,7 +90,7 @@ For details on the performance measures, complexity measures, feature
 importance and feature effect methods, see \link{summary_control}.
 }
 \description{
-summary method for class \code{Learner}.
+summary method for \link[mlr3:Learner]{mlr3::Learner}.
 The output could be tailored via the \code{control} argument, see \link{summary_control}.
 }
 \details{
@@ -113,5 +113,5 @@ if (require("mlr3")) {
 Bischl, Bernd, Sonabend, Raphael, Kotthoff, Lars, Lang, Michel (2024).
 \emph{Applied machine learning using mlr3 in R}.
 Chapman and Hall/CRC.
-ISBN 9781003402848, \doi{10.1201/9781003402848}, \url{https://mlr3book.mlr-org.com/}.
+ISBN 9781003402848, \url{https://mlr3book.mlr-org.com/}.
 }

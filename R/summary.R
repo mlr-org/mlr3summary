@@ -6,7 +6,7 @@
 #' @title Summarizing mlr3 Learners
 #'
 #' @description
-#' summary method for class `Learner`.
+#' summary method for [mlr3::Learner].
 #' The output could be tailored via the `control` argument, see [summary_control].
 #'
 #' @details
@@ -42,16 +42,16 @@
 #' \item{classes: }{The classes of the target variable. NULL if regression task.}
 #' \item{resample_info: }{Information on the resample objects, strategy type and hyperparameters.}
 #' \item{residuals: }{Vector of hold-out residuals over the resampling iterations of `resample_result`.
-#' For regression models, residuals are difference between true and predicted outcome.
+#' For regression models, residuals are the difference between true and predicted outcome.
 #' For classifiers with probabilities, the residuals are the difference
 #' between predicted probabilities and a one-hot-encoding of the true class.
-#' For hard-label classifier `confusion_matrix` is given instead of `residuals`.}
+#' For hard-label classifier, a `confusion_matrix` is shown instead of `residuals`.}
 #' \item{confusion_matrix: }{Confusion matrix of predicted vs. true classes.
 #'      Alternative to `residuals`, in case of hard-label classification.}
 #' \item{performance: }{Vector of aggregated performance measures over the iterations of `resample_result`.
 #'      The arrows display whether lower or higher values are better.
 #'      (micro/macro) displays whether it is a micro or macro measure.
-#'      For macro aggregation measures are computed
+#'      For macro aggregation, measures are computed
 #'      for each iteration separately before averaging.
 #'      For micro, measures are computed across all iterations.
 #'      See Bischl et al. (2024), for details.}
@@ -67,10 +67,10 @@
 #'       The arrows display whether lower or higher values are better.
 #'      (micro/macro) displays whether it is a micro or macro measure (see details above).}
 #' \item{importances: }{List of `data.table` that display the feature importances
-#'      per importance measure. Given are the means and standard deviations (sd)
+#'      per importance measure. Given are the means and standard deviations
 #'      over the resampling iterations of `resample_result`.
 #'      Higher average values display higher importance of a feature.}
-#' \item{effects: }{List of `data.table` that display the feature effects
+#' \item{effects: }{List of `data.table`s that display the feature effects
 #'      per effect method. Given are the mean effects
 #'      over the resampling iterations of `resample_result` for a maximum of
 #'      5 grid points. For binary classifiers, effects are only displayed for
@@ -333,7 +333,7 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #'
 #' @details
 #'
-#' The following provides some details on the different paragraphs in the summary output.
+#' The following provides some details on the different choices of measures.
 #'
 #' \strong{Performance}
 #' The default `measures` depend on the type of task. Therefore, NULL is displayed as default and
@@ -386,14 +386,14 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' }
 #' NULL is the default, corresponding to importance calculations based on pdp and pfi.
 #' Because the loss function for pfi relies on the task at hand, the importance measures
-#' are initialized in `summary`. `pdp`and `pfi.ce` are the defaults for
-#' classification, `pdp` and `pfi.mse` for regression.
+#' are initialized in `summary`."pdp" and "pfi.ce" are the defaults for
+#' classification, "pdp" and "pfi.mse" for regression.
 #'
 #' \strong{Effects} The `effect_measures` are based on [iml::FeatureEffects].
 #' Currently partial dependence plots (pdp) and accumulated local effects are
 #' available (ale). Ale has the advantage over pdp that it takes feature
 #' correlations into account but has a less natural interpretation than pdp.
-#' Therefore, both pdps and ales are the defaults.
+#' Therefore, both "pdp" and "ale" are the defaults.
 #'
 #' \strong{Fairness}
 #' The default `fairness_measures` depend on the type of task.
@@ -421,24 +421,27 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @param measures ([mlr3::Measure] | list of [mlr3::Measure] | NULL)\cr
 #'   measure(s) to calculate performance on. If NULL (default), a set of
 #'   selected measures are calculated (choice depends on Learner type (classif vs. regr)).
+#'   See details below.
 #' @param complexity_measures (character)\cr
 #'   vector of complexity measures. Possible choices are "sparsity" (the number
 #'   of used features) and "interaction_strength" (see Molnar et al. (2020)).
-#'   Both are the default.
+#'   Both are the default. See details below.
 #' @param importance_measures (character()|NULL)\cr
 #'   vector of importance measure names. Possible choices are "pfi.<loss>"
 #'   ([iml::FeatureImp]), "pdp" ([iml::FeatureEffects], see ) and
 #'   "shap" ([fastshap::explain]). Default of NULL results in "pfi.<loss> and
 #'   "pdp", where the <loss> depends on the Learner type (classif vs. regr).
+#'   See details below.
 #' @param n_important (numeric(1))\cr
 #'   number of important variables to be displayed. Default is 15L.
 #' @param effect_measures (character | NULL)\cr
 #'   vector of effect method names. Possible choices are "pfi" and "ale"
-#'   (see [iml::FeatureEffects]). Both are the default.
+#'   (see [iml::FeatureEffects]). Both are the default. See details below.
 #' @param fairness_measures ([mlr3fairness::MeasureFairness] |
 #' list of [mlr3fairness::MeasureFairness] | NULL)\cr
 #'  measure(s) to assess fairness. If NULL (default), a set of
 #'  selected measures are calculated (choice depends on Learner type (classif vs. regr)).
+#'  See details below.
 #' @param protected_attribute (character(1))\cr
 #'  name of the binary feature that is used as a protected attribute.
 #'  If no `protected_attribute` is specified (and also no `pta` feature is

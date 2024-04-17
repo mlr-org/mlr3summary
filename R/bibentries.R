@@ -83,7 +83,6 @@ bibentries = c(
   ), mlr3book = bibentry("book",
     title = "Applied machine learning using mlr3 in R",
     ISBN = "9781003402848",
-    DOI = "10.1201/9781003402848",
     publisher = "Chapman and Hall/CRC",
     author = "Bischl,  Bernd and Sonabend,  Raphael and Kotthoff,  Lars and Lang,  Michel",
     url = "https://mlr3book.mlr-org.com/",
