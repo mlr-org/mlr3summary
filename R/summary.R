@@ -68,7 +68,8 @@
 #'      (micro/macro) displays whether it is a micro or macro measure (see details above).}
 #' \item{importances: }{List of `data.table` that display the feature importances
 #'      per importance measure. Given are the means and standard deviations (sd)
-#'      over the resampling iterations of `resample_result`.}
+#'      over the resampling iterations of `resample_result`.
+#'      Higher average values display higher importance of a feature.}
 #' \item{effects: }{List of `data.table` that display the feature effects
 #'      per effect method. Given are the mean effects
 #'      over the resampling iterations of `resample_result` for a maximum of
@@ -335,9 +336,9 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' The following provides some details on the different paragraphs in the summary output.
 #'
 #' \strong{Performance}
-#' The default performance measures depend on the type of task. Therefore, NULL is displayed and
+#' The default `measures` depend on the type of task. Therefore, NULL is displayed as default and
 #' the measures will be initialized in `summary.Learner` with the help of `mlr3::msr`.
-#' The following provides an overview:
+#' The following provides an overview of these defaults:
 #' \itemize{
 #'  \item{Regression: }{\link[mlr3::mlr_measures_regr.rmse]{"regr.rmse"},
 #'  \link[mlr3::mlr_measures_regr.rsq]{"regr.rsq"},
@@ -353,13 +354,69 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #'  \link[mlr3::mlr_measures_classif.bacc]{"classif.bacc"},
 #'  \link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
 #'  \link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
-
 #'  \item{Multi-class classification with probabilities: }{
 #'  \link[mlr3::mlr_measures_classif.mauc_aunp]{"classif.mauc_aunp"},
 #'  \link[mlr3::mlr_measures_classif.mbrier]{"classif.mbrier"}}
-#'
+#' }
+#' \strong{Complexity}
+#' Currently only two `complexity_measures` are available, which are
+#' based on Molnar et al. (2020):
+#' \itemize{
+#' \item{`sparsity`: }{The number of used features, that have a non-zero effect
+#' on the prediction (evaluated by accumulated local effects (ale, Apley and Zhu
+#' (2020)). The measure can have values between 0 and the number of features.}
+#' \item{`interaction_strength`: }{The scaled approximation error between a
+#' main effect model (based on ale) and the prediction function. It can have
+#' values between 0 and 1, where 0 means no interaction and 1 only interaction,
+#' and no main effects. Interaction strength can only be measured for binary
+#' classification and regression models.}
 #' }
 #'
+#' \strong{Importance} The `importance_measures` are based on the [iml] and
+#' [fastshap] packages. Multiple measures are available:
+#' \itemize{
+#' \item{pdp: }{This corrensponds to importances based on the standard deviations
+#' in partial dependence plots (Friedmann (2001)), as proposed by Greenwell et al. (2018).}
+#' \item{pfi.<loss>: }{This corresponds to the permutation feature importance as
+#' implemented in [iml::FeatureImp]. Different loss functions are possible and
+#' rely on the task at hand.}
+#' \item{shap: }{This importance corresponds to the
+#' mean absolute Shapley values computed with [fastshap::explain].
+#' Higher values display higher importance.}
+#' }
+#' NULL is the default, corresponding to importance calculations based on pdp and pfi.
+#' Because the loss function for pfi relies on the task at hand, the importance measures
+#' are initialized in `summary`. `pdp`and `pfi.ce` are the defaults for
+#' classification, `pdp` and `pfi.mse` for regression.
+#'
+#' \strong{Effects} The `effect_measures` are based on [iml::FeatureEffects].
+#' Currently partial dependence plots (pdp) and accumulated local effects are
+#' available (ale). Ale has the advantage over pdp that it takes feature
+#' correlations into account but has a less natural interpretation than pdp.
+#' Therefore, both pdps and ales are the defaults.
+#'
+#' \strong{Fairness}
+#' The default `fairness_measures` depend on the type of task.
+#' Therefore, NULL is displayed as default and
+#' the measures will be initialized in `summary.Learner` based on
+#' [mlr3fairness:mlr_measures_fairness].
+#' There is currently a mismatch between the naming convention of
+#' measures in [mlr3fairness] and the underlying measurements displayed.
+#' To avoid confusion, the id of the fairness measures were adapted.
+#' The following provides an overview of these defaults and adapted names:
+#' \itemize{
+#'  \item{Binary classification: }{"fairness.dp" (demographic parity) based on "fairness.cv",
+#'  "fairness.cuae" (conditional use accuracy equality) based on "fairness.pp",
+#'  "fairness.eod" (equalized odds) based on "fairness.eod". Smaller values are better.}
+#'  \item{Multi-class classification: }{"fairness.acc", the smallest absolute
+#'  difference in accuracy between groups of the `protected_attribute`.
+#'  Smaller values are better.}
+#'  \item{Regression: }{"fairness.rmse" and "fairness.mae",
+#'  the smallest absolute difference (see [mlr3fairness::groupdiff_absdiff])
+#'  in the either the root mean-squared error (rmse) or
+#'  the mean absolute error (mae) between groups of the `protected_attribute`.
+#'  Smaller values are better.}
+#'  }
 #'
 #' @param measures ([mlr3::Measure] | list of [mlr3::Measure] | NULL)\cr
 #'   measure(s) to calculate performance on. If NULL (default), a set of
@@ -394,6 +451,10 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' `r format_bib("molnar_complexity_2020")`
 #'
 #' `r format_bib("greenwell_simple_2018")`
+#'
+#' `r format_bib("apley_ale_2020")`
+#'
+#' `r format_bib("friedman_pdp_2001")`
 #' @export
 
 summary_control = function(measures = NULL,

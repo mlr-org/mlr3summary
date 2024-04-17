@@ -71,7 +71,8 @@ The arrows display whether lower or higher values are better.
 (micro/macro) displays whether it is a micro or macro measure (see details above).}
 \item{importances: }{List of \code{data.table} that display the feature importances
 per importance measure. Given are the means and standard deviations (sd)
-over the resampling iterations of \code{resample_result}.}
+over the resampling iterations of \code{resample_result}.
+Higher average values display higher importance of a feature.}
 \item{effects: }{List of \code{data.table} that display the feature effects
 per effect method. Given are the mean effects
 over the resampling iterations of \code{resample_result} for a maximum of
