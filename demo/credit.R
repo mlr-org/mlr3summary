@@ -35,12 +35,21 @@ summary(object = rf, resample_result = rr,
   control = summary_control(measures = msrs(list("classif.acc"))))
 
 summary(object = rf, resample_result = rr,
-  control = summary_control(importance_measures = c("pfi.f1", "shap")))
+  control = summary_control(importance_measures = c("pfi.f1")))
 
 # ---- omit certain parts ----
-# summary(object = rf, resample_result = rr,
-#   control = summary_control(measures = msrs(list("classif.acc"))),
-#   hide = c("performance", "residuals", "complexity"))
+summary(object = rf, resample_result = rr,
+  control = summary_control(measures = msrs(list("classif.acc"))),
+  hide = c("performance", "residuals", "complexity"))
+
+# ---- parallelization ----
+library("future")
+plan("multisession")
+summary(object = rf, resample_result = rr)
+
+# ---- getting help ---
+?summary.Learner
+?summary_control
 
 # ---- pipelines ----
 library(mlr3pipelines)
@@ -73,7 +82,8 @@ lrn_svm = po("encode") %>>% lrn("classif.svm",
   cost  = to_tune(1e-5, 1e5, logscale = TRUE),
   gamma = to_tune(1e-5, 1e5, logscale = TRUE),
   kernel = "radial",
-  type = "C-classification"
+  type = "C-classification",
+  predict_type = "prob"
 )
 cv3 = rsmp("cv", folds = 3)
 msr_ce = msr("classif.ce")
@@ -85,9 +95,4 @@ summary(at)
 
 rr_at = resample(task = task, learner = at, resampling = cv3, store_models = TRUE)
 summary(at, rr_at)
-
-# ---- getting help ---
-?summary.Learner
-?summary_control
-as.data.table(mlr_measures_fairness)
 
