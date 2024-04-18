@@ -10,7 +10,7 @@
 
 \method{summary}{GraphLearner}(object, resample_result = NULL, control = summary_control(), ...)
 
-\method{print}{summary.Learner}(x, digits = NULL, n_important = NULL, ...)
+\method{print}{summary.Learner}(x, digits = NULL, n_important = NULL, hide = NULL, ...)
 }
 \arguments{
 \item{object}{(\link[mlr3:Learner]{mlr3::Learner})\cr
@@ -35,6 +35,11 @@ the number of digits to use when printing.}
 \item{n_important}{(numeric(1))\cr
 number of important variables to be displayed.
 If NULL, \code{x$control$n_important} is used.}
+
+\item{hide}{(character)\cr
+Names of paragraphs which should not be part of the summary.
+Possible values are "general", "residuals", "performance", "complexity", "fairness",
+"importance", "effect". If NULL, no paragraph is hided.}
 }
 \value{
 summary.Learner returns an object of class "summary.Learner", a \link{list} with the following entries.
