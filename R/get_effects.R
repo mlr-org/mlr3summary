@@ -19,7 +19,7 @@ get_effects = function(obj, effect_measures) {
         learner, resampling, iteration, prediction, ...) {
         get_single_effect(eff_msr, task, learner, train_set = resampling$train_set(iteration),
           prediction, min_val = min_val, max_val = max_val)
-      },  tab$task, tab$learner, tab$resampling, tab$iteration, tab$prediction,
+      }, tab$task, tab$learner, tab$resampling, tab$iteration, tab$prediction,
           future.seed = NULL, SIMPLIFY = FALSE))
       if (!is.null(effs$class)) {
         groupvars = c("feature", "grid", "class")
