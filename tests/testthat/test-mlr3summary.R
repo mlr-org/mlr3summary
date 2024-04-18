@@ -71,3 +71,15 @@ test_that("Correct output for multiclass classification", {
   expect_true(all(sm_complex$effects$ale$class %in% 1:3))
   expect_true(all(sm_complex$effects$pdp$class %in% 1:3))
 })
+
+test_that("hide works", {
+  set.seed(100)
+  tsk = get_regression_task()
+  lrn_rr = lrn("regr.rpart", maxdepth = 2L)
+  lrn_rr$train(tsk)
+  ho = rsmp("holdout")
+  rr_reg = resample(tsk, lrn_rr, ho, store_models = TRUE)
+  sm = summary(lrn_rr, rr_reg, summary_control(hide = c("fairness",
+    "importance", "effect", "complexity", "performance", "residuals", "general")))
+  expect_list(sm, len = 1, label = "control")
+})

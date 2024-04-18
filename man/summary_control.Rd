@@ -12,6 +12,7 @@ summary_control(
   effect_measures = c("pdp", "ale"),
   fairness_measures = NULL,
   protected_attribute = NULL,
+  hide = NULL,
   digits = max(3L, getOption("digits") - 3L)
 )
 }
@@ -51,6 +52,11 @@ name of the binary feature that is used as a protected attribute.
 If no \code{protected_attribute} is specified (and also no \code{pta} feature is
 available in the \code{mlr3::Task} for training the \code{mlr3::Learner}),
 no fairness metrics are computed.}
+
+\item{hide}{(character)\cr
+Names of paragraphs which should not be part of the summary.
+Possible values are "general", "residuals", "performance", "complexity", "fairness",
+"importance", "effect". If NULL, no paragraph is hided.}
 
 \item{digits}{(numeric(1))\cr
 the number of digits to use when printing.}
