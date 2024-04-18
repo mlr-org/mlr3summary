@@ -4,22 +4,58 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of mlr3summary is to ...
+Concise, informative summaries of machine learning models.
+Based on the [mlr3](https://github.com/mlr-org).
+Inspired by the summary output of (generalized) linear models.
+
 
 ## Installation
 
-You can install the development version of mlr3summary like so:
+You can install the development version of mlr3summary: 
 
-``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+```{r eval = FALSE}
+remotes::install_github("mlr-org/mlr3summary")
+```
+
+If you want to get started with `mlr3` (the basis of `mlr3summary`), we recommend installing the [mlr3verse](https://mlr3verse.mlr-org.com/) meta-package which installs `mlr3` and some of the most important extension packages:
+```{r eval = FALSE}
+install.packages("mlr3verse")
 ```
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+### Load data and create a task
 
-``` r
+```{r}
 library(mlr3summary)
-## basic example code
+data("credit", package = "mlr3summary")
+task = TaskClassif$new(id = "credit", backend = credit, target = "risk", positive = "good")
+```
+
+### Fit a model and resampling strategy
+
+```{r}
+set.seed(12005L)
+rf = lrn("classif.ranger", predict_type = "prob")
+rf$train(task)
+
+cv3 = rsmp("cv", folds = 3L)
+rr = resample(task = task, learner = rf, resampling = cv3, store_models = TRUE)
+rr$aggregate(msrs(list("classif.acc", "classif.auc")))
+
+```
+
+### Apply the summary function
+
+```{r}
+summary(object = rf, resample_result = rr)
+```
+![summary_output](https://github.com/slds-lmu/mlr3summary/assets/25373845/84b6cf8f-72d6-42ae-8218-5df1623008a3)
+
+## Extension Packages
+
+If you use mlr3summary, please cite: 
+```{r echo = FALSE, comment = ""}
+toBibtex(citation("mlr3summary"))
 ```
 

@@ -6,7 +6,7 @@
 \alias{mlr3summary-package}
 \title{mlr3summary: Model and learner summaries for 'mlr3'}
 \description{
-Summary package for learners and models of the 'mlr3' ecosystem. Returns a summary table that provides an overview of a model at one glance. It works for single models but also resampling results.
+The package provides concise and interpretable summaries for machine learning models and learners of the 'mlr3' ecosystem. The package takes inspiration from the summary function for (generalized) linear models but extends it to non-parametric machine learning models, based on generalization performance, model complexity, feature importances and effects, and fairness metrics.
 }
 \author{
 \strong{Maintainer}: Susanne Dandl \email{dandls.datascience@gmail.com} (\href{https://orcid.org/0000-0003-4324-4163}{ORCID})
@@ -14,9 +14,9 @@ Summary package for learners and models of the 'mlr3' ecosystem. Returns a summa
 Authors:
 \itemize{
   \item Marc Becker \email{marcbecker@posteo.de} (\href{https://orcid.org/0000-0002-8115-0400}{ORCID})
-  \item Ludwig Bothmann \email{ludwig.bothmann@stat.uni-muenchen.de} (\href{https://orcid.org/0000-0002-1471-6582}{ORCID})
-  \item Giuseppe Casalicchio \email{giuseppe.casalicchio@stat.uni-muenchen.de} (\href{https://orcid.org/0000-0001-5324-5966}{ORCID})
   \item Bernd Bischl \email{bernd_bischl@gmx.net} (\href{https://orcid.org/0000-0001-6002-6980}{ORCID})
+  \item Giuseppe Casalicchio \email{giuseppe.casalicchio@stat.uni-muenchen.de} (\href{https://orcid.org/0000-0001-5324-5966}{ORCID})
+  \item Ludwig Bothmann \email{ludwig.bothmann@stat.uni-muenchen.de} (\href{https://orcid.org/0000-0002-1471-6582}{ORCID})
 }
 
 }
