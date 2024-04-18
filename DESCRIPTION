@@ -6,16 +6,19 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-4324-4163")),
     person("Marc", "Becker", , "marcbecker@posteo.de", role = c("aut"),
            comment = c(ORCID = "0000-0002-8115-0400")),
-    person("Ludwig", "Bothmann", , "ludwig.bothmann@stat.uni-muenchen.de", role = "aut",
-           comment = c(ORCID = "0000-0002-1471-6582")),
+    person("Bernd", "Bischl", , "bernd_bischl@gmx.net", role = "aut",
+           comment = c(ORCID = "0000-0001-6002-6980")),
     person("Giuseppe", "Casalicchio", , "giuseppe.casalicchio@stat.uni-muenchen.de", role = "aut",
            comment = c(ORCID = "0000-0001-5324-5966")),
-    person("Bernd", "Bischl", , "bernd_bischl@gmx.net", role = "aut",
-           comment = c(ORCID = "0000-0001-6002-6980"))
+    person("Ludwig", "Bothmann", , "ludwig.bothmann@stat.uni-muenchen.de", role = "aut",
+           comment = c(ORCID = "0000-0002-1471-6582"))
   )
-Description: Summary package for learners and models of the 'mlr3' ecosystem. 
-    Returns a summary table that provides an overview of a model at one glance.
-    It works for single models but also resampling results.
+Description: The package provides concise and interpretable summaries 
+    for machine learning models and learners of the 'mlr3' ecosystem.
+    The package takes inspiration from the summary function for (generalized)
+    linear models but extends it to non-parametric machine learning models, 
+    based on generalization performance, model complexity, feature importances 
+    and effects, and fairness metrics. 
 License: LGPL-3
 Depends:
     R (>= 3.1.0)
@@ -31,7 +34,9 @@ Suggests:
     iml,
     mlr3pipelines,
     mlr3fairness,
-    fastshap
+    fastshap, 
+    ranger, 
+    rpart
 Config/testthat/edition: 3
 Language: en-US
 NeedsCompilation: no

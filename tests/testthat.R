@@ -7,6 +7,7 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 library(testthat)
 library(checkmate)
+library(mlr3learners)
 library(mlr3summary)
 library(data.table)
 
