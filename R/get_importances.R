@@ -10,11 +10,14 @@ get_importances = function(obj, importance_measures) {
   imps_list = map(importance_measures, function(imp_msr) {
 
     # step through resample folds
-    imps = pmap_dtr(tab, function(task,
+    imps = rbindlist(
+      future_mapply(function(task,
       learner, resampling, iteration, prediction, ...) {
       get_single_importance(imp_msr, task, learner, train_set = resampling$train_set(iteration),
         prediction)
-    })
+    }, tab$task, tab$learner, tab$resampling, tab$iteration, tab$prediction,
+      future.seed = NULL, SIMPLIFY = FALSE)
+    )
 
     # aggregate results (mean, sd)
     mm = imps[, list(mean = mean(importance)), by = feature]
@@ -22,6 +25,7 @@ get_importances = function(obj, importance_measures) {
     merge(mm, varimps, by = "feature")
 
   })
+
   names(imps_list) = importance_measures
   imps_list
 }

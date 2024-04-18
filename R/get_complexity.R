@@ -9,11 +9,14 @@ get_complexity = function(obj, complexity_measures) {
   # step through complexity measures
   comps_list = map(complexity_measures, function(comp_msr) {
     # step through resample folds
-    comps = pmap_dbl(tab, function(task,
+
+    comps = future_mapply(function(task,
       learner, resampling, iteration, prediction, ...) {
       get_single_complexity(comp_msr, task, learner, train_set = resampling$train_set(iteration),
         prediction)
-    })
+    },  tab$task, tab$learner, tab$resampling, tab$iteration, tab$prediction,
+      future.seed = NULL)
+
     comps
   })
   names(comps_list) = complexity_measures
