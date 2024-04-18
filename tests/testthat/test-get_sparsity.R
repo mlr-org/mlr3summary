@@ -1,4 +1,5 @@
 require("rpart")
+require("iml")
 
 test_that("correct number of features for rpart", {
   set.seed(1234L)

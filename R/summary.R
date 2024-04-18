@@ -1,27 +1,106 @@
-#' Learner and model summaries
+#' @rdname summary.Learner
+#' @name summary.Learner
+#' @aliases summary.Learner
+#' @aliases summary.GraphLearner
+#' @aliases print.summary.Learner
+#' @title Summarizing mlr3 Learners
 #'
-#' @param object (`Learner`)
-#'  To Do.
-#' @param resample_result (`Resampling`)
-#'  To Do.
-#' @param control (`summary_control`)
-#'  To Do.
+#' @description
+#' summary method for [mlr3::Learner].
+#' The output could be tailored via the `control` argument, see [summary_control].
 #'
-#' @param ... (any)
-#'  To Do.
+#' @details
 #'
-#' @return summary.Learner list
+#' This function can be parallelized with the \CRANpkg{future} package.
+#' One job is one resampling iteration, and all jobs are send to an apply function
+#' from \CRANpkg{future.apply} in a single batch.
+#' To select a parallel backend, use [future::plan()].
+#'
+#'
+#' @param object ([mlr3::Learner])\cr
+#'  trained model of class `Learner`.
+#' @param x (`summary.Learner`)\cr
+#'  an object of class "summary.Learner", usually a result of a call to `summary.Learner`.
+#' @param resample_result ([mlr3::ResampleResult])\cr
+#'  outcome of `resample`. If  NULL (default), no residuals, performances, etc.
+#'  are derived.
+#' @param control (`summary_control`)\cr
+#'  a list with control parameters, see `summary_control`.
+#' @param digits (numeric(1))\cr
+#'   the number of digits to use when printing.
+#' @param n_important (numeric(1))\cr
+#'   number of important variables to be displayed.
+#'   If NULL, `x$control$n_important` is used.
+#' @param ... (any)\cr
+#'  further arguments passed to or from other methods.
+#'
+#' @return summary.Learner returns an object of class "summary.Learner", a [list] with the following entries.
+#' \itemize{
+#' \item{task_type: }{The type of task, either `classif` (classification) or `regr` (regression).}
+#' \item{target_name: }{The name of the target variable.}
+#' \item{feature_names: }{The names of the features.}
+#' \item{classes: }{The classes of the target variable. NULL if regression task.}
+#' \item{resample_info: }{Information on the resample objects, strategy type and hyperparameters.}
+#' \item{residuals: }{Vector of hold-out residuals over the resampling iterations of `resample_result`.
+#' For regression models, residuals are the difference between true and predicted outcome.
+#' For classifiers with probabilities, the residuals are the difference
+#' between predicted probabilities and a one-hot-encoding of the true class.
+#' For hard-label classifier, a `confusion_matrix` is shown instead of `residuals`.}
+#' \item{confusion_matrix: }{Confusion matrix of predicted vs. true classes.
+#'      Alternative to `residuals`, in case of hard-label classification.}
+#' \item{performance: }{Vector of aggregated performance measures over the iterations of `resample_result`.
+#'      The arrows display whether lower or higher values are better.
+#'      (micro/macro) displays whether it is a micro or macro measure.
+#'      For macro aggregation, measures are computed
+#'      for each iteration separately before averaging.
+#'      For micro, measures are computed across all iterations.
+#'      See Bischl et al. (2024), for details.}
+#' \item{performance_sd: }{Vector of standard deviations of performance measures
+#'       over the iterations of `resample_result`.
+#'       The arrows display whether lower or higher values are better.
+#'      (micro/macro) displays whether it is a micro or macro measure.}
+#' \item{fairness: }{Vector of aggregated fairness measures over the iterations of `resample_result`.
+#'      The arrows display whether lower or higher values are better.
+#'      (micro/macro) displays whether it is a micro or macro measure.}
+#' \item{fairness_sd: }{Vector of standard deviations of fairness measures
+#'       over the iterations of `resample_result`.
+#'       The arrows display whether lower or higher values are better.
+#'      (micro/macro) displays whether it is a micro or macro measure (see details above).}
+#' \item{importances: }{List of `data.table` that display the feature importances
+#'      per importance measure. Given are the means and standard deviations
+#'      over the resampling iterations of `resample_result`.
+#'      Higher average values display higher importance of a feature.}
+#' \item{effects: }{List of `data.table`s that display the feature effects
+#'      per effect method. Given are the mean effects
+#'      over the resampling iterations of `resample_result` for a maximum of
+#'      5 grid points. For binary classifiers, effects are only displayed for
+#'      the positively-labeled class.
+#'      For multi-class, effect plots are displayed separately for each class.
+#'      For categorical features, the factor levels of the feature determine
+#'      the ordering of the bars.}
+#' \item{complexity: }{List of vectors that display the complexity values
+#'      per complexity measure for each resampling iteration.}
+#' \item{control: }{[summary_control] used as an input for `summary.Learner`.}
+#' }
+#'
+#' For details on the performance measures, complexity measures, feature
+#' importance and feature effect methods, see [summary_control].
 #'
 #' @references
-#' `r format_bib("greenwell_simple_2018")`
+#' `r format_bib("mlr3book")`
 #'
-#' `r format_bib("fisher_all_2019")`
-#'
-#' `r format_bib("molnar_relating_2023")`
-#'
-#' `r format_bib("breiman_leo_random_2001")`
-#'
+#' @examples
+#' if (require("mlr3")) {
+#'   tsk_iris = tsk("iris")
+#'   lrn_rpart =  lrn("classif.rpart", predict_type = "prob")
+#'   lrn_rpart$train(task = tsk_iris)
+#'   rsmp_cv3 = rsmp("cv", folds = 3L)
+#'   rr = resample(tsk_iris, lrn_rpart, rsmp_cv3, store_model = TRUE)
+#'   summary(lrn_rpart, rr)
+#' }
 #' @importFrom stats sd
+#' @importFrom stats setNames
+#' @importFrom stats var
 #' @export
 summary.Learner = function(object, resample_result = NULL, control = summary_control(), ...) {
 
@@ -37,9 +116,10 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       stop("resample_result does not contain trained models, ensure resample() was run with 'store_models = TRUE'")
     }
     # ensure underlying algo and task of object and resample_result match
-    if (!(object$base_learner()$hash == resample_result$learner$base_learner()$hash)) {
-      stop("Learning algorithm of object does not match algorithm used for resampling. Ensure equality.")
-
+    if (!inherits(object, "AutoTuner")) {
+      if (!(object$base_learner()$hash == resample_result$learner$base_learner()$hash)) {
+        stop("Learning algorithm of object does not match algorithm used for resampling. Ensure equality.")
+      }
     }
     if (!all.equal(object$state$train_task$hash, resample_result$task$hash)) {
       stop("object and resample_result seem to be trained on differing tasks. Ensure equality.")
@@ -223,6 +303,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 }
 
 #' @export
+#' @rdname summary.Learner
 summary.GraphLearner = function(object, resample_result = NULL, control = summary_control(), ...) {
 
   # get all info as Learner
@@ -253,31 +334,146 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 }
 
 
-#' @title Control for model summaries
+#' @title Control for Learner summaries
 #'
-#' @description Various parameters that control aspect of the model summaries.
+#' @description Various parameters that control aspects of `summary.Learner`.
 #'
-#' @param measures ([mlr3::Measure] | list of [mlr3::Measure])\cr
-#'   Measure(s) to calculate performance on.
-#' @param importance_measures (character())\cr
-#'   To Do.
-#' @param
-#' n_important (numeric(1))\cr
-#'   To Do.
-#' @param effect_measures (character)\cr
-#'   To Do.
+#' @details
+#'
+#' The following provides some details on the different choices of measures.
+#'
+#' \strong{Performance}
+#' The default `measures` depend on the type of task. Therefore, NULL is displayed as default and
+#' the measures will be initialized in `summary.Learner` with the help of `mlr3::msr`.
+#' The following provides an overview of these defaults:
+#' \itemize{
+#'  \item{Regression: }{\link[mlr3::mlr_measures_regr.rmse]{"regr.rmse"},
+#'  \link[mlr3::mlr_measures_regr.rsq]{"regr.rsq"},
+#'  \link[mlr3::mlr_measures_regr.mae]{"regr.mae"},
+#'  \link[mlr3::mlr_measures_regr.medae]{"regr.medae"}}
+#'  \item{Binary classification with probabilities: }{
+#'  \link[mlr3::mlr_measures_classif.auc]{"classif.auc"},
+#'  \link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
+#'  \link[mlr3::mlr_measures_classif.bbrier]{"classif.bbrier"},
+#'  \link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
+#'  \item{Binary classification with hard labels: }{
+#'  \link[mlr3::mlr_measures_classif.acc]{"classif.acc"},
+#'  \link[mlr3::mlr_measures_classif.bacc]{"classif.bacc"},
+#'  \link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
+#'  \link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
+#'  \item{Multi-class classification with probabilities: }{
+#'  \link[mlr3::mlr_measures_classif.mauc_aunp]{"classif.mauc_aunp"},
+#'  \link[mlr3::mlr_measures_classif.mbrier]{"classif.mbrier"}}
+#' }
+#' \strong{Complexity}
+#' Currently only two `complexity_measures` are available, which are
+#' based on Molnar et al. (2020):
+#' \itemize{
+#' \item{`sparsity`: }{The number of used features, that have a non-zero effect
+#' on the prediction (evaluated by accumulated local effects (ale, Apley and Zhu
+#' (2020)). The measure can have values between 0 and the number of features.}
+#' \item{`interaction_strength`: }{The scaled approximation error between a
+#' main effect model (based on ale) and the prediction function. It can have
+#' values between 0 and 1, where 0 means no interaction and 1 only interaction,
+#' and no main effects. Interaction strength can only be measured for binary
+#' classification and regression models.}
+#' }
+#'
+#' \strong{Importance} The `importance_measures` are based on the [iml] and
+#' [fastshap] packages. Multiple measures are available:
+#' \itemize{
+#' \item{pdp: }{This corrensponds to importances based on the standard deviations
+#' in partial dependence plots (Friedmann (2001)), as proposed by Greenwell et al. (2018).}
+#' \item{pfi.<loss>: }{This corresponds to the permutation feature importance as
+#' implemented in [iml::FeatureImp]. Different loss functions are possible and
+#' rely on the task at hand.}
+#' \item{shap: }{This importance corresponds to the
+#' mean absolute Shapley values computed with [fastshap::explain].
+#' Higher values display higher importance.}
+#' }
+#' NULL is the default, corresponding to importance calculations based on pdp and pfi.
+#' Because the loss function for pfi relies on the task at hand, the importance measures
+#' are initialized in `summary`."pdp" and "pfi.ce" are the defaults for
+#' classification, "pdp" and "pfi.mse" for regression.
+#'
+#' \strong{Effects} The `effect_measures` are based on [iml::FeatureEffects].
+#' Currently partial dependence plots (pdp) and accumulated local effects are
+#' available (ale). Ale has the advantage over pdp that it takes feature
+#' correlations into account but has a less natural interpretation than pdp.
+#' Therefore, both "pdp" and "ale" are the defaults.
+#'
+#' \strong{Fairness}
+#' The default `fairness_measures` depend on the type of task.
+#' Therefore, NULL is displayed as default and
+#' the measures will be initialized in `summary.Learner` based on
+#' [mlr3fairness:mlr_measures_fairness].
+#' There is currently a mismatch between the naming convention of
+#' measures in [mlr3fairness] and the underlying measurements displayed.
+#' To avoid confusion, the id of the fairness measures were adapted.
+#' The following provides an overview of these defaults and adapted names:
+#' \itemize{
+#'  \item{Binary classification: }{"fairness.dp" (demographic parity) based on "fairness.cv",
+#'  "fairness.cuae" (conditional use accuracy equality) based on "fairness.pp",
+#'  "fairness.eod" (equalized odds) based on "fairness.eod". Smaller values are better.}
+#'  \item{Multi-class classification: }{"fairness.acc", the smallest absolute
+#'  difference in accuracy between groups of the `protected_attribute`.
+#'  Smaller values are better.}
+#'  \item{Regression: }{"fairness.rmse" and "fairness.mae",
+#'  the smallest absolute difference (see [mlr3fairness::groupdiff_absdiff])
+#'  in the either the root mean-squared error (rmse) or
+#'  the mean absolute error (mae) between groups of the `protected_attribute`.
+#'  Smaller values are better.}
+#'  }
+#'
+#' @param measures ([mlr3::Measure] | list of [mlr3::Measure] | NULL)\cr
+#'   measure(s) to calculate performance on. If NULL (default), a set of
+#'   selected measures are calculated (choice depends on Learner type (classif vs. regr)).
+#'   See details below.
+#' @param complexity_measures (character)\cr
+#'   vector of complexity measures. Possible choices are "sparsity" (the number
+#'   of used features) and "interaction_strength" (see Molnar et al. (2020)).
+#'   Both are the default. See details below.
+#' @param importance_measures (character()|NULL)\cr
+#'   vector of importance measure names. Possible choices are "pfi.<loss>"
+#'   ([iml::FeatureImp]), "pdp" ([iml::FeatureEffects], see ) and
+#'   "shap" ([fastshap::explain]). Default of NULL results in "pfi.<loss> and
+#'   "pdp", where the <loss> depends on the Learner type (classif vs. regr).
+#'   See details below.
+#' @param n_important (numeric(1))\cr
+#'   number of important variables to be displayed. Default is 15L.
+#' @param effect_measures (character | NULL)\cr
+#'   vector of effect method names. Possible choices are "pfi" and "ale"
+#'   (see [iml::FeatureEffects]). Both are the default. See details below.
+#' @param fairness_measures ([mlr3fairness::MeasureFairness] |
+#' list of [mlr3fairness::MeasureFairness] | NULL)\cr
+#'  measure(s) to assess fairness. If NULL (default), a set of
+#'  selected measures are calculated (choice depends on Learner type (classif vs. regr)).
+#'  See details below.
+#' @param protected_attribute (character(1))\cr
+#'  name of the binary feature that is used as a protected attribute.
+#'  If no `protected_attribute` is specified (and also no `pta` feature is
+#'  available in the `mlr3::Task` for training the `mlr3::Learner`),
+#'  no fairness metrics are computed.
 #' @param digits (numeric(1))\cr
-#'   To Do.
+#'   the number of digits to use when printing.
 #' @param hide (character)\cr
 #'   Names of paragraphs which should not be part of the summary.
 #'   Possible values are "general", "residuals", "performance", "complexity", "fairness",
 #'   "importance", "effect". If NULL, no paragraph is hided.
-#' @return [list]
+#' @return [list] of class `summary_control`
+#' @references
+#' `r format_bib("molnar_complexity_2020")`
 #'
+#' `r format_bib("greenwell_simple_2018")`
+#'
+#' `r format_bib("apley_ale_2020")`
+#'
+#' `r format_bib("friedman_pdp_2001")`
 #' @export
-
-summary_control = function(measures = NULL, importance_measures = NULL, n_important = 15L,
-  effect_measures = c("pdp", "ale"), complexity_measures = c("sparsity", "interaction_strength"),
+summary_control = function(measures = NULL,
+  complexity_measures = c("sparsity", "interaction_strength"),
+  importance_measures = NULL, n_important = 15L,
+  effect_measures = c("pdp", "ale"),
   fairness_measures = NULL, protected_attribute = NULL, hide = NULL,
   digits = max(3L, getOption("digits") - 3L)) {
 
@@ -311,9 +507,9 @@ summary_control = function(measures = NULL, importance_measures = NULL, n_import
   assert_int(digits, lower = 0L, null.ok = FALSE)
 
   # create list
-  ctrlist = list(measures = measures, importance_measures = importance_measures,
-    n_important = n_important, effect_measures = effect_measures,
-    complexity_measures = complexity_measures, fairness_measures = fairness_measures,
+  ctrlist = list(measures = measures, complexity_measures = complexity_measures,
+    importance_measures = importance_measures, n_important = n_important,
+    effect_measures = effect_measures, fairness_measures = fairness_measures,
     protected_attribute = protected_attribute, hide = hide, digits = digits)
 
   class(ctrlist) = "summary_control"
@@ -321,6 +517,7 @@ summary_control = function(measures = NULL, importance_measures = NULL, n_import
 }
 
 #' @export
+#' @rdname summary.Learner
 print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NULL, ...) {
   # input checks
   assert_int(digits, lower = 0L, null.ok = TRUE)
