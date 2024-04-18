@@ -14,11 +14,11 @@
 #'
 #' @format A data frame with 522 and 6 variables:
 #' \describe{
-#'   \item{age}{age of the customer [19-75]}
+#'   \item{age}{age of the customer \[19-75\]}
 #'   \item{sex}{sex of the customer (female, male)}
-#'   \item{saving}{saving account balance of the customer (little, moderate, rich)}
-#'   \item{duration}{payback duration of credit (in month) [6, 72]}
-#'   \item{credit.amount}{credit amount [276-18424]}
+#'   \item{saving.accounts}{saving account balance of the customer (little, moderate, rich)}
+#'   \item{duration}{payback duration of credit (in month) \[6-72\]}
+#'   \item{credit.amount}{credit amount \[276-18424\]}
 #'   \item{risk}{whether the credit is of low/good or high/bad risk (bad, good)}
 #'   }
 #' @references

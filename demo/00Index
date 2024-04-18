@@ -1,2 +1,7 @@
-credit 		--> data by Hofmann (1994), adapted by Leonardo Ferreira (2016) and Susanne Dandl (2024)
-		--> code by Susanne Dandl 
+credit
+    --> data by Hofmann (1994), adapted by Leonardo Ferreira (2016) and Susanne Dandl (2024)
+		--> code by Susanne Dandl
+regr_multi
+    --> mtcars: data from the 1974 Motor Trend US magazine
+    --> wine: data from Aeberhard and Forina (1991)
+    --> code by Susanne Dandl

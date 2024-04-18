@@ -35,6 +35,7 @@ Suggests:
     iml,
     mlr3pipelines,
     mlr3fairness,
+    mlr3learners,
     fastshap, 
     ranger, 
     rpart

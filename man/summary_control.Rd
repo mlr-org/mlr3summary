@@ -75,23 +75,23 @@ The default \code{measures} depend on the type of task. Therefore, NULL is displ
 the measures will be initialized in \code{summary.Learner} with the help of \code{mlr3::msr}.
 The following provides an overview of these defaults:
 \itemize{
-\item{Regression: }{\link[mlr3::mlr_measures_regr.rmse]{"regr.rmse"},
-\link[mlr3::mlr_measures_regr.rsq]{"regr.rsq"},
-\link[mlr3::mlr_measures_regr.mae]{"regr.mae"},
-\link[mlr3::mlr_measures_regr.medae]{"regr.medae"}}
+\item{Regression: }{\link[mlr3:mlr_measures_regr.rmse]{regr.rmse},
+\link[mlr3:mlr_measures_regr.rsq]{regr.rsq},
+\link[mlr3:mlr_measures_regr.mae]{regr.mae},
+\link[mlr3:mlr_measures_regr.medae]{regr.medae}}
 \item{Binary classification with probabilities: }{
-\link[mlr3::mlr_measures_classif.auc]{"classif.auc"},
-\link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
-\link[mlr3::mlr_measures_classif.bbrier]{"classif.bbrier"},
-\link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
+\link[mlr3:mlr_measures_classif.auc]{classif.auc},
+\link[mlr3:mlr_measures_classif.fbeta]{classif.fbeta},
+\link[mlr3:mlr_measures_classif.bbrier]{classif.bbrier},
+\link[mlr3:mlr_measures_classif.mcc]{classif.mcc}}
 \item{Binary classification with hard labels: }{
-\link[mlr3::mlr_measures_classif.acc]{"classif.acc"},
-\link[mlr3::mlr_measures_classif.bacc]{"classif.bacc"},
-\link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
-\link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
+\link[mlr3:mlr_measures_classif.acc]{classif.acc},
+\link[mlr3:mlr_measures_classif.bacc]{classif.bacc},
+\link[mlr3:mlr_measures_classif.fbeta]{classif.fbeta},
+\link[mlr3:mlr_measures_classif.mcc]{classif.mcc}}
 \item{Multi-class classification with probabilities: }{
-\link[mlr3::mlr_measures_classif.mauc_aunp]{"classif.mauc_aunp"},
-\link[mlr3::mlr_measures_classif.mbrier]{"classif.mbrier"}}
+\link[mlr3:mlr_measures_classif.mauc_aunp]{classif.mauc_aunp},
+\link[mlr3:mlr_measures_classif.mbrier]{classif.mbrier}}
 }
 \strong{Complexity}
 Currently only two \code{complexity_measures} are available, which are
@@ -107,8 +107,8 @@ and no main effects. Interaction strength can only be measured for binary
 classification and regression models.}
 }
 
-\strong{Importance} The \code{importance_measures} are based on the \link{iml} and
-\link{fastshap} packages. Multiple measures are available:
+\strong{Importance} The \code{importance_measures} are based on the \code{iml} and
+\code{fastshap} packages. Multiple measures are available:
 \itemize{
 \item{pdp: }{This corrensponds to importances based on the standard deviations
 in partial dependence plots (Friedmann (2001)), as proposed by Greenwell et al. (2018).}
@@ -134,9 +134,9 @@ Therefore, both "pdp" and "ale" are the defaults.
 The default \code{fairness_measures} depend on the type of task.
 Therefore, NULL is displayed as default and
 the measures will be initialized in \code{summary.Learner} based on
-\link{mlr3fairness:mlr_measures_fairness}.
+\link[mlr3fairness:mlr_measures_fairness]{mlr3fairness::mlr_measures_fairness}.
 There is currently a mismatch between the naming convention of
-measures in \link{mlr3fairness} and the underlying measurements displayed.
+measures in \code{mlr3fairness} and the underlying measurements displayed.
 To avoid confusion, the id of the fairness measures were adapted.
 The following provides an overview of these defaults and adapted names:
 \itemize{
@@ -156,7 +156,7 @@ Smaller values are better.}
 \references{
 Molnar, Christoph, Casalicchio, Giuseppe, Bischl, Bernd (2020).
 \dQuote{Quantifying Model Complexity via Functional Decomposition for Better Post-hoc Interpretability.}
-In \emph{Communications in Computer and Information Science}, chapter 1, 193–204.
+In \emph{Communications in Computer and Information Science}, chapter 1, 193--204.
 Springer International Publishing.
 
 Greenwell, M. B, Boehmke, C. B, McCarthy, J. A (2018).

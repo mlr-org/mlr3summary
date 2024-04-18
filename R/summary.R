@@ -351,23 +351,23 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' the measures will be initialized in `summary.Learner` with the help of `mlr3::msr`.
 #' The following provides an overview of these defaults:
 #' \itemize{
-#'  \item{Regression: }{\link[mlr3::mlr_measures_regr.rmse]{"regr.rmse"},
-#'  \link[mlr3::mlr_measures_regr.rsq]{"regr.rsq"},
-#'  \link[mlr3::mlr_measures_regr.mae]{"regr.mae"},
-#'  \link[mlr3::mlr_measures_regr.medae]{"regr.medae"}}
+#'  \item{Regression: }{[regr.rmse][mlr3::mlr_measures_regr.rmse],
+#'  [regr.rsq][mlr3::mlr_measures_regr.rsq],
+#'  [regr.mae][mlr3::mlr_measures_regr.mae],
+#'  [regr.medae][mlr3::mlr_measures_regr.medae]}
 #'  \item{Binary classification with probabilities: }{
-#'  \link[mlr3::mlr_measures_classif.auc]{"classif.auc"},
-#'  \link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
-#'  \link[mlr3::mlr_measures_classif.bbrier]{"classif.bbrier"},
-#'  \link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
+#'  [classif.auc][mlr3::mlr_measures_classif.auc],
+#'  [classif.fbeta][mlr3::mlr_measures_classif.fbeta],
+#'  [classif.bbrier][mlr3::mlr_measures_classif.bbrier],
+#'  [classif.mcc][mlr3::mlr_measures_classif.mcc]}
 #'  \item{Binary classification with hard labels: }{
-#'  \link[mlr3::mlr_measures_classif.acc]{"classif.acc"},
-#'  \link[mlr3::mlr_measures_classif.bacc]{"classif.bacc"},
-#'  \link[mlr3::mlr_measures_classif.fbeta]{"classif.fbeta"},
-#'  \link[mlr3::mlr_measures_classif.mcc]{"classif.mcc"}}
+#'  [classif.acc][mlr3::mlr_measures_classif.acc],
+#'  [classif.bacc][mlr3::mlr_measures_classif.bacc],
+#'  [classif.fbeta][mlr3::mlr_measures_classif.fbeta],
+#'  [classif.mcc][mlr3::mlr_measures_classif.mcc]}
 #'  \item{Multi-class classification with probabilities: }{
-#'  \link[mlr3::mlr_measures_classif.mauc_aunp]{"classif.mauc_aunp"},
-#'  \link[mlr3::mlr_measures_classif.mbrier]{"classif.mbrier"}}
+#'  [classif.mauc_aunp][mlr3::mlr_measures_classif.mauc_aunp],
+#'  [classif.mbrier][mlr3::mlr_measures_classif.mbrier]}
 #' }
 #' \strong{Complexity}
 #' Currently only two `complexity_measures` are available, which are
@@ -383,8 +383,8 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' classification and regression models.}
 #' }
 #'
-#' \strong{Importance} The `importance_measures` are based on the [iml] and
-#' [fastshap] packages. Multiple measures are available:
+#' \strong{Importance} The `importance_measures` are based on the `iml` and
+#' `fastshap` packages. Multiple measures are available:
 #' \itemize{
 #' \item{pdp: }{This corrensponds to importances based on the standard deviations
 #' in partial dependence plots (Friedmann (2001)), as proposed by Greenwell et al. (2018).}
@@ -410,9 +410,9 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' The default `fairness_measures` depend on the type of task.
 #' Therefore, NULL is displayed as default and
 #' the measures will be initialized in `summary.Learner` based on
-#' [mlr3fairness:mlr_measures_fairness].
+#' [mlr3fairness::mlr_measures_fairness].
 #' There is currently a mismatch between the naming convention of
-#' measures in [mlr3fairness] and the underlying measurements displayed.
+#' measures in `mlr3fairness` and the underlying measurements displayed.
 #' To avoid confusion, the id of the fairness measures were adapted.
 #' The following provides an overview of these defaults and adapted names:
 #' \itemize{
