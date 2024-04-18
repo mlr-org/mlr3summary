@@ -49,7 +49,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
   ans = list()
 
-  if (!("general" %in% control$hide)) {
+  if ("general" %nin% control$hide) {
     # assignment to shorter names
     tt = object$task_type
     tn = object$state$train_task$target_names
