@@ -18,30 +18,33 @@ summary_control(
 \arguments{
 \item{measures}{(\link[mlr3:Measure]{mlr3::Measure} | list of \link[mlr3:Measure]{mlr3::Measure} | NULL)\cr
 measure(s) to calculate performance on. If NULL (default), a set of
-selected measures are calculated (choice depends on Learner type (classif vs. regr)).}
+selected measures are calculated (choice depends on Learner type (classif vs. regr)).
+See details below.}
 
 \item{complexity_measures}{(character)\cr
 vector of complexity measures. Possible choices are "sparsity" (the number
 of used features) and "interaction_strength" (see Molnar et al. (2020)).
-Both are the default.}
+Both are the default. See details below.}
 
 \item{importance_measures}{(character()|NULL)\cr
 vector of importance measure names. Possible choices are "pfi.\if{html}{\out{<loss>}}"
 (\link[iml:FeatureImp]{iml::FeatureImp}), "pdp" (\link[iml:FeatureEffects]{iml::FeatureEffects}, see ) and
 "shap" (\link[fastshap:explain]{fastshap::explain}). Default of NULL results in "pfi.\if{html}{\out{<loss>}} and
-"pdp", where the \if{html}{\out{<loss>}} depends on the Learner type (classif vs. regr).}
+"pdp", where the \if{html}{\out{<loss>}} depends on the Learner type (classif vs. regr).
+See details below.}
 
 \item{n_important}{(numeric(1))\cr
 number of important variables to be displayed. Default is 15L.}
 
 \item{effect_measures}{(character | NULL)\cr
 vector of effect method names. Possible choices are "pfi" and "ale"
-(see \link[iml:FeatureEffects]{iml::FeatureEffects}). Both are the default.}
+(see \link[iml:FeatureEffects]{iml::FeatureEffects}). Both are the default. See details below.}
 
 \item{fairness_measures}{(\link[mlr3fairness:MeasureFairness]{mlr3fairness::MeasureFairness} |
 list of \link[mlr3fairness:MeasureFairness]{mlr3fairness::MeasureFairness} | NULL)\cr
 measure(s) to assess fairness. If NULL (default), a set of
-selected measures are calculated (choice depends on Learner type (classif vs. regr)).}
+selected measures are calculated (choice depends on Learner type (classif vs. regr)).
+See details below.}
 
 \item{protected_attribute}{(character(1))\cr
 name of the binary feature that is used as a protected attribute.
@@ -59,7 +62,7 @@ the number of digits to use when printing.}
 Various parameters that control aspects of \code{summary.Learner}.
 }
 \details{
-The following provides some details on the different paragraphs in the summary output.
+The following provides some details on the different choices of measures.
 
 \strong{Performance}
 The default \code{measures} depend on the type of task. Therefore, NULL is displayed as default and
@@ -112,14 +115,14 @@ Higher values display higher importance.}
 }
 NULL is the default, corresponding to importance calculations based on pdp and pfi.
 Because the loss function for pfi relies on the task at hand, the importance measures
-are initialized in \code{summary}. \code{pdp}and \code{pfi.ce} are the defaults for
-classification, \code{pdp} and \code{pfi.mse} for regression.
+are initialized in \code{summary}."pdp" and "pfi.ce" are the defaults for
+classification, "pdp" and "pfi.mse" for regression.
 
 \strong{Effects} The \code{effect_measures} are based on \link[iml:FeatureEffects]{iml::FeatureEffects}.
 Currently partial dependence plots (pdp) and accumulated local effects are
 available (ale). Ale has the advantage over pdp that it takes feature
 correlations into account but has a less natural interpretation than pdp.
-Therefore, both pdps and ales are the defaults.
+Therefore, both "pdp" and "ale" are the defaults.
 
 \strong{Fairness}
 The default \code{fairness_measures} depend on the type of task.

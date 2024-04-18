@@ -192,9 +192,9 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       if (is.na(pmsr$minimize)) {
         arrow = ""
       } else if (pmsr$minimize) {
-        arrow = cli::symbol[["arrow_down"]]
+        arrow = symbol[["arrow_down"]]
       } else {
-        arrow = cli::symbol[["arrow_up"]]
+        arrow = symbol[["arrow_up"]]
       }
       pmsr$id = sprintf("%s%s (%s)", arrow, pmsr$id, pmsr$average)
       pmsr
@@ -203,12 +203,11 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     sc = resample_result$score(measures = control$measures)
     nam_multimeas = names(sc)[grep(tt, names(sc))]
     sc = sc[, nam_multimeas, with = FALSE]
-    stdt = map_dbl(sc, stats::sd)
+    stdt = map_dbl(sc, sd)
 
     ans$performance = pf
     ans$performance_sd = stdt
 
-    # <FIXME:> currently only binary classification metrics available:
       if (!is.null(control$protected_attribute) || length(object$state$train_task$col_roles$pta)) {
         if (is.null(control$fairness_measures)) {
           control$fairness_measures = get_default_fairness_measures(task_type = object$task_type,
@@ -250,8 +249,6 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       }
 
     ## importance
-    ## <FIXME:> This should be rather exported into own R6 classes??
-
     if (is.null(control$importance_measures)) {
       control$importance_measures = get_default_importances(
         task_type = object$task_type, ...)
