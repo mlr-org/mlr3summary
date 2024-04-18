@@ -31,6 +31,10 @@
 #' @param n_important (numeric(1))\cr
 #'   number of important variables to be displayed.
 #'   If NULL, `x$control$n_important` is used.
+#' @param hide (character)\cr
+#'   Names of paragraphs which should not be part of the summary.
+#'   Possible values are "general", "residuals", "performance", "complexity", "fairness",
+#'   "importance", "effect". If NULL, no paragraph is hided.
 #' @param ... (any)\cr
 #'  further arguments passed to or from other methods.
 #'
