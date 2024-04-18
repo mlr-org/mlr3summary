@@ -79,12 +79,12 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
   if (!is.null(resample_result)) {
 
     ## ResampleResult info
-    if (!("general" %in% control$hide)) {
+    if ("general" %nin% control$hide) {
       ans[["resample_info"]] = paste(resample_result$resampling$id, "with",
         as_short_string(resample_result$resampling$param_set$values, 1000L))
       ## residuals
     }
-    if (!"residuals" %in% control$hide) {
+    if ("residuals" %nin% control$hide) {
       res = resample_result$prediction()
       if (tt == "regr") {
         ans[["residuals"]] = res[["truth"]] - res[["response"]]
@@ -105,7 +105,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 
     ## performance
 
-    if (!"performance" %in% control$hide) {
+    if ("performance" %nin% control$hide) {
       # Set default measures if no measures specified
       if (is.null(control$measures)) {
         control$measures = get_default_measures(task_type = object$task_type,
@@ -135,7 +135,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       ans$performance_sd = stdt
     }
 
-    if (!("fairness" %in% control$hide)) {
+    if ("fairness" %nin% control$hide) {
       if (!is.null(control$protected_attribute) || length(object$state$train_task$col_roles$pta)) {
         if (is.null(control$fairness_measures)) {
           control$fairness_measures = get_default_fairness_measures(task_type = object$task_type,
@@ -178,7 +178,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     }
 
     ## importance
-    if (!("importance" %in% control$hide)) {
+    if ("importance" %nin% control$hide) {
       if (is.null(control$importance_measures)) {
         control$importance_measures = get_default_importances(
           task_type = object$task_type, ...)
@@ -189,14 +189,14 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     }
 
     ## effects
-    if (!("effect" %in% control$hide)) {
+    if ("effect" %nin% control$hide) {
       effs_res = get_effects(resample_result, control$effect_measures)
       ans$effects = effs_res
     }
 
 
     # <FIXME:> remove interaction_strength if multi_class
-    if (!("complexity" %in% control$hide)) {
+    if ("complexity" %nin% control$hide) {
       if ("interaction_strength" %in% control$complexity_measures) {
         multi_class = object$state$train_task$task_type == "classif" &&
           object$state$train_task$properties == "multiclass"
@@ -338,7 +338,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     x$control$n_important = n_important
   }
 
-  if (!("general" %in% hide)) {
+  if ("general" %nin% hide) {
     cli_div(theme = list(.val = list(digits = x$control$digits)))
     cli_h1("General")
     cli_text("Task type: {x$task_type}")
@@ -364,7 +364,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     }
   }
 
-  if (!is.null(x$residuals) && !("residuals" %in% hide)) {
+  if (!is.null(x$residuals) && "residuals" %nin% hide) {
     cli_h1("Residuals")
     zz = zapsmall(summary(x$residuals), x$control$digits + 1L)
     nam = c("Min", "1Q", "Median", "Mean", "3Q", "Max")
@@ -386,7 +386,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     }
   }
 
-  if (!is.null(x$performance) && !("performance" %in% hide)) {
+  if (!is.null(x$performance) && "performance" %nin% hide) {
     cli_h1("Performance [sd]")
     namp = structure(paste0(round(x$performance, x$control$digits),
       " [", round(x$performance_sd, x$control$digits), "]"),
@@ -398,7 +398,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
 
   }
 
-  if (!is.null(x$fairness) && !("fairness" %in% hide)) {
+  if (!is.null(x$fairness) && "fairness" %nin% hide) {
     cli_h1("Fairness [sd]")
     cli_text("Protected attribute: {x$control$protected_attribute}")
     nampf = setNames(paste0(round(x$fairness, x$control$digits),
@@ -409,7 +409,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     print.default(fair, quote = FALSE, right = FALSE, ...)
   }
 
-  if (!is.null(x$complexity) && !("complexity" %in% hide)) {
+  if (!is.null(x$complexity) && "complexity" %nin% hide) {
     cli_h1("Complexity [sd]")
     aggregate_complexity = function(com) {
       paste0(round(mean(com), x$control$digits),
@@ -424,7 +424,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
   }
 
 
-  if (!is.null(x$importance) && !("importance" %in% hide)) {
+  if (!is.null(x$importance) && "importance" %nin% hide) {
     cli_h1("Importance [sd]")
 
     featorder = x$importances[[1]][order(mean, decreasing = TRUE), feature]
@@ -453,7 +453,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
   }
 
 
-  if (!is.null(x$effects) && !("effect" %in% hide)) {
+  if (!is.null(x$effects) && "effect" %nin% hide) {
     # Size of effect plots are derived based on ALE/PDP curves
     scale_values = function(x, range){(x - range[1])/(range[2] - range[1])*(7) + 1}
     get_effect_plot = function(x, range) {
