@@ -63,7 +63,6 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       ans$classes = object$state$train_task$col_info[id == tn,]$levels[[1]]
     }
 
-
     if (!inherits(object, "GraphLearner")) {
       params = object$param_set$values
       if (length(params)) {
