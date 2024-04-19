@@ -61,7 +61,7 @@ The arrows display whether lower or higher values are better.
 (micro/macro) displays whether it is a micro or macro measure.
 For macro aggregation, measures are computed
 for each iteration separately before averaging.
-For micro, measures are computed across all iterations.
+For micro aggregation, measures are computed across all iterations.
 See Bischl et al. (2024), for details.}
 \item{performance_sd: }{Vector of standard deviations of performance measures
 over the iterations of \code{resample_result}.
@@ -96,11 +96,11 @@ importance and feature effect methods, see \link{summary_control}.
 }
 \description{
 summary method for \link[mlr3:Learner]{mlr3::Learner}.
-The output could be tailored via the \code{control} argument, see \link{summary_control}.
+The output can be tailored via the \code{control} argument, see \link{summary_control}.
 }
 \details{
 This function can be parallelized with the \CRANpkg{future} package.
-One job is one resampling iteration, and all jobs are send to an apply function
+One job is one resampling iteration, and all jobs are sent to an apply function
 from \CRANpkg{future.apply} in a single batch.
 To select a parallel backend, use \code{\link[future:plan]{future::plan()}}.
 }

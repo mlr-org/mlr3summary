@@ -28,10 +28,10 @@ of used features) and "interaction_strength" (see Molnar et al. (2020)).
 Both are the default. See details below.}
 
 \item{importance_measures}{(character()|NULL)\cr
-vector of importance measure names. Possible choices are "pfi.\if{html}{\out{<loss>}}"
+vector of importance measure names. Possible choices are "pfi.\code{<}loss\code{>}"
 (\link[iml:FeatureImp]{iml::FeatureImp}), "pdp" (\link[iml:FeatureEffects]{iml::FeatureEffects}, see ) and
-"shap" (\link[fastshap:explain]{fastshap::explain}). Default of NULL results in "pfi.\if{html}{\out{<loss>}} and
-"pdp", where the \if{html}{\out{<loss>}} depends on the Learner type (classif vs. regr).
+"shap" (\link[fastshap:explain]{fastshap::explain}). Default of NULL results in "pfi.\code{<}loss\code{>}" and
+"pdp", where the \code{<}loss\code{>} depends on the Learner type (classif vs. regr).
 See details below.}
 
 \item{n_important}{(numeric(1))\cr
@@ -54,12 +54,12 @@ available in the \code{mlr3::Task} for training the \code{mlr3::Learner}),
 no fairness metrics are computed.}
 
 \item{hide}{(character)\cr
-Names of paragraphs which should not be part of the summary.
+names of paragraphs which should not be part of the summary.
 Possible values are "general", "residuals", "performance", "complexity", "fairness",
 "importance", "effect". If NULL, no paragraph is hided.}
 
 \item{digits}{(numeric(1))\cr
-the number of digits to use when printing.}
+number of digits to use when printing.}
 }
 \value{
 \link{list} of class \code{summary_control}
@@ -112,7 +112,7 @@ classification and regression models.}
 \itemize{
 \item{pdp: }{This corrensponds to importances based on the standard deviations
 in partial dependence plots (Friedmann (2001)), as proposed by Greenwell et al. (2018).}
-\item{pfi.\if{html}{\out{<loss>}}: }{This corresponds to the permutation feature importance as
+\item{pfi.\code{<}loss\code{>}: }{This corresponds to the permutation feature importance as
 implemented in \link[iml:FeatureImp]{iml::FeatureImp}. Different loss functions are possible and
 rely on the task at hand.}
 \item{shap: }{This importance corresponds to the

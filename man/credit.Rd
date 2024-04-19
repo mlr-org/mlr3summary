@@ -20,7 +20,7 @@ based on the Statlog (German credit dataset) of Hofmann (1994) available on
 UCI.
 }
 \details{
-The dataset was further adapted: rows with missing values were remove,
+The dataset was further adapted: rows with missing values were removed,
 low-cardinal classes were binned, classes of the job feature were renamed,
 the features on the savings and checking account were defined as ordinal variables,
 and all feature names were transposed to lower. Only a subset of features was

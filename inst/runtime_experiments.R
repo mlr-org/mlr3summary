@@ -3,6 +3,7 @@
 library(data.table)
 library(mlr3)
 library(mlr3learners)
+library(mlr3summary)
 library(mlr3misc)
 library(tictoc)
 library(checkmate)
@@ -10,7 +11,8 @@ library(devtools)
 library(ggpubr)
 library(future)
 library(future.apply)
-load_all()
+
+set.seed(3100)
 
 n_set = c(50, 100, 500, 1000, 2000)
 p_set = c(5, 10, 25, 50, 100)
@@ -25,8 +27,6 @@ run_experiment = function(n, p, mod, print = FALSE) {
 
   assert_integerish(p, lower = 5L)
   assert_integerish(n, lower = 1L)
-
-  set.seed(3100)
 
   x1 = runif(n = n)
   x2 = runif(n = n)
@@ -88,9 +88,6 @@ plt_lm = ggplot(data = results, aes(x = p, y = runtime2, group = n)) +
   guides(colour = guide_legend(reverse=T)) +
   scale_colour_grey(start = 0.8, end = 0.2) +
   ylab("runtime (sec)")
-# scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 2))
-# ylim(c(0, 1100))
-
 
 plt_rf = ggplot(data = results, aes(x = p, y = runtime1, group = n)) +
   geom_point(aes(colour = n)) +
@@ -99,8 +96,6 @@ plt_rf = ggplot(data = results, aes(x = p, y = runtime1, group = n)) +
   guides(colour = guide_legend(reverse=T)) +
   scale_colour_grey(start = 0.8, end = 0.2) +
   ylab("")
-  # ylim(c(0, 1100))
-  #  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 2))
 
 
 plt_rf_para = ggplot(data = results, aes(x = p, y = runtime3, group = n)) +
