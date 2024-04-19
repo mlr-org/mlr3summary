@@ -7,12 +7,12 @@
 #'
 #' @description
 #' summary method for [mlr3::Learner].
-#' The output could be tailored via the `control` argument, see [summary_control].
+#' The output can be tailored via the `control` argument, see [summary_control].
 #'
 #' @details
 #'
 #' This function can be parallelized with the \CRANpkg{future} package.
-#' One job is one resampling iteration, and all jobs are send to an apply function
+#' One job is one resampling iteration, and all jobs are sent to an apply function
 #' from \CRANpkg{future.apply} in a single batch.
 #' To select a parallel backend, use [future::plan()].
 #'
@@ -57,7 +57,7 @@
 #'      (micro/macro) displays whether it is a micro or macro measure.
 #'      For macro aggregation, measures are computed
 #'      for each iteration separately before averaging.
-#'      For micro, measures are computed across all iterations.
+#'      For micro aggregation, measures are computed across all iterations.
 #'      See Bischl et al. (2024), for details.}
 #' \item{performance_sd: }{Vector of standard deviations of performance measures
 #'       over the iterations of `resample_result`.
@@ -440,7 +440,7 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @param importance_measures (character()|NULL)\cr
 #'   vector of importance measure names. Possible choices are "pfi.<loss>"
 #'   ([iml::FeatureImp]), "pdp" ([iml::FeatureEffects], see ) and
-#'   "shap" ([fastshap::explain]). Default of NULL results in "pfi.<loss> and
+#'   "shap" ([fastshap::explain]). Default of NULL results in "pfi.<loss>" and
 #'   "pdp", where the <loss> depends on the Learner type (classif vs. regr).
 #'   See details below.
 #' @param n_important (numeric(1))\cr
@@ -459,9 +459,9 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #'  available in the `mlr3::Task` for training the `mlr3::Learner`),
 #'  no fairness metrics are computed.
 #' @param digits (numeric(1))\cr
-#'   the number of digits to use when printing.
+#'  number of digits to use when printing.
 #' @param hide (character)\cr
-#'   Names of paragraphs which should not be part of the summary.
+#'   names of paragraphs which should not be part of the summary.
 #'   Possible values are "general", "residuals", "performance", "complexity", "fairness",
 #'   "importance", "effect". If NULL, no paragraph is hided.
 #' @return [list] of class `summary_control`
