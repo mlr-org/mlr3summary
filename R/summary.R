@@ -12,7 +12,7 @@
 #' @details
 #'
 #' This function can be parallelized with the \CRANpkg{future} package.
-#' One job is one resampling iteration, and all jobs are send to an apply function
+#' One job is one resampling iteration, and all jobs are sent to an apply function
 #' from \CRANpkg{future.apply} in a single batch.
 #' To select a parallel backend, use [future::plan()].
 #'
@@ -57,7 +57,7 @@
 #'      (micro/macro) displays whether it is a micro or macro measure.
 #'      For macro aggregation, measures are computed
 #'      for each iteration separately before averaging.
-#'      For micro, measures are computed across all iterations.
+#'      For micro aggregation, measures are computed across all iterations.
 #'      See Bischl et al. (2024), for details.}
 #' \item{performance_sd: }{Vector of standard deviations of performance measures
 #'       over the iterations of `resample_result`.
