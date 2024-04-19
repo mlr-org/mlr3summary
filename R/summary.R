@@ -459,9 +459,9 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #'  available in the `mlr3::Task` for training the `mlr3::Learner`),
 #'  no fairness metrics are computed.
 #' @param digits (numeric(1))\cr
-#'   the number of digits to use when printing.
+#'  number of digits to use when printing.
 #' @param hide (character)\cr
-#'   Names of paragraphs which should not be part of the summary.
+#'   names of paragraphs which should not be part of the summary.
 #'   Possible values are "general", "residuals", "performance", "complexity", "fairness",
 #'   "importance", "effect". If NULL, no paragraph is hided.
 #' @return [list] of class `summary_control`
