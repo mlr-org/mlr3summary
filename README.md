@@ -53,9 +53,11 @@ summary(object = rf, resample_result = rr)
 ```
 ![summary_output](https://github.com/slds-lmu/mlr3summary/assets/25373845/84b6cf8f-72d6-42ae-8218-5df1623008a3)
 
+More examples can be found in [demo/](https://github.com/mlr-org/mlr3summary/tree/master/demo).
+
 ## Citation
 
-If you use mlr3summary, please cite: 
+If you use `mlr3summary`, please cite: 
 
 ```
 Dandl S, Becker M, Bischl B, Casalicchio G, Bothmann L (2024).
