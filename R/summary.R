@@ -7,7 +7,7 @@
 #'
 #' @description
 #' summary method for [mlr3::Learner].
-#' The output could be tailored via the `control` argument, see [summary_control].
+#' The output can be tailored via the `control` argument, see [summary_control].
 #'
 #' @details
 #'
