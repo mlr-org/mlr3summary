@@ -388,7 +388,7 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' \itemize{
 #' \item{pdp: }{This corrensponds to importances based on the standard deviations
 #' in partial dependence plots (Friedmann (2001)), as proposed by Greenwell et al. (2018).}
-#' \item{pfi.<loss>: }{This corresponds to the permutation feature importance as
+#' \item{pfi.`<`loss`>`: }{This corresponds to the permutation feature importance as
 #' implemented in [iml::FeatureImp]. Different loss functions are possible and
 #' rely on the task at hand.}
 #' \item{shap: }{This importance corresponds to the
@@ -438,10 +438,10 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #'   of used features) and "interaction_strength" (see Molnar et al. (2020)).
 #'   Both are the default. See details below.
 #' @param importance_measures (character()|NULL)\cr
-#'   vector of importance measure names. Possible choices are "pfi.<loss>"
+#'   vector of importance measure names. Possible choices are "pfi.`<`loss`>`"
 #'   ([iml::FeatureImp]), "pdp" ([iml::FeatureEffects], see ) and
-#'   "shap" ([fastshap::explain]). Default of NULL results in "pfi.<loss> and
-#'   "pdp", where the <loss> depends on the Learner type (classif vs. regr).
+#'   "shap" ([fastshap::explain]). Default of NULL results in "pfi.`<`loss`>` and
+#'   "pdp", where the `<`loss`>` depends on the Learner type (classif vs. regr).
 #'   See details below.
 #' @param n_important (numeric(1))\cr
 #'   number of important variables to be displayed. Default is 15L.
