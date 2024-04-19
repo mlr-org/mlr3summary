@@ -440,7 +440,7 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' @param importance_measures (character()|NULL)\cr
 #'   vector of importance measure names. Possible choices are "pfi.<loss>"
 #'   ([iml::FeatureImp]), "pdp" ([iml::FeatureEffects], see ) and
-#'   "shap" ([fastshap::explain]). Default of NULL results in "pfi.<loss> and
+#'   "shap" ([fastshap::explain]). Default of NULL results in "pfi.<loss>" and
 #'   "pdp", where the <loss> depends on the Learner type (classif vs. regr).
 #'   See details below.
 #' @param n_important (numeric(1))\cr
