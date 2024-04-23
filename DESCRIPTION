@@ -1,5 +1,5 @@
 Package: mlr3summary
-Title: Model and learner summaries for 'mlr3'
+Title: Model and Learner Summaries for 'mlr3'
 Version: 0.1.0
 Authors@R: c(
     person("Susanne", "Dandl", , "dandls.datascience@gmail.com", role = c("aut", "cre"),
@@ -13,8 +13,8 @@ Authors@R: c(
     person("Ludwig", "Bothmann", , "ludwig.bothmann@stat.uni-muenchen.de", role = "aut",
            comment = c(ORCID = "0000-0002-1471-6582"))
   )
-Description: The package provides concise and interpretable summaries 
-    for machine learning models and learners of the 'mlr3' ecosystem.
+Description: Concise and interpretable summaries for machine learning models 
+    and learners of the 'mlr3' ecosystem.
     The package takes inspiration from the summary function for (generalized)
     linear models but extends it to non-parametric machine learning models, 
     based on generalization performance, model complexity, feature importances 

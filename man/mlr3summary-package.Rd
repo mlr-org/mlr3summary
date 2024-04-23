@@ -4,9 +4,9 @@
 \name{mlr3summary-package}
 \alias{mlr3summary}
 \alias{mlr3summary-package}
-\title{mlr3summary: Model and learner summaries for 'mlr3'}
+\title{mlr3summary: Model and Learner Summaries for 'mlr3'}
 \description{
-The package provides concise and interpretable summaries for machine learning models and learners of the 'mlr3' ecosystem. The package takes inspiration from the summary function for (generalized) linear models but extends it to non-parametric machine learning models, based on generalization performance, model complexity, feature importances and effects, and fairness metrics.
+Concise and interpretable summaries for machine learning models and learners of the 'mlr3' ecosystem. The package takes inspiration from the summary function for (generalized) linear models but extends it to non-parametric machine learning models, based on generalization performance, model complexity, feature importances and effects, and fairness metrics.
 }
 \author{
 \strong{Maintainer}: Susanne Dandl \email{dandls.datascience@gmail.com} (\href{https://orcid.org/0000-0003-4324-4163}{ORCID})
