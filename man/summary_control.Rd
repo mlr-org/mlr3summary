@@ -75,21 +75,21 @@ The default \code{measures} depend on the type of task. Therefore, NULL is displ
 the measures will be initialized in \code{summary.Learner} with the help of \code{mlr3::msr}.
 The following provides an overview of these defaults:
 \itemize{
-\item{Regression: }{\link[mlr3:mlr_measures_regr.rmse]{regr.rmse},
+\item{Regression: \link[mlr3:mlr_measures_regr.rmse]{regr.rmse},
 \link[mlr3:mlr_measures_regr.rsq]{regr.rsq},
 \link[mlr3:mlr_measures_regr.mae]{regr.mae},
 \link[mlr3:mlr_measures_regr.medae]{regr.medae}}
-\item{Binary classification with probabilities: }{
+\item{Binary classification with probabilities:
 \link[mlr3:mlr_measures_classif.auc]{classif.auc},
 \link[mlr3:mlr_measures_classif.fbeta]{classif.fbeta},
 \link[mlr3:mlr_measures_classif.bbrier]{classif.bbrier},
 \link[mlr3:mlr_measures_classif.mcc]{classif.mcc}}
-\item{Binary classification with hard labels: }{
+\item{Binary classification with hard labels:
 \link[mlr3:mlr_measures_classif.acc]{classif.acc},
 \link[mlr3:mlr_measures_classif.bacc]{classif.bacc},
 \link[mlr3:mlr_measures_classif.fbeta]{classif.fbeta},
 \link[mlr3:mlr_measures_classif.mcc]{classif.mcc}}
-\item{Multi-class classification with probabilities: }{
+\item{Multi-class classification with probabilities:
 \link[mlr3:mlr_measures_classif.mauc_aunp]{classif.mauc_aunp},
 \link[mlr3:mlr_measures_classif.mbrier]{classif.mbrier}}
 }
@@ -97,10 +97,10 @@ The following provides an overview of these defaults:
 Currently only two \code{complexity_measures} are available, which are
 based on Molnar et al. (2020):
 \itemize{
-\item{\code{sparsity}: }{The number of used features, that have a non-zero effect
+\item{\code{sparsity}: The number of used features, that have a non-zero effect
 on the prediction (evaluated by accumulated local effects (ale, Apley and Zhu
 (2020)). The measure can have values between 0 and the number of features.}
-\item{\code{interaction_strength}: }{The scaled approximation error between a
+\item{\code{interaction_strength}: The scaled approximation error between a
 main effect model (based on ale) and the prediction function. It can have
 values between 0 and 1, where 0 means no interaction and 1 only interaction,
 and no main effects. Interaction strength can only be measured for binary
@@ -110,12 +110,12 @@ classification and regression models.}
 \strong{Importance} The \code{importance_measures} are based on the \code{iml} and
 \code{fastshap} packages. Multiple measures are available:
 \itemize{
-\item{pdp: }{This corrensponds to importances based on the standard deviations
+\item{pdp: This corrensponds to importances based on the standard deviations
 in partial dependence plots (Friedmann (2001)), as proposed by Greenwell et al. (2018).}
-\item{pfi.\code{<}loss\code{>}: }{This corresponds to the permutation feature importance as
+\item{pfi.\code{<}loss\code{>}: This corresponds to the permutation feature importance as
 implemented in \link[iml:FeatureImp]{iml::FeatureImp}. Different loss functions are possible and
 rely on the task at hand.}
-\item{shap: }{This importance corresponds to the
+\item{shap: This importance corresponds to the
 mean absolute Shapley values computed with \link[fastshap:explain]{fastshap::explain}.
 Higher values display higher importance.}
 }
@@ -140,13 +140,13 @@ measures in \code{mlr3fairness} and the underlying measurements displayed.
 To avoid confusion, the id of the fairness measures were adapted.
 The following provides an overview of these defaults and adapted names:
 \itemize{
-\item{Binary classification: }{"fairness.dp" (demographic parity) based on "fairness.cv",
+\item{Binary classification: "fairness.dp" (demographic parity) based on "fairness.cv",
 "fairness.cuae" (conditional use accuracy equality) based on "fairness.pp",
 "fairness.eod" (equalized odds) based on "fairness.eod". Smaller values are better.}
-\item{Multi-class classification: }{"fairness.acc", the smallest absolute
+\item{Multi-class classification: "fairness.acc", the smallest absolute
 difference in accuracy between groups of the \code{protected_attribute}.
 Smaller values are better.}
-\item{Regression: }{"fairness.rmse" and "fairness.mae",
+\item{Regression: "fairness.rmse" and "fairness.mae",
 the smallest absolute difference (see \link[mlr3fairness:groupdiff_tau]{mlr3fairness::groupdiff_absdiff})
 in the either the root mean-squared error (rmse) or
 the mean absolute error (mae) between groups of the \code{protected_attribute}.

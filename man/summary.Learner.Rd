@@ -44,41 +44,41 @@ Possible values are "general", "residuals", "performance", "complexity", "fairne
 \value{
 summary.Learner returns an object of class "summary.Learner", a \link{list} with the following entries.
 \itemize{
-\item{task_type: }{The type of task, either \code{classif} (classification) or \code{regr} (regression).}
-\item{target_name: }{The name of the target variable.}
-\item{feature_names: }{The names of the features.}
-\item{classes: }{The classes of the target variable. NULL if regression task.}
-\item{resample_info: }{Information on the resample objects, strategy type and hyperparameters.}
-\item{residuals: }{Vector of hold-out residuals over the resampling iterations of \code{resample_result}.
+\item{task_type: The type of task, either \code{classif} (classification) or \code{regr} (regression).}
+\item{target_name: The name of the target variable.}
+\item{feature_names: The names of the features.}
+\item{classes: The classes of the target variable. NULL if regression task.}
+\item{resample_info: Information on the resample objects, strategy type and hyperparameters.}
+\item{residuals: Vector of hold-out residuals over the resampling iterations of \code{resample_result}.
 For regression models, residuals are the difference between true and predicted outcome.
 For classifiers with probabilities, the residuals are the difference
 between predicted probabilities and a one-hot-encoding of the true class.
 For hard-label classifier, a \code{confusion_matrix} is shown instead of \code{residuals}.}
-\item{confusion_matrix: }{Confusion matrix of predicted vs. true classes.
+\item{confusion_matrix: Confusion matrix of predicted vs. true classes.
 Alternative to \code{residuals}, in case of hard-label classification.}
-\item{performance: }{Vector of aggregated performance measures over the iterations of \code{resample_result}.
+\item{performance: Vector of aggregated performance measures over the iterations of \code{resample_result}.
 The arrows display whether lower or higher values are better.
 (micro/macro) displays whether it is a micro or macro measure.
 For macro aggregation, measures are computed
 for each iteration separately before averaging.
 For micro aggregation, measures are computed across all iterations.
 See Bischl et al. (2024), for details.}
-\item{performance_sd: }{Vector of standard deviations of performance measures
+\item{performance_sd: Vector of standard deviations of performance measures
 over the iterations of \code{resample_result}.
 The arrows display whether lower or higher values are better.
 (micro/macro) displays whether it is a micro or macro measure.}
-\item{fairness: }{Vector of aggregated fairness measures over the iterations of \code{resample_result}.
+\item{fairness: Vector of aggregated fairness measures over the iterations of \code{resample_result}.
 The arrows display whether lower or higher values are better.
 (micro/macro) displays whether it is a micro or macro measure.}
-\item{fairness_sd: }{Vector of standard deviations of fairness measures
+\item{fairness_sd: Vector of standard deviations of fairness measures
 over the iterations of \code{resample_result}.
 The arrows display whether lower or higher values are better.
 (micro/macro) displays whether it is a micro or macro measure (see details above).}
-\item{importances: }{List of \code{data.table} that display the feature importances
+\item{importances: List of \code{data.table} that display the feature importances
 per importance measure. Given are the means and standard deviations
 over the resampling iterations of \code{resample_result}.
 Higher average values display higher importance of a feature.}
-\item{effects: }{List of \code{data.table}s that display the feature effects
+\item{effects: List of \code{data.table}s that display the feature effects
 per effect method. Given are the mean effects
 over the resampling iterations of \code{resample_result} for a maximum of
 5 grid points. For binary classifiers, effects are only displayed for
@@ -86,9 +86,9 @@ the positively-labeled class.
 For multi-class, effect plots are displayed separately for each class.
 For categorical features, the factor levels of the feature determine
 the ordering of the bars.}
-\item{complexity: }{List of vectors that display the complexity values
+\item{complexity: List of vectors that display the complexity values
 per complexity measure for each resampling iteration.}
-\item{control: }{\link{summary_control} used as an input for \code{summary.Learner}.}
+\item{control: \link{summary_control} used as an input for \code{summary.Learner}.}
 }
 
 For details on the performance measures, complexity measures, feature

@@ -40,41 +40,41 @@
 #'
 #' @return summary.Learner returns an object of class "summary.Learner", a [list] with the following entries.
 #' \itemize{
-#' \item{task_type: }{The type of task, either `classif` (classification) or `regr` (regression).}
-#' \item{target_name: }{The name of the target variable.}
-#' \item{feature_names: }{The names of the features.}
-#' \item{classes: }{The classes of the target variable. NULL if regression task.}
-#' \item{resample_info: }{Information on the resample objects, strategy type and hyperparameters.}
-#' \item{residuals: }{Vector of hold-out residuals over the resampling iterations of `resample_result`.
+#' \item{task_type: The type of task, either `classif` (classification) or `regr` (regression).}
+#' \item{target_name: The name of the target variable.}
+#' \item{feature_names: The names of the features.}
+#' \item{classes: The classes of the target variable. NULL if regression task.}
+#' \item{resample_info: Information on the resample objects, strategy type and hyperparameters.}
+#' \item{residuals: Vector of hold-out residuals over the resampling iterations of `resample_result`.
 #' For regression models, residuals are the difference between true and predicted outcome.
 #' For classifiers with probabilities, the residuals are the difference
 #' between predicted probabilities and a one-hot-encoding of the true class.
 #' For hard-label classifier, a `confusion_matrix` is shown instead of `residuals`.}
-#' \item{confusion_matrix: }{Confusion matrix of predicted vs. true classes.
+#' \item{confusion_matrix: Confusion matrix of predicted vs. true classes.
 #'      Alternative to `residuals`, in case of hard-label classification.}
-#' \item{performance: }{Vector of aggregated performance measures over the iterations of `resample_result`.
+#' \item{performance: Vector of aggregated performance measures over the iterations of `resample_result`.
 #'      The arrows display whether lower or higher values are better.
 #'      (micro/macro) displays whether it is a micro or macro measure.
 #'      For macro aggregation, measures are computed
 #'      for each iteration separately before averaging.
 #'      For micro aggregation, measures are computed across all iterations.
 #'      See Bischl et al. (2024), for details.}
-#' \item{performance_sd: }{Vector of standard deviations of performance measures
+#' \item{performance_sd: Vector of standard deviations of performance measures
 #'       over the iterations of `resample_result`.
 #'       The arrows display whether lower or higher values are better.
 #'      (micro/macro) displays whether it is a micro or macro measure.}
-#' \item{fairness: }{Vector of aggregated fairness measures over the iterations of `resample_result`.
+#' \item{fairness: Vector of aggregated fairness measures over the iterations of `resample_result`.
 #'      The arrows display whether lower or higher values are better.
 #'      (micro/macro) displays whether it is a micro or macro measure.}
-#' \item{fairness_sd: }{Vector of standard deviations of fairness measures
+#' \item{fairness_sd: Vector of standard deviations of fairness measures
 #'       over the iterations of `resample_result`.
 #'       The arrows display whether lower or higher values are better.
 #'      (micro/macro) displays whether it is a micro or macro measure (see details above).}
-#' \item{importances: }{List of `data.table` that display the feature importances
+#' \item{importances: List of `data.table` that display the feature importances
 #'      per importance measure. Given are the means and standard deviations
 #'      over the resampling iterations of `resample_result`.
 #'      Higher average values display higher importance of a feature.}
-#' \item{effects: }{List of `data.table`s that display the feature effects
+#' \item{effects: List of `data.table`s that display the feature effects
 #'      per effect method. Given are the mean effects
 #'      over the resampling iterations of `resample_result` for a maximum of
 #'      5 grid points. For binary classifiers, effects are only displayed for
@@ -82,9 +82,9 @@
 #'      For multi-class, effect plots are displayed separately for each class.
 #'      For categorical features, the factor levels of the feature determine
 #'      the ordering of the bars.}
-#' \item{complexity: }{List of vectors that display the complexity values
+#' \item{complexity: List of vectors that display the complexity values
 #'      per complexity measure for each resampling iteration.}
-#' \item{control: }{[summary_control] used as an input for `summary.Learner`.}
+#' \item{control: [summary_control] used as an input for `summary.Learner`.}
 #' }
 #'
 #' For details on the performance measures, complexity measures, feature
@@ -351,21 +351,21 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' the measures will be initialized in `summary.Learner` with the help of `mlr3::msr`.
 #' The following provides an overview of these defaults:
 #' \itemize{
-#'  \item{Regression: }{[regr.rmse][mlr3::mlr_measures_regr.rmse],
+#'  \item{Regression: [regr.rmse][mlr3::mlr_measures_regr.rmse],
 #'  [regr.rsq][mlr3::mlr_measures_regr.rsq],
 #'  [regr.mae][mlr3::mlr_measures_regr.mae],
 #'  [regr.medae][mlr3::mlr_measures_regr.medae]}
-#'  \item{Binary classification with probabilities: }{
+#'  \item{Binary classification with probabilities:
 #'  [classif.auc][mlr3::mlr_measures_classif.auc],
 #'  [classif.fbeta][mlr3::mlr_measures_classif.fbeta],
 #'  [classif.bbrier][mlr3::mlr_measures_classif.bbrier],
 #'  [classif.mcc][mlr3::mlr_measures_classif.mcc]}
-#'  \item{Binary classification with hard labels: }{
+#'  \item{Binary classification with hard labels:
 #'  [classif.acc][mlr3::mlr_measures_classif.acc],
 #'  [classif.bacc][mlr3::mlr_measures_classif.bacc],
 #'  [classif.fbeta][mlr3::mlr_measures_classif.fbeta],
 #'  [classif.mcc][mlr3::mlr_measures_classif.mcc]}
-#'  \item{Multi-class classification with probabilities: }{
+#'  \item{Multi-class classification with probabilities:
 #'  [classif.mauc_aunp][mlr3::mlr_measures_classif.mauc_aunp],
 #'  [classif.mbrier][mlr3::mlr_measures_classif.mbrier]}
 #' }
@@ -373,10 +373,10 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' Currently only two `complexity_measures` are available, which are
 #' based on Molnar et al. (2020):
 #' \itemize{
-#' \item{`sparsity`: }{The number of used features, that have a non-zero effect
+#' \item{`sparsity`: The number of used features, that have a non-zero effect
 #' on the prediction (evaluated by accumulated local effects (ale, Apley and Zhu
 #' (2020)). The measure can have values between 0 and the number of features.}
-#' \item{`interaction_strength`: }{The scaled approximation error between a
+#' \item{`interaction_strength`: The scaled approximation error between a
 #' main effect model (based on ale) and the prediction function. It can have
 #' values between 0 and 1, where 0 means no interaction and 1 only interaction,
 #' and no main effects. Interaction strength can only be measured for binary
@@ -386,12 +386,12 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' \strong{Importance} The `importance_measures` are based on the `iml` and
 #' `fastshap` packages. Multiple measures are available:
 #' \itemize{
-#' \item{pdp: }{This corrensponds to importances based on the standard deviations
+#' \item{pdp: This corrensponds to importances based on the standard deviations
 #' in partial dependence plots (Friedmann (2001)), as proposed by Greenwell et al. (2018).}
-#' \item{pfi.`<`loss`>`: }{This corresponds to the permutation feature importance as
+#' \item{pfi.`<`loss`>`: This corresponds to the permutation feature importance as
 #' implemented in [iml::FeatureImp]. Different loss functions are possible and
 #' rely on the task at hand.}
-#' \item{shap: }{This importance corresponds to the
+#' \item{shap: This importance corresponds to the
 #' mean absolute Shapley values computed with [fastshap::explain].
 #' Higher values display higher importance.}
 #' }
@@ -416,13 +416,13 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #' To avoid confusion, the id of the fairness measures were adapted.
 #' The following provides an overview of these defaults and adapted names:
 #' \itemize{
-#'  \item{Binary classification: }{"fairness.dp" (demographic parity) based on "fairness.cv",
+#'  \item{Binary classification: "fairness.dp" (demographic parity) based on "fairness.cv",
 #'  "fairness.cuae" (conditional use accuracy equality) based on "fairness.pp",
 #'  "fairness.eod" (equalized odds) based on "fairness.eod". Smaller values are better.}
-#'  \item{Multi-class classification: }{"fairness.acc", the smallest absolute
+#'  \item{Multi-class classification: "fairness.acc", the smallest absolute
 #'  difference in accuracy between groups of the `protected_attribute`.
 #'  Smaller values are better.}
-#'  \item{Regression: }{"fairness.rmse" and "fairness.mae",
+#'  \item{Regression: "fairness.rmse" and "fairness.mae",
 #'  the smallest absolute difference (see [mlr3fairness::groupdiff_absdiff])
 #'  in the either the root mean-squared error (rmse) or
 #'  the mean absolute error (mae) between groups of the `protected_attribute`.
