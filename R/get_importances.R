@@ -43,7 +43,8 @@ get_single_importance = function(importance_measure, task, learner, train_set, p
   switch(importance_measure,
     pdp = get_pdp_importance(learner, test_tsk),
     pfi = get_pfi_importance(learner, test_tsk, loss),
-    shap = get_shap_importance(learner, test_tsk))
+    shap = get_shap_importance(learner, test_tsk)
+  )
 }
 
 

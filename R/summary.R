@@ -115,7 +115,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
   if (!is.null(resample_result)) {
     assert_resample_result(resample_result)
     # assert that store_model = TRUE
-    if (is.null(resample_result$learners[[1]]$model)) {
+    if (is.null(resample_result$learners[[1L]]$model)) {
       stopf("resample_result does not contain trained models, ensure resample() was run with 'store_models = TRUE'")
     }
     # ensure underlying algo and task of object and resample_result match
@@ -191,9 +191,11 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     if ("performance" %nin% control$hide) {
       # Set default measures if no measures specified
       if (is.null(control$measures)) {
-        control$measures = get_default_measures(task_type = object$task_type,
+        control$measures = get_default_measures(
+          task_type = object$task_type,
           properties = object$state$train_task$properties,
-          predict_type = object$predict_type)
+          predict_type = object$predict_type
+        )
       }
 
       control$measures = map(control$measures, function(pmsr) {
@@ -294,9 +296,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       }
     }
 
-    ans = c(ans, list(
-      control = control)
-    )
+    ans = c(ans, list(control = control))
   }
 
   ans$control = control
@@ -324,7 +324,7 @@ summary.GraphLearner = function(object, resample_result = NULL, control = summar
   pp = paste0(c("<INPUT>", ppunit, "<OUTPUT>"), collapse = arr)
   ans$pipeline = pp
 
-  return(ans)
+  ans
 }
 
 
@@ -588,14 +588,14 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
 
   if (!is.null(x$performance) && "performance" %nin% hide) {
     cli_h1("Performance [sd]")
-    namp = structure(paste0(round(x$performance, x$control$digits),
-      " [", round(x$performance_sd, x$control$digits), "]"),
-      names = names(x$performance))
+    namp = structure(
+      paste0(round(x$performance, x$control$digits), " [", round(x$performance_sd, x$control$digits), "]"),
+      names = names(x$performance)
+    )
     names(namp) = paste0(names(namp), ":")
     perf = as.matrix(namp)
     colnames(perf) = ""
     print.default(perf, quote = FALSE, right = FALSE, ...)
-
   }
 
   if (!is.null(x$fairness) && "fairness" %nin% hide) {
@@ -636,11 +636,11 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     }
 
     rr = map(x$importance, compute_imp_summary)
-    rr = Reduce(merge,rr)
+    rr = Reduce(merge, rr)
     rr = rr[order(match(feature, featorder))]
     names(rr) = c("feature", names(x$importances))
     rownames(rr) = rr$feature
-    rr[,feature := NULL]
+    rr[, feature := NULL]
     col = names(x$importances)[[1L]]
 
     if (!is.null(x$control$n_important) && nrow(rr) > x$control$n_important) {
@@ -657,9 +657,11 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     # Size of effect plots are derived based on ALE/PDP curves
     scale_values = function(x, range) (x - range[1]) / (range[2] - range[1]) * 7 + 1
     get_effect_plot = function(x, range) {
-      symb = map_chr(paste("lower_block", round(scale_values(x, range)), sep = "_"),
-        function(s) symbol[[s]])
-      return(paste0(symb, collapse = ""))
+      symb = map_chr(
+        paste("lower_block", round(scale_values(x, range)), sep = "_"),
+        function(s) symbol[[s]]
+      )
+      paste0(symb, collapse = "")
     }
 
     if (!is.null(x$importances)) {

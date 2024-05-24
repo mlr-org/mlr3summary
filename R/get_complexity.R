@@ -1,8 +1,9 @@
 ## inspired by mlr3:::score_measures and mlr3:::score_single_measure
 get_complexity = function(obj, complexity_measures) {
 
-  tab = get_private(obj)$.data$as_data_table(view = NULL,
-    reassemble_learners = TRUE, convert_predictions = FALSE)
+  tab = get_private(obj)$.data$as_data_table(
+    view = NULL, reassemble_learners = TRUE, convert_predictions = FALSE
+  )
   tmp = unique(tab, by = c("task_hash", "learner_hash"))[,
     c("task", "learner"), with = FALSE]
 
@@ -28,7 +29,8 @@ get_single_complexity = function(complexity_measure, task, learner, train_set, p
   learner$state$train_task = task
   em = switch(complexity_measure,
     sparsity = get_sparsity_or_interaction_strength(learner, test_tsk, method = "sparsity"),
-    interaction_strength = get_sparsity_or_interaction_strength(learner, test_tsk, method = "interaction_strength"))
+    interaction_strength = get_sparsity_or_interaction_strength(learner, test_tsk, method = "interaction_strength")
+  )
 }
 
 get_sparsity_or_interaction_strength = function(learner, test_tsk, method) {

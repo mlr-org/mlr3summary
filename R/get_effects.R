@@ -45,7 +45,8 @@ get_single_effect = function(effect_measure, task, learner, train_set, predictio
 
   em = switch(effect_measure,
     pdp = get_pdp_or_ale_effect(learner, test_tsk, method = "pdp", min_val, max_val),
-    ale = get_pdp_or_ale_effect(learner, test_tsk, method = "ale", min_val, max_val))
+    ale = get_pdp_or_ale_effect(learner, test_tsk, method = "ale", min_val, max_val)
+  )
 }
 
 
