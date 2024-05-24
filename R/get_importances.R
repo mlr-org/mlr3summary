@@ -26,8 +26,7 @@ get_importances = function(obj, importance_measures) {
 
   })
 
-  names(imps_list) = importance_measures
-  imps_list
+  set_names(imps_list, importance_measures)
 }
 
 get_single_importance = function(importance_measure, task, learner, train_set, prediction) {
@@ -36,22 +35,22 @@ get_single_importance = function(importance_measure, task, learner, train_set, p
   test_tsk = task$clone()$filter(test_ids)
   learner$state$train_task = task
 
-  if (grepl("pfi", importance_measure)) {
+  if (grepl("pfi", importance_measure, fixed = TRUE)) {
     loss = gsub("pfi.", "", importance_measure)
     importance_measure = "pfi"
   }
 
   switch(importance_measure,
-    "pdp" = get_pdp_importance(learner, test_tsk),
-    "pfi" = get_pfi_importance(learner, test_tsk, loss),
-    "shap" = get_shap_importance(learner, test_tsk))
+    pdp = get_pdp_importance(learner, test_tsk),
+    pfi = get_pfi_importance(learner, test_tsk, loss),
+    shap = get_shap_importance(learner, test_tsk))
 }
 
 
 get_pdp_importance = function(learner, test_tsk) {
   # based on Greenwell et al. (2018)
   if (!requireNamespace("iml", quietly = TRUE)) {
-    stop("Package 'iml' needed for this function to work. Please install it.", call. = FALSE)
+    stopf("Package 'iml' needed for this function to work. Please install it.")
   }
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names)
@@ -70,14 +69,13 @@ get_pdp_importance = function(learner, test_tsk) {
   # currently just sum over variances weighted by class frequencies
   imp = map(pdp$results, function(dt) {
     dt = as.data.table(dt)
-  if (learner$task_type == "classif" && learner$state$train_task$properties == "multiclass") {
+    if (learner$task_type == "classif" && learner$state$train_task$properties == "multiclass") {
       sdvals = dt[, stats::sd(.value), by = .class]
-        sdvals = merge(sdvals, weights, by.x = ".class", by.y = tgtname)
-        sum(sdvals$V1*sdvals$weights)
-      # }
-  } else {
+      sdvals = merge(sdvals, weights, by.x = ".class", by.y = tgtname)
+      sum(sdvals$V1*sdvals$weights)
+    } else {
       dt[, stats::sd(.value)]
-  }
+    }
   })
   data.table(feature = names(pdp$results),
     importance = as.numeric(unlist(imp)))
@@ -87,7 +85,7 @@ get_pdp_importance = function(learner, test_tsk) {
 get_pfi_importance = function(learner, test_tsk, loss) {
   # based on Breiman (2001) and Fisher et al. (2019)
   if (!requireNamespace("iml", quietly = TRUE)) {
-    stop("Package 'iml' needed for this function to work. Please install it.", call. = FALSE)
+    stopf("Package 'iml' needed for this function to work. Please install it.")
   }
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names)
@@ -97,21 +95,21 @@ get_pfi_importance = function(learner, test_tsk, loss) {
 get_shap_importance = function(learner, test_tsk, loss) {
   # based on Lundberg and Lee (2017)
   if (!requireNamespace("fastshap", quietly = TRUE)) {
-    stop("Package 'fastshap' needed for this measuring importance. Please install it.", call. = FALSE)
+    stopf("Package 'fastshap' needed for this measuring importance. Please install it.")
   }
   if (learner$task_type == "regr") {
     outcome_classes = "response"
   } else if (learner$task_type == "classif") {
     outcome_classes = learner$state$train_task$class_names
   }
-  temp = vapply(outcome_classes, FUN.VALUE = numeric(length(test_tsk$feature_names)), function(reference) {
+  temp = map_dbl(outcome_classes, function(reference) {
     pfun = function(object, newdata) {
       if (object$task_type == "regr") {
         object$predict_newdata(newdata)[[reference]]
       } else if (object$task_type == "classif") {
         if (object$predict_type == "response") {
-          stop("Importance measure 'shap' requires a learner with `predict_type = 'prob'")
-        } else{
+          stopf("Importance measure 'shap' requires a learner with `predict_type = 'prob'")
+        } else {
           object$predict_newdata(newdata)$prob[, reference]
         }
       }

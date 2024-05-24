@@ -103,7 +103,6 @@
 #'   summary(lrn_rpart, rr)
 #' }
 #' @importFrom stats sd
-#' @importFrom stats setNames
 #' @importFrom stats var
 #' @export
 summary.Learner = function(object, resample_result = NULL, control = summary_control(), ...) {
@@ -117,16 +116,16 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     assert_resample_result(resample_result)
     # assert that store_model = TRUE
     if (is.null(resample_result$learners[[1]]$model)) {
-      stop("resample_result does not contain trained models, ensure resample() was run with 'store_models = TRUE'")
+      stopf("resample_result does not contain trained models, ensure resample() was run with 'store_models = TRUE'")
     }
     # ensure underlying algo and task of object and resample_result match
     if (!inherits(object, "AutoTuner")) {
       if (!(object$base_learner()$hash == resample_result$learner$base_learner()$hash)) {
-        stop("Learning algorithm of object does not match algorithm used for resampling. Ensure equality.")
+        stopf("Learning algorithm of object does not match algorithm used for resampling. Ensure equality.")
       }
     }
     if (!all.equal(object$state$train_task$hash, resample_result$task$hash)) {
-      stop("object and resample_result seem to be trained on differing tasks. Ensure equality.")
+      stopf("object and resample_result seem to be trained on differing tasks. Ensure equality.")
     }
   }
   assert_class(control, classes = "summary_control", null.ok = FALSE)
@@ -144,7 +143,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     ans[["feature_names"]] = fn
 
     if (tt == "classif") {
-      ans$classes = object$state$train_task$col_info[id == tn,]$levels[[1]]
+      ans$classes = object$state$train_task$col_info[id == tn, ]$levels[[1L]]
     }
 
     if (!inherits(object, "GraphLearner")) {
@@ -179,7 +178,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
           truth = as.character(res$truth)
           res = res$data$prob
           rs = vector(length = nrow(res))
-          for (i in 1:nrow(res)) {
+          for (i in seq_len(nrow(res))) {
             rs[i] = 1 - res[i, truth[i]]
           }
           ans[["residuals"]] = rs
@@ -245,7 +244,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
         })
         fair = resample_result$aggregate(measures = control$fairness_measures)
         fairscores = resample_result$score(measures = control$fairness_measures)
-        nam_multimeas = names(fairscores)[grep("fairness", names(fairscores))]
+        nam_multimeas = names(fairscores)[grep("fairness", names(fairscores), fixed = TRUE)]
         fairscores = fairscores[, nam_multimeas, with = FALSE]
         stdfair = map_dbl(fairscores, stats::sd)
 
@@ -316,7 +315,7 @@ summary.GraphLearner = function(object, resample_result = NULL, control = summar
   # pipeline
   arr = "  ->  "
   if (inherits(object, "GraphLearner")) {
-    if(all(!duplicated(object$graph$edges[["src_id"]]))) {
+    if (all(!duplicated(object$graph$edges[["src_id"]]))) {
       ppunit = paste0(object$graph$ids(), collapse = arr)
     } else {
       ppunit = "<SUPPRESSED>"
@@ -332,7 +331,7 @@ summary.GraphLearner = function(object, resample_result = NULL, control = summar
 #' @export
 summary.Graph = function(object, resample_result = NULL, control = summary_control(), ...) {
 
-  stop("object of type 'Graph' cannot be processed, convert 'Graph' to 'GraphLearner' via mlr3::as_learner() and retrain.")
+  stopf("object of type 'Graph' cannot be processed, convert 'Graph' to 'GraphLearner' via mlr3::as_learner() and retrain.")
   # # convert to GraphLearner and run summary
   # summary(as_learner(object), resample_result = resample_result, control = control, ...)
 }
@@ -577,11 +576,11 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     cli_h1("Confusion matrix")
     max_cols = 8L
     if (ncol(x$confusion_matrix) >= max_cols) {
-      conf = x$confusion_matrix[1:(max_cols + 1), 1:(max_cols + 1)]
-      conf[max_cols+1,] = "..."
-      conf[,max_cols+1] = "..."
-      rownames(conf)[max_cols + 1] = "..."
-      colnames(conf)[max_cols + 1] = "..."
+      conf = x$confusion_matrix[1:(max_cols + 1L), 1:(max_cols + 1L)]
+      conf[max_cols + 1L,] = "..."
+      conf[, max_cols + 1L] = "..."
+      rownames(conf)[max_cols + 1L] = "..."
+      colnames(conf)[max_cols + 1L] = "..."
     } else {
       print(x$confusion_matrix)
     }
@@ -602,7 +601,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
   if (!is.null(x$fairness) && "fairness" %nin% hide) {
     cli_h1("Fairness [sd]")
     cli_text("Protected attribute: {x$control$protected_attribute}")
-    nampf = setNames(paste0(round(x$fairness, x$control$digits),
+    nampf = set_names(paste0(round(x$fairness, x$control$digits),
       " [", round(x$fairness_sd, x$control$digits), "]"),
       paste0(names(x$fairness), ":"))
     fair = as.matrix(nampf)
@@ -641,11 +640,11 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     rr = rr[order(match(feature, featorder))]
     names(rr) = c("feature", names(x$importances))
     rownames(rr) = rr$feature
-    rr[,feature:=NULL]
-    col = names(x$importances)[[1]]
+    rr[,feature := NULL]
+    col = names(x$importances)[[1L]]
 
     if (!is.null(x$control$n_important) && nrow(rr) > x$control$n_important) {
-      rr = rr[1:x$control$n_important,]
+      rr = rr[1:x$control$n_important, ]
       featorder = featorder[1:x$control$n_important]
     }
     rr = as.matrix(rr, rownames = featorder)
@@ -656,7 +655,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
 
   if (!is.null(x$effects) && "effect" %nin% hide) {
     # Size of effect plots are derived based on ALE/PDP curves
-    scale_values = function(x, range){(x - range[1])/(range[2] - range[1])*(7) + 1}
+    scale_values = function(x, range) (x - range[1]) / (range[2] - range[1]) * 7 + 1
     get_effect_plot = function(x, range) {
       symb = map_chr(paste("lower_block", round(scale_values(x, range)), sep = "_"),
         function(s) symbol[[s]])
@@ -685,17 +684,17 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
       res
     })
 
-    effs = effs[ , which( !duplicated(t(effs))) , with = FALSE]
+    effs = effs[, which(!duplicated(t(effs))), with = FALSE]
 
     cli_h1("Effects")
-    names(effs)[grepl("class", colnames(effs))] = "class"
-    names(effs)[grepl("feature", colnames(effs))] = "feature"
-    names(effs) = gsub("\\.V1", "", names(effs))
+    names(effs)[grepl("class", colnames(effs), fixed = TRUE)] = "class"
+    names(effs)[grepl("feature", colnames(effs), fixed = TRUE)] = "feature"
+    names(effs) = gsub("\\.V1", "", names(effs), fixed = TRUE)
 
     # if multi-class, effects for each class are displayed one below the other
     if (!is.null(effs$class)) {
       effs = split(effs, effs$class)
-      for (i in 1:length(effs)) {
+      for (i in seq_along(effs)) {
         cat("\n")
         cli_h2(names(effs[i]))
         ef = copy(effs[[i]])

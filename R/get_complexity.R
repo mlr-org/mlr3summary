@@ -19,8 +19,7 @@ get_complexity = function(obj, complexity_measures) {
 
     comps
   })
-  names(comps_list) = complexity_measures
-  comps_list
+  set_names(comps_list, complexity_measures)
 }
 
 get_single_complexity = function(complexity_measure, task, learner, train_set, prediction) {
@@ -28,13 +27,13 @@ get_single_complexity = function(complexity_measure, task, learner, train_set, p
   test_tsk = task$clone()$filter(test_ids)
   learner$state$train_task = task
   em = switch(complexity_measure,
-    "sparsity" = get_sparsity_or_interaction_strength(learner, test_tsk, method = "sparsity"),
-    "interaction_strength" = get_sparsity_or_interaction_strength(learner, test_tsk, method = "interaction_strength"))
+    sparsity = get_sparsity_or_interaction_strength(learner, test_tsk, method = "sparsity"),
+    interaction_strength = get_sparsity_or_interaction_strength(learner, test_tsk, method = "interaction_strength"))
 }
 
 get_sparsity_or_interaction_strength = function(learner, test_tsk, method) {
   if (!requireNamespace("iml", quietly = TRUE)) {
-    stop("Package 'iml' needed for this function to work. Please install it.", call. = FALSE)
+    stopf("Package 'iml' needed for this function to work. Please install it.")
   }
   class = if (learner$state$train_task$task_type == "classif" && learner$state$train_task$properties == "twoclass") {
     learner$state$train_task$positive
@@ -42,7 +41,7 @@ get_sparsity_or_interaction_strength = function(learner, test_tsk, method) {
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names, class = class)
 
-  gride_size = switch(method, "sparsity" = 20L, "interaction_strength" = 100L)
+  gride_size = switch(method, sparsity = 20L, interaction_strength = 100L)
   ales = iml::FeatureEffects$new(pred, method = "ale", grid.size = gride_size)
   if (method == "sparsity") {
     get_sparsity(ales)
@@ -67,10 +66,10 @@ compute_interaction_strength = function(predictor, effects) {
   # compute ALE
   dt = predictor$data$get.x()
   pred = predictor$predict(dt)
-  if (ncol(pred) > 1) {
-    stop("Complexity measure 'interaction_strength' does not work for multiClass")
+  if (ncol(pred) > 1L) {
+    stopf("Complexity measure 'interaction_strength' does not work for multiClass")
   } else {
-    pred = pred[[1]]
+    pred = pred[[1L]]
   }
   mean_pred = mean(pred)
   res = map_dtc(effects$effects, function(eff) {
@@ -83,15 +82,15 @@ compute_interaction_strength = function(predictor, effects) {
   ale_predictions = rowSums(res) + mean_pred
   ssq_bb = ssq(pred - mean_pred)
 
-  if(!ssq_bb) {
+  if (!ssq_bb) {
     is = 0
   } else {
     ssq_1st_order_e = ssq(ale_predictions - pred)
-    is = ssq_1st_order_e/ssq_bb
+    is = ssq_1st_order_e / ssq_bb
   }
 }
 
 ssq = function(x) {
-  assert_numeric(x, any.missing = FALSE, min.len = 1)
+  assert_numeric(x, any.missing = FALSE, min.len = 1L)
   sum(x^2)
 }

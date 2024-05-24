@@ -38,14 +38,14 @@ get_single_effect = function(effect_measure, task, learner, train_set, predictio
   test_tsk = task$clone()$filter(test_ids)
   learner$state$train_task = task
 
-  if (grepl("pfi", effect_measure)) {
+  if (grepl("pfi", effect_measure, fixed = TRUE)) {
     loss = gsub("pfi.", "", effect_measure)
     effect_measure = "pfi"
   }
 
   em = switch(effect_measure,
-    "pdp" = get_pdp_or_ale_effect(learner, test_tsk, method = "pdp", min_val, max_val),
-    "ale" = get_pdp_or_ale_effect(learner, test_tsk, method = "ale", min_val, max_val))
+    pdp = get_pdp_or_ale_effect(learner, test_tsk, method = "pdp", min_val, max_val),
+    ale = get_pdp_or_ale_effect(learner, test_tsk, method = "ale", min_val, max_val))
 }
 
 
@@ -59,9 +59,9 @@ get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
   eff = map(test_tsk$feature_names, function(feature) {
     col_info = test_tsk$col_info[id == feature,]
     if (!col_info$type %in% c("numeric", "integer")) {
-      if (col_info$type == "ordered" & length(col_info$levels[[1]]) > 5) {
-        levs = col_info$levels[[1]]
-        grid = levs[round(seq(1, length(levs), length.out = gridsize))]
+      if (col_info$type == "ordered" & length(col_info$levels[[1L]]) > 5L) {
+        levs = col_info$levels[[1L]]
+        grid = levs[round(seq(1L, length(levs), length.out = gridsize))]
       } else {
         grid = NULL
       }
@@ -93,5 +93,3 @@ get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
   })
   do.call(rbind, eff)
 }
-
-
