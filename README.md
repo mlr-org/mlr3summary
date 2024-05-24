@@ -79,9 +79,11 @@ If you use `mlr3summary`, please cite:
 
 A BibTeX entry for LaTeX users is
 
-      @Manual{,
-        title = {mlr3summary: Model and learner summaries for 'mlr3'},
-        author = {Susanne Dandl and Marc Becker and Bernd Bischl and Giuseppe Casalicchio and Ludwig Bothmann},
-        year = {2024},
-        note = {R package version 0.1.0},
-      }
+``` bibtex
+@Manual{,
+  title = {mlr3summary: Model and learner summaries for 'mlr3'},
+  author = {Susanne Dandl and Marc Becker and Bernd Bischl and Giuseppe Casalicchio and Ludwig Bothmann},
+  year = {2024},
+  note = {R package version 0.1.0}
+}
+```
