@@ -3,8 +3,12 @@
 
 # mlr3summary
 
+Package website: [release](https://mlr3summary.mlr-org.com/) \|
+[dev](https://mlr3summary.mlr-org.com/dev/)
+
 <!-- badges: start -->
 
+[![r-cmd-check](https://github.com/mlr-org/mlr3summary/actions/workflows/r-cmd-check.yml/badge.svg)](https://github.com/mlr-org/mlr3summary/actions/workflows/r-cmd-check.yml)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/mlr3summary)](https://CRAN.R-project.org/package=mlr3summary)
 [![StackOverflow](https://img.shields.io/badge/stackoverflow-mlr3-orange.svg)](https://stackoverflow.com/questions/tagged/mlr3)
