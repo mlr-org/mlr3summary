@@ -56,7 +56,7 @@ get_pdp_importance = function(learner, test_tsk) {
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names)
   if (learner$task_type == "classif") {
-    if (learner$state$train_task$properties == "multiclass") {
+    if ("multiclass" %in% learner$state$train_task$properties) {
       # get class frequencies for weighting
       tgtname = test_tsk$target_names
       weights = test_tsk$data(cols = learner$state$train_task$target_names)[, .N/test_tsk$nrow, by = tgtname]
@@ -70,7 +70,7 @@ get_pdp_importance = function(learner, test_tsk) {
   # currently just sum over variances weighted by class frequencies
   imp = map(pdp$results, function(dt) {
     dt = as.data.table(dt)
-  if (learner$task_type == "classif" && learner$state$train_task$properties == "multiclass") {
+  if (learner$task_type == "classif" && "multiclass" %in% learner$state$train_task$properties) {
       sdvals = dt[, stats::sd(.value), by = .class]
         sdvals = merge(sdvals, weights, by.x = ".class", by.y = tgtname)
         sum(sdvals$V1*sdvals$weights)
