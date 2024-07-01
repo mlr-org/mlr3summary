@@ -36,7 +36,7 @@ get_sparsity_or_interaction_strength = function(learner, test_tsk, method) {
   if (!requireNamespace("iml", quietly = TRUE)) {
     stop("Package 'iml' needed for this function to work. Please install it.", call. = FALSE)
   }
-  class = if (learner$state$train_task$task_type == "classif" && learner$state$train_task$properties == "twoclass") {
+  class = if (learner$state$train_task$task_type == "classif" && "twoclass" %in% learner$state$train_task$properties) {
     learner$state$train_task$positive
   }
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),

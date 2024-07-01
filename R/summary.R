@@ -283,7 +283,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     if ("complexity" %nin% control$hide) {
       if ("interaction_strength" %in% control$complexity_measures) {
         multi_class = object$state$train_task$task_type == "classif" &&
-          object$state$train_task$properties == "multiclass"
+          "multiclass" %in% object$state$train_task$properties
         if (multi_class) {
           control$complexity_measures = setdiff(control$complexity_measures, "interaction_strength")
           messagef("complexity measure 'interaction_strenght' is ignored because it does not work for multiClass")
