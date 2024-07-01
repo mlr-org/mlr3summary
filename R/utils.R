@@ -3,15 +3,15 @@
 get_default_measures = function(task_type, properties = NULL, predict_type = NULL) {
   keys = if (task_type == "classif") {
     if (predict_type == "response") {
-      if (properties == "twoclass") {
+      if ("twoclass" %in% properties) {
         mlr_measures$mget(c("classif.acc", "classif.bacc", "classif.fbeta", "classif.mcc"))
-      } else if (properties == "multiclass") {
+      } else if ("multiclass" %in% properties) {
         mlr_measures$mget(c("classif.acc", "classif.bacc"))
       }
     } else if (predict_type == "prob") {
-      if (properties == "twoclass") {
+      if ("twoclass" %in% properties) {
         mlr_measures$mget(c("classif.auc", "classif.fbeta", "classif.bbrier", "classif.mcc"))
-      } else if (properties == "multiclass") {
+      } else if ("multiclass" %in% properties) {
         mlr_measures$mget(c("classif.mauc_aunp", "classif.mbrier"))
       }
 
@@ -33,7 +33,7 @@ get_default_fairness_measures = function(task_type, properties = NULL, predict_t
     list(msr("fairness", operation = groupdiff_absdiff, base_measure = msr("regr.rmse")),
       msr("fairness", operation = groupdiff_absdiff, base_measure = msr("regr.mae"))
     )
-  } else if (task_type == "classif" && properties == "multiclass") {
+  } else if (task_type == "classif" && "multiclass" %in% properties) {
     list(msr("fairness", operation = groupdiff_absdiff, base_measure = msr("classif.acc")))
   } else {
     NA_character_
