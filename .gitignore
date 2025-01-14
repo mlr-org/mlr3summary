@@ -1,4 +1,3 @@
-### R ###
 # History files
 .Rhistory
 .Rapp.history
@@ -22,8 +21,38 @@
 # RStudio files
 .Rproj.user/
 
-# mlr3 playground
-inst/mlr3_playground.R
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+doc/
+Meta/
 
-# htmls
-inst/mlr3summary_playground.html
+# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+.httr-oauth
+
+# knitr and R markdown default cache directories
+*_cache/
+/cache/
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+
+# R Environment Variables
+.Renviron
+
+# pkgdown site
+docs/
+
+# translation temp files
+po/*~
+
+# RStudio Connect folder
+rsconnect/
+
+# CRAN
+CRAN-RELEASE
+CRAN-SUBMISSION
+
+# MacOS
+.DS_Store
