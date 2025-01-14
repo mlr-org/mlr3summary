@@ -24,7 +24,7 @@
 ^cran-comments\.md$
 ^data-raw$
 ^docs$
-^inst/demo/$
+^inst/demo$
 ^inst/extdata/.+\.R$
 ^inst/mlr3summary_playground.Rmd$
 ^inst/runtime_experiments.R$
