@@ -22,8 +22,5 @@
 #'   \item{risk}{whether the credit is of low/good or high/bad risk (bad, good)}
 #'   }
 #' @references
-#' `r format_bib("creditdata")`
-#'
-#' `r format_bib("kaggle16")`
-#'
+#' `r format_bib("creditdata", "kaggle16")`
 NULL

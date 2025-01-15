@@ -12,10 +12,8 @@ get_complexity = function(obj, complexity_measures) {
   comps_list = map(complexity_measures, function(comp_msr) {
     # step through resample folds
 
-    comps = future_mapply(function(task,
-      learner, resampling, iteration, prediction, ...) {
-      get_single_complexity(comp_msr, task, learner, train_set = resampling$train_set(iteration),
-        prediction)
+    comps = future_mapply(function(task, learner, resampling, iteration, prediction, ...) {
+      get_single_complexity(comp_msr, task, learner, train_set = resampling$train_set(iteration), prediction)
     }, tab$task, tab$learner, tab$resampling, tab$iteration, tab$prediction,
     future.seed = NULL)
 
@@ -44,7 +42,7 @@ get_sparsity_or_interaction_strength = function(learner, test_tsk, method) {
   pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
     y = test_tsk$target_names, class = class)
 
-  gride_size = switch(method, "sparsity" = 20L, "interaction_strength" = 100L)
+  gride_size = switch(method, sparsity = 20L, interaction_strength = 100L)
   ales = iml::FeatureEffects$new(pred, method = "ale", grid.size = gride_size)
   if (method == "sparsity") {
     get_sparsity(ales)

@@ -318,8 +318,7 @@ summary.GraphLearner = function(object, resample_result = NULL, control = summar
   }
   pp = paste0(c("<INPUT>", ppunit, "<OUTPUT>"), collapse = arr)
   ans$pipeline = pp
-
-  return(ans)
+  ans
 }
 
 
@@ -655,7 +654,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     get_effect_plot = function(x, range) {
       symb = map_chr(paste("lower_block", round(scale_values(x, range)), sep = "_"),
         function(s) symbol[[s]])
-      return(paste0(symb, collapse = ""))
+      paste0(symb, collapse = "")
     }
 
     if (!is.null(x$importances)) {

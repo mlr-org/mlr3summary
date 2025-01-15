@@ -1,8 +1,8 @@
 ## inspired by mlr3:::score_measures and mlr3:::score_single_measure
 get_importances = function(obj, importance_measures) {
-
-  tab = get_private(obj)$.data$as_data_table(view = NULL,
-    reassemble_learners = TRUE, convert_predictions = FALSE)
+  tab = get_private(obj)$.data$as_data_table(
+    view = NULL, reassemble_learners = TRUE, convert_predictions = FALSE
+  )
   tmp = unique(tab, by = c("task_hash", "learner_hash"))[,
     c("task", "learner"), with = FALSE]
 
@@ -11,10 +11,10 @@ get_importances = function(obj, importance_measures) {
 
     # step through resample folds
     imps = rbindlist(
-      future_mapply(function(task,
-        learner, resampling, iteration, prediction, ...) {
-        get_single_importance(imp_msr, task, learner, train_set = resampling$train_set(iteration),
-          prediction)
+      future_mapply(function(task, learner, resampling, iteration, prediction, ...) {
+        get_single_importance(
+          imp_msr, task, learner, train_set = resampling$train_set(iteration), prediction
+        )
       }, tab$task, tab$learner, tab$resampling, tab$iteration, tab$prediction,
       future.seed = NULL, SIMPLIFY = FALSE)
     )
@@ -23,15 +23,12 @@ get_importances = function(obj, importance_measures) {
     mm = imps[, list(mean = mean(importance)), by = feature]
     varimps = imps[, list(sd = stats::sd(importance)), by = feature]
     merge(mm, varimps, by = "feature")
-
   })
 
-  names(imps_list) = importance_measures
-  imps_list
+  set_names(imps_list, importance_measures)
 }
 
 get_single_importance = function(importance_measure, task, learner, train_set, prediction) {
-
   test_ids = prediction$test$row_ids
   test_tsk = task$clone()$filter(test_ids)
   learner$state$train_task = task
@@ -42,19 +39,18 @@ get_single_importance = function(importance_measure, task, learner, train_set, p
   }
 
   switch(importance_measure,
-    "pdp" = get_pdp_importance(learner, test_tsk),
-    "pfi" = get_pfi_importance(learner, test_tsk, loss),
-    "shap" = get_shap_importance(learner, test_tsk))
+    pdp = get_pdp_importance(learner, test_tsk),
+    pfi = get_pfi_importance(learner, test_tsk, loss),
+    shap = get_shap_importance(learner, test_tsk)
+  )
 }
-
 
 get_pdp_importance = function(learner, test_tsk) {
   # based on Greenwell et al. (2018)
   if (!requireNamespace("iml", quietly = TRUE)) {
     stopf("Package 'iml' needed for this function to work. Please install it.", call. = FALSE)
   }
-  pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
-    y = test_tsk$target_names)
+  pred = iml::Predictor$new(model = learner, data = test_tsk$data(), y = test_tsk$target_names)
   if (learner$task_type == "classif") {
     if ("multiclass" %in% learner$state$train_task$properties) {
       # get class frequencies for weighting
@@ -81,7 +77,6 @@ get_pdp_importance = function(learner, test_tsk) {
   })
   data.table(feature = names(pdp$results), importance = as.numeric(unlist(imp)))
 }
-
 
 get_pfi_importance = function(learner, test_tsk, loss) {
   # based on Breiman (2001) and Fisher et al. (2019)
