@@ -1,7 +1,5 @@
-
 #' @importFrom utils bibentry
-
-bibentries = c(
+bibentries = c( # nolint start
   greenwell_simple_2018 = bibentry("techreport",
     title = "A Simple and Effective Model-Based Variable Importance Measure",
     url = "http://arxiv.org/abs/1805.04755",
@@ -24,7 +22,8 @@ bibentries = c(
     numpages = "10",
     location = "Long Beach, California, USA",
     series = "NIPS'17"
-  ), breiman_leo_random_2001 = bibentry("article",
+  ),
+  breiman_leo_random_2001 = bibentry("article",
     title = "Random Forest",
     volume = "45",
     number = "1",
@@ -32,7 +31,8 @@ bibentries = c(
     author = "Breiman, Leo",
     year = "2001",
     pages = "5--32",
-  ), molnar_complexity_2020 = bibentry("inbook",
+  ),
+  molnar_complexity_2020 = bibentry("inbook",
     title = "Quantifying Model Complexity via Functional Decomposition for Better Post-hoc Interpretability",
     chapter = "1",
     booktitle = "Communications in Computer and Information Science",
@@ -40,7 +40,8 @@ bibentries = c(
     author = "Molnar,  Christoph and Casalicchio,  Giuseppe and Bischl,  Bernd",
     year = "2020",
     pages = "193--204"
-  ), friedman_pdp_2001 = bibentry("article",
+  ),
+  friedman_pdp_2001 = bibentry("article",
     title = "Greedy Function Approximation: A Gradient Boosting Machine",
     volume = "29",
     number = "5",
@@ -48,7 +49,8 @@ bibentries = c(
     publisher = "Institute of Mathematical Statistics",
     author = "Friedman,  Jerome H.",
     year = "2001"
-  ), apley_ale_2020 = bibentry("article",
+  ),
+  apley_ale_2020 = bibentry("article",
     author = "Apley, Daniel W. and Zhu, Jingyu",
     title = "Visualizing the Effects of Predictor Variables in Black Box Supervised Learning Models",
     journal = "Journal of the Royal Statistical Society Series B: Statistical Methodology",
@@ -56,7 +58,8 @@ bibentries = c(
     number = "4",
     pages = "1059-1086",
     year = "2020"
-  ), mehrabi_fairness_2022 = bibentry("article",
+  ),
+  mehrabi_fairness_2022 = bibentry("article",
     author = "Mehrabi, Ninareh and Morstatter, Fred and Saxena, Nripsuta and Lerman, Kristina and Galstyan, Aram",
     title = "A Survey on Bias and Fairness in Machine Learning",
     year = "2021",
@@ -67,25 +70,28 @@ bibentries = c(
     journal = "ACM Computational Surveys",
     articleno = "115",
     numpages = "35",
-  ), creditdata = bibentry("article",
+  ),
+  creditdata = bibentry("article",
     url = "https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data",
     author = "Hofmann,  Hans",
     title = "Statlog ({G}erman Credit Data)",
     journal = "{UCI} Machine Learning Repository",
     year = "1994"
-  ), kaggle16 = bibentry("misc",
+  ),
+  kaggle16 = bibentry("misc",
     author = "Leonardo Ferreira",
     editor = "Kaggle Inc.",
     title = "{G}erman credit risk",
     url = "https://www.kaggle.com/datasets/kabure/german-credit-data-with-risk",
     year = "2018",
     note = "Last accessed 10.04.2024"
-  ), mlr3book = bibentry("book",
+  ),
+  mlr3book = bibentry("book",
     title = "Applied machine learning using mlr3 in R",
     ISBN = "9781003402848",
     publisher = "Chapman and Hall/CRC",
     author = "Bischl,  Bernd and Sonabend,  Raphael and Kotthoff,  Lars and Lang,  Michel",
     url = "https://mlr3book.mlr-org.com/",
     year = "2024",
-    )
-)
+  )
+) # nolint end

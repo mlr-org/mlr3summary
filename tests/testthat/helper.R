@@ -14,8 +14,8 @@ x6 = as.factor(sample(1:5, size = 100, replace = TRUE, prob = c(0.5, 0.2, 0.15, 
 X = data.table(x1, x2, x3, x4, x5, x6)
 
 # first 3 features main effects, interaction effect between x3 and x5
-ytrue = 4*x1 + 4*x2 + 4*x5*x3^2
-epsilon = rnorm(n = 100, mean = 0, sd = ytrue*0.1)
+ytrue = 4 * x1 + 4 * x2 + 4 * x5 * x3^2
+epsilon = rnorm(n = 100, mean = 0, sd = ytrue * 0.1)
 target = ytrue + epsilon
 
 ## regression
@@ -38,4 +38,3 @@ get_multiclass_task = function() {
   dt = data.table(X, y)
   TaskClassif$new(id = "multiclass", backend = dt, target = "y")
 }
-

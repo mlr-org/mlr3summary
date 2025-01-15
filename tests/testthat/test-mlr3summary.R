@@ -1,4 +1,3 @@
-
 test_that("Correct output for regression", {
   set.seed(1003)
   tsk = get_regression_task()
@@ -13,9 +12,9 @@ test_that("Correct output for regression", {
 
   sm_complex = summary(lrn_rr, rr_reg, summary_control(importance_measures = c("pfi.mse", "pdp")))
   expect_true(all(sm_complex$importances$pdp$mean[1:3] > 0.05 &
-      sm_complex$importances$pfi.mse$mean[4:6] < 6e-8))
+    sm_complex$importances$pfi.mse$mean[4:6] < 6e-8))
   expect_true(all(sm_complex$importances$pfi.mse$mean[1:3] > 0.05 &
-      sm_complex$importances$pfi.mse$mean[4:6] == 0))
+    sm_complex$importances$pfi.mse$mean[4:6] == 0))
 
   expect_true(all(sm_complex$effects$ale$grid %in% sm_complex$effects$pdp$grid))
   cnt_pdp = sm_complex$effects$pdp[feature %in% c("x1", "x2", "x3", "x4", "x5", "x6"), .(count = .N), by = feature]$count
@@ -46,7 +45,6 @@ test_that("Correct output for binary classification", {
   expect_true(all(cnt_ale == 5))
 })
 
-
 test_that("Correct output for multiclass classification", {
   set.seed(1003)
   tsk = get_multiclass_task()
@@ -64,9 +62,9 @@ test_that("Correct output for multiclass classification", {
 
   expect_true(all(sm_complex$effects$ale$grid %in% sm_complex$effects$pdp$grid))
   cnt_pdp = sm_complex$effects$pdp[feature %in% c("x1", "x2", "x3", "x4", "x5", "x6"), .(count = .N), by = feature]$count
-  expect_true(all(cnt_pdp == 5*3L))
+  expect_true(all(cnt_pdp == 5 * 3L))
   cnt_ale = sm_complex$effects$ale[feature %in% c("x1", "x2", "x3", "x4", "x6"), .(count = .N), by = feature]$count
-  expect_true(all(cnt_ale == 5*3L))
+  expect_true(all(cnt_ale == 5 * 3L))
 
   expect_true(all(sm_complex$effects$ale$class %in% 1:3))
   expect_true(all(sm_complex$effects$pdp$class %in% 1:3))
