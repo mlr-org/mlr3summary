@@ -89,5 +89,5 @@ get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
     }
     data.table(feature = ef$featurenam, grid = ef[[feature]], value = ef$.value, class = ef$.class)
   })
-  do.call(rbind, eff)
+  rbindlist(eff)
 }
