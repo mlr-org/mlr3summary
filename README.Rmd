@@ -11,6 +11,8 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
+lgr::get_logger("mlr3")$set_threshold("warn")
 ```
 
 # mlr3summary
@@ -47,15 +49,19 @@ pak::pak("mlr-org/mlr3summary")
 
 ### Load data and create a task
 
-```{r, eval = FALSE}
+```{r}
+library(mlr3)
 library(mlr3summary)
+
 data("credit", package = "mlr3summary")
 task = as_task_classif(credit, target = "risk", positive = "good")
 ```
 
 ### Fit a model and resampling strategy
 
-```{r, eval = FALSE}
+```{r}
+library(mlr3learners)
+
 set.seed(12005L)
 rf = lrn("classif.ranger", predict_type = "prob")
 rf$train(task)
@@ -67,13 +73,11 @@ rr$aggregate(msrs(list("classif.acc", "classif.auc")))
 
 ### Apply the summary function
 
-```{r, eval = FALSE}
+```{r}
 summary(object = rf, resample_result = rr)
 ```
 
-![summary_output](https://github.com/slds-lmu/mlr3summary/assets/25373845/84b6cf8f-72d6-42ae-8218-5df1623008a3)
-
-More examples can be found in [demo/](https://github.com/mlr-org/mlr3summary/tree/master/demo).
+More examples can be found in [inst/demo](https://github.com/mlr-org/mlr3summary/tree/master/demo).
 
 ## Citation
 

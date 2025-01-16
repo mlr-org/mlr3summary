@@ -39,7 +39,9 @@ pak::pak("mlr-org/mlr3summary")
 ### Load data and create a task
 
 ``` r
+library(mlr3)
 library(mlr3summary)
+
 data("credit", package = "mlr3summary")
 task = as_task_classif(credit, target = "risk", positive = "good")
 ```
@@ -47,6 +49,8 @@ task = as_task_classif(credit, target = "risk", positive = "good")
 ### Fit a model and resampling strategy
 
 ``` r
+library(mlr3learners)
+
 set.seed(12005L)
 rf = lrn("classif.ranger", predict_type = "prob")
 rf$train(task)
@@ -54,23 +58,57 @@ rf$train(task)
 cv3 = rsmp("cv", folds = 3L)
 rr = resample(task = task, learner = rf, resampling = cv3, store_models = TRUE)
 rr$aggregate(msrs(list("classif.acc", "classif.auc")))
+#> classif.acc classif.auc 
+#>   0.6455939   0.6787890
 ```
 
 ### Apply the summary function
 
 ``` r
 summary(object = rf, resample_result = rr)
+#> 
+#> ── General ─────────────────────────────────────────────────────────────────────
+#> Task type: classif
+#> Target name: risk (good and bad)
+#> Feature names: age, credit.amount, duration, saving.accounts, and sex
+#> Model type: classif.ranger with num.threads=1
+#> Resampling: cv with folds=3
+#> 
+#> ── Residuals ───────────────────────────────────────────────────────────────────
+#>     Min      1Q  Median    Mean      3Q     Max 
+#> 0.05832 0.28068 0.40930 0.43374 0.56692 0.94926
+#> 
+#> ── Performance [sd] ────────────────────────────────────────────────────────────
+#>                                         
+#> ↑classif.auc (macro):    0.6788 [0.0468]
+#> ↑classif.fbeta (macro):  0.6973 [0.0536]
+#> ↓classif.bbrier (macro): 0.2272 [0.0229]
+#> ↑classif.mcc (macro):    0.2747 [0.0712]
+#> 
+#> ── Complexity [sd] ─────────────────────────────────────────────────────────────
+#>                                      
+#> sparsity:                       5 [0]
+#> interaction_strength: 0.6036 [0.0987]
+#> 
+#> ── Importance [sd] ─────────────────────────────────────────────────────────────
+#>                 pdp             pfi.ce          
+#> duration        0.1631 [0.0252] 0.1054 [0.0465] 
+#> credit.amount   0.1337 [0.0228] 0.0575 [0.0152] 
+#> saving.accounts 0.0909 [0.058]  0.0153 [0.0145] 
+#> age             0.0497 [0.0146] -0.0038 [0.0346]
+#> sex             0.0319 [0.0245] 0.0038 [0.0133]
+#> 
+#> ── Effects ─────────────────────────────────────────────────────────────────────
+#>                 pdp   ale  
+#> duration        █▅▄▁▁ █▅▄▁▁
+#> credit.amount   ▆▆▃▂▂ ▆▆▄▃▄
+#> saving.accounts ▅▆█   ▅▆▇  
+#> age             ▅▅▆▆▇ ▅▅▆▆▆
+#> sex             ▅▆    ▅▆
 ```
 
-<figure>
-<img
-src="https://github.com/slds-lmu/mlr3summary/assets/25373845/84b6cf8f-72d6-42ae-8218-5df1623008a3"
-alt="summary_output" />
-<figcaption aria-hidden="true">summary_output</figcaption>
-</figure>
-
 More examples can be found in
-[demo/](https://github.com/mlr-org/mlr3summary/tree/master/demo).
+[inst/demo](https://github.com/mlr-org/mlr3summary/tree/master/demo).
 
 ## Citation
 
