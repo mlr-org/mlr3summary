@@ -77,7 +77,7 @@ rr$aggregate(msrs(list("classif.acc", "classif.auc")))
 summary(object = rf, resample_result = rr)
 ```
 
-More examples can be found in [inst/demo](https://github.com/mlr-org/mlr3summary/tree/master/demo).
+More examples can be found in [inst/demo](./inst/demo).
 
 ## Citation
 

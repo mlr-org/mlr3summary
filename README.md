@@ -107,8 +107,7 @@ summary(object = rf, resample_result = rr)
 #> sex             ▅▆    ▅▆
 ```
 
-More examples can be found in
-[inst/demo](https://github.com/mlr-org/mlr3summary/tree/master/demo).
+More examples can be found in [inst/demo](./inst/demo).
 
 ## Citation
 
