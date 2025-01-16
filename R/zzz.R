@@ -5,6 +5,7 @@
 #' @import backports
 #' @import cli
 #' @importFrom future.apply future_Map future_mapply
+#' @importFrom stats sd var
 "_PACKAGE"
 
 .onLoad = function(libname, pkgname) {
@@ -13,4 +14,4 @@
   backports::import(pkgname)
 } # nocov end
 
-mlr3misc::leanify_package()
+leanify_package()

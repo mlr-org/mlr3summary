@@ -30,7 +30,7 @@ test_that("Works for binary classif", {
 test_that("Works for multiclass", {
   tsk_peng = tsk("penguins")
   tsk_peng$set_col_roles("sex", add_to = "pta")
-  lrn_rpart =  lrn("classif.rpart", predict_type = "prob")
+  lrn_rpart = lrn("classif.rpart", predict_type = "prob")
   lrn_rpart$train(task = tsk_peng)
   rsmp_cv2 = rsmp("cv", folds = 2L)
   rr_9 = resample(tsk_peng, lrn_rpart, rsmp_cv2, store_model = TRUE)

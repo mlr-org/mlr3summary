@@ -1,5 +1,3 @@
-
-
 get_default_measures = function(task_type, properties = NULL, predict_type = NULL) {
   keys = if (task_type == "classif") {
     if (predict_type == "response") {
@@ -50,4 +48,3 @@ get_default_importances = function(task_type, ...) {
     NULL
   }
 }
-
