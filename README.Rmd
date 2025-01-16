@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
 )
 
 lgr::get_logger("mlr3")$set_threshold("warn")
+set.seed(12005L)
 ```
 
 # mlr3summary
@@ -62,10 +63,7 @@ task = as_task_classif(credit, target = "risk", positive = "good")
 ```{r}
 library(mlr3learners)
 
-set.seed(12005L)
-rf = lrn("classif.ranger", predict_type = "prob")
-rf$train(task)
-
+rf = lrn("classif.ranger", predict_type = "prob")$train(task)
 cv3 = rsmp("cv", folds = 3L)
 rr = resample(task = task, learner = rf, resampling = cv3, store_models = TRUE)
 rr$aggregate(msrs(list("classif.acc", "classif.auc")))
