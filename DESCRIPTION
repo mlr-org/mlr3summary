@@ -21,7 +21,7 @@ Description: Concise and interpretable summaries for machine learning
     effects, and fairness metrics.
 License: LGPL-3
 Depends:
-    R (>= 3.1.0)
+    R (>= 3.5.0)
 Imports:
     backports,
     checkmate (>= 2.0.0),
