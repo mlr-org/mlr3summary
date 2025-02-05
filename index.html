@@ -86,30 +86,70 @@
 <h3 id="load-data-and-create-a-task">Load data and create a task<a class="anchor" aria-label="anchor" href="#load-data-and-create-a-task"></a>
 </h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mlr3summary</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mlr3.mlr-org.com" class="external-link">mlr3</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mlr3summary</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"credit"</span>, package <span class="op">=</span> <span class="st">"mlr3summary"</span><span class="op">)</span></span>
-<span><span class="va">task</span> <span class="op">=</span> <span class="fu">as_task_classif</span><span class="op">(</span><span class="va">credit</span>, target <span class="op">=</span> <span class="st">"risk"</span>, positive <span class="op">=</span> <span class="st">"good"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">task</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/as_task_classif.html" class="external-link">as_task_classif</a></span><span class="op">(</span><span class="va">credit</span>, target <span class="op">=</span> <span class="st">"risk"</span>, positive <span class="op">=</span> <span class="st">"good"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="fit-a-model-and-resampling-strategy">Fit a model and resampling strategy<a class="anchor" aria-label="anchor" href="#fit-a-model-and-resampling-strategy"></a>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">12005L</span><span class="op">)</span></span>
-<span><span class="va">rf</span> <span class="op">=</span> <span class="fu">lrn</span><span class="op">(</span><span class="st">"classif.ranger"</span>, predict_type <span class="op">=</span> <span class="st">"prob"</span><span class="op">)</span></span>
-<span><span class="va">rf</span><span class="op">$</span><span class="fu">train</span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mlr3learners.mlr-org.com" class="external-link">mlr3learners</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">cv3</span> <span class="op">=</span> <span class="fu">rsmp</span><span class="op">(</span><span class="st">"cv"</span>, folds <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
-<span><span class="va">rr</span> <span class="op">=</span> <span class="fu">resample</span><span class="op">(</span>task <span class="op">=</span> <span class="va">task</span>, learner <span class="op">=</span> <span class="va">rf</span>, resampling <span class="op">=</span> <span class="va">cv3</span>, store_models <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">rr</span><span class="op">$</span><span class="fu">aggregate</span><span class="op">(</span><span class="fu">msrs</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"classif.acc"</span>, <span class="st">"classif.auc"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">rf</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">lrn</a></span><span class="op">(</span><span class="st">"classif.ranger"</span>, predict_type <span class="op">=</span> <span class="st">"prob"</span><span class="op">)</span><span class="op">$</span><span class="fu">train</span><span class="op">(</span><span class="va">task</span><span class="op">)</span></span>
+<span><span class="va">cv3</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">rsmp</a></span><span class="op">(</span><span class="st">"cv"</span>, folds <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
+<span><span class="va">rr</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/resample.html" class="external-link">resample</a></span><span class="op">(</span>task <span class="op">=</span> <span class="va">task</span>, learner <span class="op">=</span> <span class="va">rf</span>, resampling <span class="op">=</span> <span class="va">cv3</span>, store_models <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">rr</span><span class="op">$</span><span class="fu">aggregate</span><span class="op">(</span><span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">msrs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"classif.acc"</span>, <span class="st">"classif.auc"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; classif.acc classif.auc </span></span>
+<span><span class="co">#&gt;   0.6455939   0.6787890</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="apply-the-summary-function">Apply the summary function<a class="anchor" aria-label="anchor" href="#apply-the-summary-function"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">rf</span>, resample_result <span class="op">=</span> <span class="va">rr</span><span class="op">)</span></span></code></pre></div>
-<figure><img src="https://github.com/slds-lmu/mlr3summary/assets/25373845/84b6cf8f-72d6-42ae-8218-5df1623008a3" alt="summary_output"><figcaption aria-hidden="true">
-summary_output
-</figcaption></figure><p>More examples can be found in <a href="https://github.com/mlr-org/mlr3summary/tree/master/demo" class="external-link">demo/</a>.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">rf</span>, resample_result <span class="op">=</span> <span class="va">rr</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── General ─────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Task type: classif</span></span>
+<span><span class="co">#&gt; Target name: risk (good and bad)</span></span>
+<span><span class="co">#&gt; Feature names: age, credit.amount, duration, saving.accounts, and sex</span></span>
+<span><span class="co">#&gt; Model type: classif.ranger with num.threads=1</span></span>
+<span><span class="co">#&gt; Resampling: cv with folds=3</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Residuals ───────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt;     Min      1Q  Median    Mean      3Q     Max </span></span>
+<span><span class="co">#&gt; 0.05832 0.28068 0.40930 0.43374 0.56692 0.94926</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Performance [sd] ────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt;                                         </span></span>
+<span><span class="co">#&gt; ↑classif.auc (macro):    0.6788 [0.0468]</span></span>
+<span><span class="co">#&gt; ↑classif.fbeta (macro):  0.6973 [0.0536]</span></span>
+<span><span class="co">#&gt; ↓classif.bbrier (macro): 0.2272 [0.0229]</span></span>
+<span><span class="co">#&gt; ↑classif.mcc (macro):    0.2747 [0.0712]</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Complexity [sd] ─────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt;                                      </span></span>
+<span><span class="co">#&gt; sparsity:                       5 [0]</span></span>
+<span><span class="co">#&gt; interaction_strength: 0.6036 [0.0987]</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Importance [sd] ─────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt;                 pdp             pfi.ce          </span></span>
+<span><span class="co">#&gt; duration        0.1631 [0.0252] 0.1054 [0.0465] </span></span>
+<span><span class="co">#&gt; credit.amount   0.1337 [0.0228] 0.0575 [0.0152] </span></span>
+<span><span class="co">#&gt; saving.accounts 0.0909 [0.058]  0.0153 [0.0145] </span></span>
+<span><span class="co">#&gt; age             0.0497 [0.0146] -0.0038 [0.0346]</span></span>
+<span><span class="co">#&gt; sex             0.0319 [0.0245] 0.0038 [0.0133]</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Effects ─────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt;                 pdp   ale  </span></span>
+<span><span class="co">#&gt; duration        █▅▄▁▁ █▅▄▁▁</span></span>
+<span><span class="co">#&gt; credit.amount   ▆▆▃▂▂ ▆▆▄▃▄</span></span>
+<span><span class="co">#&gt; saving.accounts ▅▆█   ▅▆▇  </span></span>
+<span><span class="co">#&gt; age             ▅▅▆▆▇ ▅▅▆▆▆</span></span>
+<span><span class="co">#&gt; sex             ▅▆    ▅▆</span></span></code></pre></div>
+<p>More examples can be found in <a href="./inst/demo">inst/demo</a>.</p>
 </div>
 </div>
 <div class="section level2">
