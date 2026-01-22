@@ -72,6 +72,9 @@ get_pdp_or_ale_effect = function(learner, test_tsk, method, min_val, max_val) {
       # If unique length < 5 --> weird output,
       # cut differ depending on test_tsk data (sometimes length < 5, sometimes > 5)
       grid = seq(min_val[[feature]], max_val[[feature]], length.out = gridsize)
+      if (col_info$type == "integer") {
+        grid = round(grid)
+      }
     }
 
     ef = iml::FeatureEffect$new(

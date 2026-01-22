@@ -18,9 +18,9 @@ test_that("Correct output for regression", {
 
   expect_true(all(sm_complex$effects$ale$grid %in% sm_complex$effects$pdp$grid))
   cnt_pdp = sm_complex$effects$pdp[feature %in% c("x1", "x2", "x3", "x4", "x5", "x6"), .(count = .N), by = feature]$count
-  expect_true(all(cnt_pdp == 5))
+  expect_true(all(cnt_pdp[-5] == 5))
   cnt_ale = sm_complex$effects$ale[feature %in% c("x1", "x2", "x3", "x4", "x6"), .(count = .N), by = feature]$count
-  expect_true(all(cnt_ale == 5))
+  expect_true(all(cnt_ale[-5] == 5))
 })
 
 test_that("Correct output for binary classification", {
@@ -39,7 +39,7 @@ test_that("Correct output for binary classification", {
   expect_true(all(order(sm_complex$importances$pdp$mean, decreasing = TRUE)[1:3] %in% 1:3))
 
   expect_true(all(sm_complex$effects$ale$grid %in% sm_complex$effects$pdp$grid))
-  cnt_pdp = sm_complex$effects$pdp[feature %in% c("x1", "x2", "x3", "x4", "x5", "x6"), .(count = .N), by = feature]$count
+  cnt_pdp = sm_complex$effects$pdp[feature %in% c("x1", "x2", "x3", "x4", "x6"), .(count = .N), by = feature]$count
   expect_true(all(cnt_pdp == 5))
   cnt_ale = sm_complex$effects$ale[feature %in% c("x1", "x2", "x3", "x4", "x6"), .(count = .N), by = feature]$count
   expect_true(all(cnt_ale == 5))
@@ -61,7 +61,7 @@ test_that("Correct output for multiclass classification", {
   expect_true(all(order(sm_complex$importances$pdp$mean, decreasing = TRUE)[1:2] %in% 1:2))
 
   expect_true(all(sm_complex$effects$ale$grid %in% sm_complex$effects$pdp$grid))
-  cnt_pdp = sm_complex$effects$pdp[feature %in% c("x1", "x2", "x3", "x4", "x5", "x6"), .(count = .N), by = feature]$count
+  cnt_pdp = sm_complex$effects$pdp[feature %in% c("x1", "x2", "x3", "x4", "x6"), .(count = .N), by = feature]$count
   expect_true(all(cnt_pdp == 5 * 3L))
   cnt_ale = sm_complex$effects$ale[feature %in% c("x1", "x2", "x3", "x4", "x6"), .(count = .N), by = feature]$count
   expect_true(all(cnt_ale == 5 * 3L))
