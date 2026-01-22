@@ -36,6 +36,8 @@ Suggests:
     mlr3fairness,
     mlr3learners,
     mlr3pipelines,
+    mlr3tuning,
+    future,
     ranger,
     rpart,
     testthat (>= 3.1.0)
@@ -45,4 +47,4 @@ Language: en-US
 LazyData: true
 NeedsCompilation: no
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
