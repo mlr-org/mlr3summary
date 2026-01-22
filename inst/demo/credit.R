@@ -39,8 +39,11 @@ summary(object = rf, resample_result = rr,
 
 # ---- omit certain parts ----
 summary(object = rf, resample_result = rr,
-  control = summary_control(measures = msrs(list("classif.acc"))),
-  hide = c("performance", "residuals", "complexity"))
+  control = summary_control(
+    measures = msrs(list("classif.acc")), 
+    hide = c("performance", "residuals", "complexity")
+  )
+)
 
 # ---- parallelization ----
 library("future")
