@@ -1,0 +1,17 @@
+bibentry(
+  bibtype  = "InProceedings",
+  title    = "{mlr3summary}: {C}oncise and interpretable summaries for machine learning models",
+  author   = c(
+    person("Susanne", "Dandl"),
+    person("Marc", "Becker"),
+    person("Bernd", "Bischl"),
+    person("Giuseppe", "Casalicchio"),
+    person("Ludwig", "Bothmann")
+  ),
+  booktitle = "Late-breaking Work, Demos and Doctoral Consortium, Joint Proceedings of the 2nd World Conference on eXplainable Artificial Intelligence (xAI 2024)",
+  year      = 2024,
+  publisher = "CEUR-WS.org",
+  series    = "CEUR Workshop Proceedings",
+  volume    = "3793",
+  url       = "https://ceur-ws.org/Vol-3793/paper_36.pdf"
+)
