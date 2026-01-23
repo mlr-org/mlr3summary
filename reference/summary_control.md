@@ -213,7 +213,7 @@ Publishing.
 
 Greenwell, M. B, Boehmke, C. B, McCarthy, J. A (2018). “A Simple and
 Effective Model-Based Variable Importance Measure.” arXiv preprint.
-arXiv:1805.04755, <http://arxiv.org/abs/1805.04755>.
+arXiv:1805.04755, <https://arxiv.org/abs/1805.04755>.
 
 Apley, W. D, Zhu, Jingyu (2020). “Visualizing the Effects of Predictor
 Variables in Black Box Supervised Learning Models.” *Journal of the

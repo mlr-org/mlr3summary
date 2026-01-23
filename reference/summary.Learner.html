@@ -187,8 +187,8 @@ ISBN 9781003402848, <a href="https://mlr3book.mlr-org.com/" class="external-link
 <span class="r-in"><span>  <span class="va">tsk_iris</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">tsk</a></span><span class="op">(</span><span class="st">"iris"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">lrn_rpart</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">lrn</a></span><span class="op">(</span><span class="st">"classif.rpart"</span>, predict_type <span class="op">=</span> <span class="st">"prob"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">lrn_rpart</span><span class="op">$</span><span class="fu">train</span><span class="op">(</span>task <span class="op">=</span> <span class="va">tsk_iris</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">rsmp_cv3</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">rsmp</a></span><span class="op">(</span><span class="st">"cv"</span>, folds <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">rr</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/resample.html" class="external-link">resample</a></span><span class="op">(</span><span class="va">tsk_iris</span>, <span class="va">lrn_rpart</span>, <span class="va">rsmp_cv3</span>, store_model <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">rsmp_cv2</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">rsmp</a></span><span class="op">(</span><span class="st">"cv"</span>, folds <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">rr</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/resample.html" class="external-link">resample</a></span><span class="op">(</span><span class="va">tsk_iris</span>, <span class="va">lrn_rpart</span>, <span class="va">rsmp_cv2</span>, store_model <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">lrn_rpart</span>, <span class="va">rr</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: mlr3</span>
@@ -199,27 +199,27 @@ ISBN 9781003402848, <a href="https://mlr3book.mlr-org.com/" class="external-link
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Target name: Species (setosa, versicolor, and virginica)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Feature names: Petal.Length, Petal.Width, Sepal.Length, and Sepal.Width</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Model type: classif.rpart with xval=0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Resampling: cv with folds=3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Resampling: cv with folds=2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Residuals</span> <span style="color: #00BBBB;">───────────────────────────────────────────────────────────────────</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     Min      1Q  Median    Mean      3Q     Max </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 0.00000 0.00000 0.00000 0.08049 0.08277 1.00000 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.00000 0.00000 0.03704 0.08129 0.04545 1.00000 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Performance [sd]</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ↑classif.mauc_aunp (macro): 0.9689 [0.012] </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ↓classif.mbrier (macro):    0.1002 [0.0246]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ↑classif.mauc_aunp (macro): 0.972 [0.0103] </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ↓classif.mbrier (macro):    0.1025 [0.0338]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Complexity [sd]</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sparsity: 1.6667 [0.5774]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sparsity: 1.5 [0.7071]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Importance [sd]</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              pdp             pfi.ce         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length 0.35 [0.0931]   0.5333 [0.0924]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  0.1261 [0.1107] 0.1867 [0.1617]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  0 [0]           0 [0]          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length 0 [0]           0 [0]          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              pdp             pfi.ce       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length 0.3683 [0.0993] 0.52 [0.1697]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  0.1006 [0.1422] 0.14 [0.198] </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  0 [0]           0 [0]        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length 0 [0]           0 [0]        </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Effects</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────────────</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -227,7 +227,7 @@ ISBN 9781003402848, <a href="https://mlr3book.mlr-org.com/" class="external-link
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">setosa</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              pdp   ale  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length █▃▁▁▁ █▅▃▃▃</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length █▄▁▁▁ █▅▂▂▂</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  ▃▃▃▃▃ ▄▄▄▄▄</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  ▃▃▃▃▃ ▄▄▄▄▄</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length ▃▃▃▃▃ ▄▄▄▄▄</span>
@@ -235,16 +235,16 @@ ISBN 9781003402848, <a href="https://mlr3book.mlr-org.com/" class="external-link
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">versicolor</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              pdp   ale  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length ▁▄▆▄▄ ▁▄▆▄▄</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length ▁▃▇▄▄ ▁▄▆▄▄</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  ▅▅▅▂▂ ▅▅▅▂▂</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  ▃▃▃▃▃ ▄▄▄▄▄</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length ▃▃▃▃▃ ▄▄▄▄▄</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  ▄▄▄▄▄ ▄▄▄▄▄</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length ▄▄▄▄▄ ▄▄▄▄▄</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">virginica</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              pdp   ale  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length ▁▃▃▅▅ ▃▃▃▅▅</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  ▂▂▂▅▅ ▃▃▃▆▆</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length ▁▂▂▅▅ ▃▃▃▅▅</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  ▂▂▂▄▄ ▃▃▃▆▆</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  ▃▃▃▃▃ ▄▄▄▄▄</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length ▃▃▃▃▃ ▄▄▄▄▄</span>
 </code></pre></div>
