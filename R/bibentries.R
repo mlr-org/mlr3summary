@@ -2,7 +2,7 @@
 bibentries = c( # nolint start
   greenwell_simple_2018 = bibentry("techreport",
     title = "A Simple and Effective Model-Based Variable Importance Measure",
-    url = "http://arxiv.org/abs/1805.04755",
+    url = "https://arxiv.org/abs/1805.04755",
     institution = "arXiv preprint",
     author = "Greenwell, Brandon M. and Boehmke, Bradley C. and McCarthy, Andrew J.",
     year = "2018",

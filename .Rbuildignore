@@ -6,10 +6,12 @@
 ^Meta$
 ^README\.Rmd$
 ^README\.html$
+^README\.md$
 ^\.Renviron$
 ^\.Rproj\.user$
 ^\.ccache$
 ^\.editorconfig$
+^\.git$
 ^\.github$
 ^\.gitignore$
 ^\.httr-oauth$
@@ -24,6 +26,7 @@
 ^cran-comments\.md$
 ^data-raw$
 ^docs$
+^doc$
 ^inst/demo$
 ^inst/extdata/.+\.R$
 ^inst/mlr3summary_playground.Rmd$
@@ -32,3 +35,5 @@
 ^paper$
 ^pkgdown$
 ^revdep$
+^_config\.yml$
+^tests$

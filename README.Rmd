@@ -18,7 +18,7 @@ set.seed(12005L)
 
 # mlr3summary
 
-Package website: [release](https://mlr3summary.mlr-org.com/) \| [dev](https://mlr3summary.mlr-org.com/dev/)
+Package website: [release](http://mlr3summary.mlr-org.com/) \| [dev](http://mlr3summary.mlr-org.com/dev/)
 
 <!-- badges: start -->
 [![r-cmd-check](https://github.com/mlr-org/mlr3summary/actions/workflows/rcmdcheck.yaml/badge.svg)](https://github.com/mlr-org/mlr3summary/actions/workflows/rcmdcheck.yaml)
