@@ -10,3 +10,4 @@
 
 * Add missing suggests
 * Resolve error with integer transformation
+* Add CITATION
