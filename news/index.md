@@ -14,3 +14,4 @@ CRAN release: 2024-04-24
 
 - Add missing suggests
 - Resolve error with integer transformation
+- Add CITATION
