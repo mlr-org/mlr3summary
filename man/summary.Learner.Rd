@@ -106,6 +106,7 @@ To select a parallel backend, use \code{\link[future:plan]{future::plan()}}.
 }
 \examples{
 if (require("mlr3")) {
+  data.table::setDTthreads(1L)
   tsk_iris = tsk("iris")
   lrn_rpart = lrn("classif.rpart", predict_type = "prob")
   lrn_rpart$train(task = tsk_iris)
