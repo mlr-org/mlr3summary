@@ -477,7 +477,9 @@ summary_control = function(measures = NULL,
   if (!is.null(measures)) {
     measures = as_measures(measures)
   }
-  assert_measures(measures)
+  if (!is.null(measures)) {
+    assert_measures(measures)
+  }
   iml_pfi_losses = c("ce", "f1", "logLoss", "mae", "mse", "rmse", "mape", "mdae",
     "msle", "percent_bias", "rae", "rmse", "rmsle", "rse", "rrse", "smape")
   for (imp_measure in importance_measures) {
@@ -493,7 +495,9 @@ summary_control = function(measures = NULL,
   if (!is.null(fairness_measures)) {
     fairness_measures = as_measures(fairness_measures)
   }
-  assert_measures(fairness_measures)
+  if (!is.null(fairness_measures)) {
+    assert_measures(fairness_measures)
+  }
   assert_character(protected_attribute, null.ok = TRUE, len = 1L)
   assert_character(hide, null.ok = TRUE)
   for (hid in hide) {
