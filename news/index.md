@@ -12,6 +12,8 @@ CRAN release: 2024-04-24
 
 ## mlr3summary 0.1.1
 
+CRAN release: 2026-01-23
+
 - Add missing suggests
 - Resolve error with integer transformation
 - Add CITATION
