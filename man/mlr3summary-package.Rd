@@ -8,6 +8,14 @@
 \description{
 Concise and interpretable summaries for machine learning models and learners of the 'mlr3' ecosystem. The package takes inspiration from the summary function for (generalized) linear models but extends it to non-parametric machine learning models, based on generalization performance, model complexity, feature importances and effects, and fairness metrics.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mlr-org/mlr3summary}
+  \item Report bugs at \url{https://github.com/mlr-org/mlr3summary/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Susanne Dandl \email{dandls.datascience@gmail.com} (\href{https://orcid.org/0000-0003-4324-4163}{ORCID})
 

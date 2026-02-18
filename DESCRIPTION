@@ -1,6 +1,6 @@
 Package: mlr3summary
 Title: Model and Learner Summaries for 'mlr3'
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person("Susanne", "Dandl", , "dandls.datascience@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-4324-4163")),
@@ -48,3 +48,5 @@ LazyData: true
 NeedsCompilation: no
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
+URL: https://github.com/mlr-org/mlr3summary
+BugReports: https://github.com/mlr-org/mlr3summary/issues
