@@ -72,7 +72,6 @@ bibentries = c( # nolint start
     numpages = "35",
   ),
   creditdata = bibentry("article",
-    url = "https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data",
     author = "Hofmann,  Hans",
     title = "Statlog ({G}erman Credit Data)",
     journal = "{UCI} Machine Learning Repository",
@@ -82,7 +81,6 @@ bibentries = c( # nolint start
     author = "Leonardo Ferreira",
     editor = "Kaggle Inc.",
     title = "{G}erman credit risk",
-    url = "https://www.kaggle.com/datasets/kabure/german-credit-data-with-risk",
     year = "2018",
     note = "Last accessed 10.04.2024"
   ),

@@ -56,3 +56,5 @@ CRAN-SUBMISSION
 
 # MacOS
 .DS_Store
+
+cran-comments.md

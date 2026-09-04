@@ -30,9 +30,8 @@ selected: "age", "sex", "saving.accounts", "duration", "credit.amount", "risk".
 Hofmann, Hans (1994).
 \dQuote{Statlog (German Credit Data).}
 \emph{UCI Machine Learning Repository}.
-\url{https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data}.
 
 Ferreira L (2018).
 \dQuote{German credit risk.}
-Last accessed 10.04.2024, \url{https://www.kaggle.com/datasets/kabure/german-credit-data-with-risk}.
+Last accessed 10.04.2024.
 }
