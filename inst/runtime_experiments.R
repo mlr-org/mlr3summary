@@ -24,7 +24,6 @@ mod2 = lrn("regr.lm")
 cv5 = rsmp("cv", folds = 3L)
 
 run_experiment = function(n, p, mod, print = FALSE) {
-
   assert_integerish(p, lower = 5L)
   assert_integerish(n, lower = 1L)
 
@@ -37,13 +36,13 @@ run_experiment = function(n, p, mod, print = FALSE) {
 
   if (p > 5L) {
     pnoise = p - 5L
-    Xnoise = data.table(matrix(rnorm(n = n*pnoise), nrow = n, ncol = pnoise))
+    Xnoise = data.table(matrix(rnorm(n = n * pnoise), nrow = n, ncol = pnoise))
     X = cbind(X, Xnoise)
   }
 
   # first 3 features main effects, interaction effect between x3 and x5
-  ytrue = 4*x1 + 4*x2 + 4*x4*x3^2
-  epsilon = rnorm(n = n, mean = 0, sd = ytrue*0.1)
+  ytrue = 4 * x1 + 4 * x2 + 4 * x4 * x3^2
+  epsilon = rnorm(n = n, mean = 0, sd = ytrue * 0.1)
   y = ytrue + epsilon
   # y = as.factor(ifelse(target < 5, 1, 0))
   dt = data.table(X, y)
@@ -56,20 +55,20 @@ run_experiment = function(n, p, mod, print = FALSE) {
   sm = summary(object = mod, resample_result = rr)
   exectime = toc()
 
-  if (print) print(sm)
+  if (print) {
+    print(sm)
+  }
 
-  return(exectime$toc - exectime$tic)
-
+  exectime$toc - exectime$tic
 }
 
 
-
 runtime1 = pmap_dbl(setup, function(n, p) {
-  run_experiment(n, p,mod1)
+  run_experiment(n, p, mod1)
 })
 
-runtime2 =  pmap_dbl(setup, function(n, p) {
-  run_experiment(n, p,mod2)
+runtime2 = pmap_dbl(setup, function(n, p) {
+  run_experiment(n, p, mod2)
 })
 
 plan("multisession")
@@ -85,7 +84,7 @@ plt_lm = ggplot(data = results, aes(x = p, y = runtime2, group = n)) +
   geom_point(aes(colour = n)) +
   geom_line(aes(colour = n)) +
   theme_bw() +
-  guides(colour = guide_legend(reverse=T)) +
+  guides(colour = guide_legend(reverse = TRUE)) +
   scale_colour_grey(start = 0.8, end = 0.2) +
   ylab("runtime (sec)")
 
@@ -93,7 +92,7 @@ plt_rf = ggplot(data = results, aes(x = p, y = runtime1, group = n)) +
   geom_point(aes(colour = n)) +
   geom_line(aes(colour = n)) +
   theme_bw() +
-  guides(colour = guide_legend(reverse=T)) +
+  guides(colour = guide_legend(reverse = TRUE)) +
   scale_colour_grey(start = 0.8, end = 0.2) +
   ylab("")
 
@@ -102,11 +101,11 @@ plt_rf_para = ggplot(data = results, aes(x = p, y = runtime3, group = n)) +
   geom_point(aes(colour = n)) +
   geom_line(aes(colour = n)) +
   theme_bw() +
-  guides(colour = guide_legend(reverse=T)) +
+  guides(colour = guide_legend(reverse = TRUE)) +
   scale_colour_grey(start = 0.8, end = 0.2) +
   ylab("")
 
 
-plt = ggarrange(plt_lm, plt_rf, plt_rf_para, ncol=3, common.legend = TRUE, legend="right")
+plt = ggarrange(plt_lm, plt_rf, plt_rf_para, ncol = 3, common.legend = TRUE, legend = "right")
 
 ggsave(plot = plt, filename = "inst/runtime.png", width = 9, height = 1.5)

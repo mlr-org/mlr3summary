@@ -18,8 +18,8 @@ ansi_aware_handler <- function(x, options) {
 }
 
 knitr::knit_hooks$set(
-  output = ansi_aware_handler, 
-  message = ansi_aware_handler, 
+  output = ansi_aware_handler,
+  message = ansi_aware_handler,
   warning = ansi_aware_handler,
   error = ansi_aware_handler
 )
@@ -84,8 +84,10 @@ In the following, feature filtering is conducted based on the feature importance
 Please note that now a paragraph on the pipeline structure was added to the `summary()` output.
 
 ```{r graph}
-graph_learner = as_learner(po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
-  po("learner", mlr3::lrn("regr.rpart")))
+graph_learner = as_learner(
+  po("filter", filter = mlr3filters::flt("variance"), filter.frac = 0.5) %>>%
+    po("learner", mlr3::lrn("regr.rpart"))
+)
 graph_learner$train(tsk_cars)
 rr_2 = resample(tsk_cars, graph_learner, rsmp_cv3, store_model = TRUE)
 summary(graph_learner, rr_2)
@@ -192,7 +194,15 @@ lrn_rpart =  lrn("classif.rpart", predict_type = "prob")
 lrn_rpart$train(task = tsk_peng)
 rsmp_cv5 = rsmp("cv", folds = 5L)
 rr_9 = resample(tsk_peng, lrn_rpart, rsmp_cv5, store_model = TRUE)
-summary(lrn_rpart, rr_9, summary_control(complexity_measures = NULL, effect_measures = NULL, fairness_measures = (msr("fairness", operation = groupdiff_absdiff, base_measure = msr("classif.acc")))))
+summary(
+  lrn_rpart,
+  rr_9,
+  summary_control(
+    complexity_measures = NULL,
+    effect_measures = NULL,
+    fairness_measures = msr("fairness", operation = groupdiff_absdiff, base_measure = msr("classif.acc"))
+  )
+)
 ```
 
 An additional paragraph was added in the output for fairness assessment.

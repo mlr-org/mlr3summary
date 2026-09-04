@@ -22,7 +22,6 @@ rr_c = resample(task = task_cars, learner = xg, resampling = cv3, store_models =
 summary(object = xg, resample_result = rr_c)
 
 
-
 ############### MULTICLASS & TREE ################
 
 # ---- create task ----
@@ -33,8 +32,6 @@ tree = lrn("classif.rpart")
 set.seed(12005L)
 tree$train(task_wine)
 
-bs3 =  rsmp("bootstrap", repeats = 3L)
+bs3 = rsmp("bootstrap", repeats = 3L)
 rr_w = resample(task = task_wine, learner = tree, resampling = bs3, store_models = TRUE)
 summary(object = tree, resample_result = rr_w, summary_control(n_important = 4L))
-
-

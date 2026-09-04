@@ -5,17 +5,21 @@ get_complexity = function(obj, complexity_measures) {
     reassemble_learners = TRUE,
     convert_predictions = FALSE
   )
-  tmp = unique(tab, by = c("task_hash", "learner_hash"))[,
-    c("task", "learner"), with = FALSE]
-
   # step through complexity measures
   comps_list = map(complexity_measures, function(comp_msr) {
     # step through resample folds
 
-    comps = future_mapply(function(task, learner, resampling, iteration, prediction, ...) {
-      get_single_complexity(comp_msr, task, learner, train_set = resampling$train_set(iteration), prediction)
-    }, tab$task, tab$learner, tab$resampling, tab$iteration, tab$prediction,
-    future.seed = NULL)
+    comps = future_mapply(
+      function(task, learner, resampling, iteration, prediction, ...) {
+        get_single_complexity(comp_msr, task, learner, train_set = resampling$train_set(iteration), prediction)
+      },
+      tab$task,
+      tab$learner,
+      tab$resampling,
+      tab$iteration,
+      tab$prediction,
+      future.seed = NULL
+    )
 
     comps
   })
@@ -26,21 +30,21 @@ get_single_complexity = function(complexity_measure, task, learner, train_set, p
   test_ids = prediction$test$row_ids
   test_tsk = task$clone()$filter(test_ids)
   learner$state$train_task = task
-  em = switch(complexity_measure,
-    sparsity = get_sparsity_or_interaction_strength(learner, test_tsk, method = "sparsity"),
-    interaction_strength = get_sparsity_or_interaction_strength(learner, test_tsk, method = "interaction_strength")
+  switch(
+    complexity_measure,
+    sparsity = get_complexity_measure(learner, test_tsk, method = "sparsity"),
+    interaction_strength = get_complexity_measure(learner, test_tsk, method = "interaction_strength")
   )
 }
 
-get_sparsity_or_interaction_strength = function(learner, test_tsk, method) {
+get_complexity_measure = function(learner, test_tsk, method) {
   if (!requireNamespace("iml", quietly = TRUE)) {
     stopf("Package 'iml' needed for this function to work. Please install it.")
   }
   class = if (learner$state$train_task$task_type == "classif" && "twoclass" %in% learner$state$train_task$properties) {
     learner$state$train_task$positive
   }
-  pred = iml::Predictor$new(model = learner, data = test_tsk$data(),
-    y = test_tsk$target_names, class = class)
+  pred = iml::Predictor$new(model = learner, data = test_tsk$data(), y = test_tsk$target_names, class = class)
 
   gride_size = switch(method, sparsity = 20L, interaction_strength = 100L)
   ales = iml::FeatureEffects$new(pred, method = "ale", grid.size = gride_size)
@@ -79,10 +83,9 @@ compute_interaction_strength = function(predictor, effects) {
   ssq_bb = ssq(pred - mean_pred)
 
   if (!ssq_bb) {
-    is = 0
+    0
   } else {
-    ssq_1st_order_e = ssq(ale_predictions - pred)
-    is = ssq_1st_order_e / ssq_bb
+    ssq(ale_predictions - pred) / ssq_bb
   }
 }
 

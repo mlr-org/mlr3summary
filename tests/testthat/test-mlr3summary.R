@@ -11,13 +11,21 @@ test_that("Correct output for regression", {
   rr_reg = resample(tsk, lrn_rr, cv3, store_models = TRUE)
 
   sm_complex = summary(lrn_rr, rr_reg, summary_control(importance_measures = c("pfi.mse", "pdp")))
-  expect_true(all(sm_complex$importances$pdp$mean[1:3] > 0.05 &
-    sm_complex$importances$pfi.mse$mean[4:6] < 6e-8))
-  expect_true(all(sm_complex$importances$pfi.mse$mean[1:3] > 0.05 &
-    sm_complex$importances$pfi.mse$mean[4:6] == 0))
+  expect_true(all(
+    sm_complex$importances$pdp$mean[1:3] > 0.05 &
+      sm_complex$importances$pfi.mse$mean[4:6] < 6e-8
+  ))
+  expect_true(all(
+    sm_complex$importances$pfi.mse$mean[1:3] > 0.05 &
+      sm_complex$importances$pfi.mse$mean[4:6] == 0
+  ))
 
   expect_true(all(sm_complex$effects$ale$grid %in% sm_complex$effects$pdp$grid))
-  cnt_pdp = sm_complex$effects$pdp[feature %in% c("x1", "x2", "x3", "x4", "x5", "x6"), .(count = .N), by = feature]$count
+  cnt_pdp = sm_complex$effects$pdp[
+    feature %in% c("x1", "x2", "x3", "x4", "x5", "x6"),
+    .(count = .N),
+    by = feature
+  ]$count
   expect_true(all(cnt_pdp[-5] == 5))
   cnt_ale = sm_complex$effects$ale[feature %in% c("x1", "x2", "x3", "x4", "x6"), .(count = .N), by = feature]$count
   expect_true(all(cnt_ale[-5] == 5))
@@ -77,7 +85,10 @@ test_that("hide works", {
   lrn_rr$train(tsk)
   ho = rsmp("holdout")
   rr_reg = resample(tsk, lrn_rr, ho, store_models = TRUE)
-  sm = summary(lrn_rr, rr_reg, summary_control(hide = c("fairness",
-    "importance", "effect", "complexity", "performance", "residuals", "general")))
+  sm = summary(
+    lrn_rr,
+    rr_reg,
+    summary_control(hide = c("fairness", "importance", "effect", "complexity", "performance", "residuals", "general"))
+  )
   expect_list(sm, len = 1, label = "control")
 })

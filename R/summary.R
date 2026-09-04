@@ -117,8 +117,10 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       stopf("resample_result does not contain trained models, ensure resample() was run with 'store_models = TRUE'")
     }
     # ensure underlying algo and task of object and resample_result match
-    if (!inherits(object, "AutoTuner") &&
-      object$base_learner()$hash != resample_result$learner$base_learner()$hash) {
+    if (
+      !inherits(object, "AutoTuner") &&
+        object$base_learner()$hash != resample_result$learner$base_learner()$hash
+    ) {
       stopf("Learning algorithm of object does not match algorithm used for resampling. Ensure equality.")
     }
     if (!all.equal(object$state$train_task$hash, resample_result$task$hash)) {
@@ -146,8 +148,7 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     if (!inherits(object, "GraphLearner")) {
       params = object$param_set$values
       if (length(params)) {
-        ans[["model_type"]] = paste(object$id, "with",
-          as_short_string(object$param_set$values, 1000L))
+        ans[["model_type"]] = paste(object$id, "with", as_short_string(object$param_set$values, 1000L))
       } else {
         ans[["model_type"]] = object$id
       }
@@ -157,11 +158,13 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
   ### performance only if hold-out data available!
   ## <FIXME:> also allow extra data???
   if (!is.null(resample_result)) {
-
     ## ResampleResult info
     if ("general" %nin% control$hide) {
-      ans[["resample_info"]] = paste(resample_result$resampling$id, "with",
-        as_short_string(resample_result$resampling$param_set$values, 1000L))
+      ans[["resample_info"]] = paste(
+        resample_result$resampling$id,
+        "with",
+        as_short_string(resample_result$resampling$param_set$values, 1000L)
+      )
       ## residuals
     }
     if ("residuals" %nin% control$hide) {
@@ -188,9 +191,11 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     if ("performance" %nin% control$hide) {
       # Set default measures if no measures specified
       if (is.null(control$measures)) {
-        control$measures = get_default_measures(task_type = object$task_type,
+        control$measures = get_default_measures(
+          task_type = object$task_type,
           properties = object$state$train_task$properties,
-          predict_type = object$predict_type)
+          predict_type = object$predict_type
+        )
       }
 
       control$measures = map(control$measures, function(pmsr) {
@@ -218,9 +223,11 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     if ("fairness" %nin% control$hide) {
       if (!is.null(control$protected_attribute) || length(object$state$train_task$col_roles$pta)) {
         if (is.null(control$fairness_measures)) {
-          control$fairness_measures = get_default_fairness_measures(task_type = object$task_type,
+          control$fairness_measures = get_default_fairness_measures(
+            task_type = object$task_type,
             properties = object$state$train_task$properties,
-            predict_type = object$predict_type)
+            predict_type = object$predict_type
+          )
         }
         # deep clone required, otherwise hash differs of task in object and task in resample_result
         if (!is.null(control$protected_attribute)) {
@@ -261,7 +268,9 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
     if ("importance" %nin% control$hide) {
       if (is.null(control$importance_measures)) {
         control$importance_measures = get_default_importances(
-          task_type = object$task_type, ...)
+          task_type = object$task_type,
+          ...
+        )
       }
 
       imps_res = get_importances(resample_result, control$importance_measures)
@@ -273,7 +282,6 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       effs_res = get_effects(resample_result, control$effect_measures)
       ans$effects = effs_res
     }
-
 
     # <FIXME:> remove interaction_strength if multi_class
     if ("complexity" %nin% control$hide) {
@@ -291,8 +299,12 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
       }
     }
 
-    ans = c(ans, list(
-      control = control))
+    ans = c(
+      ans,
+      list(
+        control = control
+      )
+    )
   }
 
   ans$control = control
@@ -304,7 +316,6 @@ summary.Learner = function(object, resample_result = NULL, control = summary_con
 #' @export
 #' @rdname summary.Learner
 summary.GraphLearner = function(object, resample_result = NULL, control = summary_control(), ...) {
-
   # get all info as Learner
   ans = NextMethod()
 
@@ -325,7 +336,9 @@ summary.GraphLearner = function(object, resample_result = NULL, control = summar
 
 #' @export
 summary.Graph = function(object, resample_result = NULL, control = summary_control(), ...) {
-  stopf("object of type 'Graph' cannot be processed, convert 'Graph' to 'GraphLearner' via mlr3::as_learner() and retrain.")
+  stopf(
+    "object of type 'Graph' cannot be processed, convert 'Graph' to 'GraphLearner' via mlr3::as_learner() and retrain."
+  )
   # # convert to GraphLearner and run summary
   # summary(as_learner(object), resample_result = resample_result, control = control, ...)
 }
@@ -467,13 +480,17 @@ summary.Graph = function(object, resample_result = NULL, control = summary_contr
 #'
 #' `r format_bib("friedman_pdp_2001")`
 #' @export
-summary_control = function(measures = NULL,
+summary_control = function(
+  measures = NULL,
   complexity_measures = c("sparsity", "interaction_strength"),
-  importance_measures = NULL, n_important = 15L,
+  importance_measures = NULL,
+  n_important = 15L,
   effect_measures = c("pdp", "ale"),
-  fairness_measures = NULL, protected_attribute = NULL, hide = NULL,
-  digits = max(3L, getOption("digits") - 3L)) {
-
+  fairness_measures = NULL,
+  protected_attribute = NULL,
+  hide = NULL,
+  digits = max(3L, getOption("digits") - 3L)
+) {
   # input checks
   if (!is.null(measures)) {
     measures = as_measures(measures)
@@ -481,8 +498,24 @@ summary_control = function(measures = NULL,
   if (!is.null(measures)) {
     assert_measures(measures)
   }
-  iml_pfi_losses = c("ce", "f1", "logLoss", "mae", "mse", "rmse", "mape", "mdae",
-    "msle", "percent_bias", "rae", "rmse", "rmsle", "rse", "rrse", "smape")
+  iml_pfi_losses = c(
+    "ce",
+    "f1",
+    "logLoss",
+    "mae",
+    "mse",
+    "rmse",
+    "mape",
+    "mdae",
+    "msle",
+    "percent_bias",
+    "rae",
+    "rmse",
+    "rmsle",
+    "rse",
+    "rrse",
+    "smape"
+  )
   for (imp_measure in importance_measures) {
     assert_choice(imp_measure, c("pdp", "shap", paste("pfi", iml_pfi_losses, sep = ".")), null.ok = TRUE)
   }
@@ -502,16 +535,22 @@ summary_control = function(measures = NULL,
   assert_character(protected_attribute, null.ok = TRUE, len = 1L)
   assert_character(hide, null.ok = TRUE)
   for (hid in hide) {
-    assert_choice(hid, c("general", "performance", "residuals", "importance",
-      "effect", "complexity", "fairness"))
+    assert_choice(hid, c("general", "performance", "residuals", "importance", "effect", "complexity", "fairness"))
   }
   assert_int(digits, lower = 0L, null.ok = FALSE)
 
   # create list
-  ctrlist = list(measures = measures, complexity_measures = complexity_measures,
-    importance_measures = importance_measures, n_important = n_important,
-    effect_measures = effect_measures, fairness_measures = fairness_measures,
-    protected_attribute = protected_attribute, hide = hide, digits = digits)
+  ctrlist = list(
+    measures = measures,
+    complexity_measures = complexity_measures,
+    importance_measures = importance_measures,
+    n_important = n_important,
+    effect_measures = effect_measures,
+    fairness_measures = fairness_measures,
+    protected_attribute = protected_attribute,
+    hide = hide,
+    digits = digits
+  )
 
   class(ctrlist) = "summary_control"
   ctrlist
@@ -524,8 +563,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
   assert_int(digits, lower = 0L, null.ok = TRUE)
   assert_int(n_important, lower = 1L, null.ok = TRUE)
   for (hid in hide) {
-    assert_choice(hid, c("general", "performance", "residuals", "importance",
-      "effect", "complexity", "fairness"))
+    assert_choice(hid, c("general", "performance", "residuals", "importance", "effect", "complexity", "fairness"))
   }
 
   if (!is.null(digits)) {
@@ -541,11 +579,13 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     cli_h1("General")
     cli_text("Task type: {x$task_type}")
     if (!is.null(x$classes)) {
+      # nolint next: object_usage_linter. tn is used inside the cli glue string below.
       tn = cli_vec(x$classes, list("vec-trunc" = 15))
       cli_text("Target name: {x$target_name} ({tn})")
     } else {
       cli_text("Target name: {x$target_name}")
     }
+    # nolint next: object_usage_linter. fn is used inside the cli glue string below.
     fn = cli_vec(x$feature_names, list("vec-trunc" = 15))
     cli_text("Feature names: {fn}")
 
@@ -586,22 +626,23 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
 
   if (!is.null(x$performance) && "performance" %nin% hide) {
     cli_h1("Performance [sd]")
-    namp = structure(paste0(round(x$performance, x$control$digits),
-      " [", round(x$performance_sd, x$control$digits), "]"),
-    names = names(x$performance))
+    namp = structure(
+      paste0(round(x$performance, x$control$digits), " [", round(x$performance_sd, x$control$digits), "]"),
+      names = names(x$performance)
+    )
     names(namp) = paste0(names(namp), ":")
     perf = as.matrix(namp)
     colnames(perf) = ""
     print.default(perf, quote = FALSE, right = FALSE, ...)
-
   }
 
   if (!is.null(x$fairness) && "fairness" %nin% hide) {
     cli_h1("Fairness [sd]")
     cli_text("Protected attribute: {x$control$protected_attribute}")
-    nampf = set_names(paste0(round(x$fairness, x$control$digits),
-      " [", round(x$fairness_sd, x$control$digits), "]"),
-    paste0(names(x$fairness), ":"))
+    nampf = set_names(
+      paste0(round(x$fairness, x$control$digits), " [", round(x$fairness_sd, x$control$digits), "]"),
+      paste0(names(x$fairness), ":")
+    )
     fair = as.matrix(nampf)
     colnames(fair) = ""
     print.default(fair, quote = FALSE, right = FALSE, ...)
@@ -610,8 +651,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
   if (!is.null(x$complexity) && "complexity" %nin% hide) {
     cli_h1("Complexity [sd]")
     aggregate_complexity = function(com) {
-      paste0(round(mean(com), x$control$digits),
-        " [", round(sd(com), x$control$digits), "]")
+      paste0(round(mean(com), x$control$digits), " [", round(sd(com), x$control$digits), "]")
     }
     rr = map(x$complexity, aggregate_complexity)
     res = Reduce(merge, rr)
@@ -621,15 +661,13 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     print.default(com, quote = FALSE, right = TRUE, ...)
   }
 
-
   if (!is.null(x$importance) && "importance" %nin% hide) {
     cli_h1("Importance [sd]")
 
     featorder = x$importances[[1]][order(mean, decreasing = TRUE), feature]
 
     compute_imp_summary = function(imp) {
-      imp[, "res" := paste0(round(mean, x$control$digits), " [",
-        round(sd, x$control$digits), "]")]
+      imp[, "res" := paste0(round(mean, x$control$digits), " [", round(sd, x$control$digits), "]")]
       imp[, c("feature", "res")]
     }
 
@@ -639,7 +677,6 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     names(rr) = c("feature", names(x$importances))
     rownames(rr) = rr$feature
     rr[, feature := NULL]
-    col = names(x$importances)[[1]]
 
     if (!is.null(x$control$n_important) && nrow(rr) > x$control$n_important) {
       rr = rr[1:x$control$n_important, ]
@@ -647,9 +684,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
     }
     rr = as.matrix(rr, rownames = featorder)
     print.default(rr, quote = FALSE, right = FALSE, ...)
-
   }
-
 
   if (!is.null(x$effects) && "effect" %nin% hide) {
     # Size of effect plots are derived based on ALE/PDP curves
@@ -657,8 +692,7 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
       (x - range[1L]) / (range[2L] - range[1L]) * (7) + 1
     }
     get_effect_plot = function(x, range) {
-      symb = map_chr(paste("lower_block", round(scale_values(x, range)), sep = "_"),
-        function(s) symbol[[s]])
+      symb = map_chr(paste("lower_block", round(scale_values(x, range)), sep = "_"), function(s) symbol[[s]])
       paste0(symb, collapse = "")
     }
 
@@ -703,7 +737,6 @@ print.summary.Learner = function(x, digits = NULL, n_important = NULL, hide = NU
         ef = as.matrix(ef, rownames = featorder)
         print(unclass(ef), quote = FALSE, right = FALSE, ...)
       }
-
     } else {
       effs$feature = NULL
       ef = as.matrix(effs, rownames = featorder)

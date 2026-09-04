@@ -9,8 +9,16 @@ test_that("Works for regression", {
   cv3 = rsmp("cv", folds = 3L)
   rr_reg = resample(tsk, lrn_rr, cv3, store_models = TRUE)
   rr_reg$task
-  sm = summary(lrn_rr, rr_reg, summary_control(protected_attribute = "x5",
-    complexity_measures = NULL, effect_measures = NULL, importance_measures = "pdp"))
+  sm = summary(
+    lrn_rr,
+    rr_reg,
+    summary_control(
+      protected_attribute = "x5",
+      complexity_measures = NULL,
+      effect_measures = NULL,
+      importance_measures = "pdp"
+    )
+  )
   expect_true(!is.null(sm$fairness))
 })
 
@@ -22,8 +30,16 @@ test_that("Works for binary classif", {
   cv3 = rsmp("cv", folds = 3L)
   rr_classif = resample(tsk, lrn_rr, cv3, store_models = TRUE)
   rr_classif$task
-  sm = summary(lrn_rr, rr_classif, summary_control(protected_attribute = "x5",
-    complexity_measures = NULL, effect_measures = NULL, importance_measures = "pdp"))
+  sm = summary(
+    lrn_rr,
+    rr_classif,
+    summary_control(
+      protected_attribute = "x5",
+      complexity_measures = NULL,
+      effect_measures = NULL,
+      importance_measures = "pdp"
+    )
+  )
   expect_true(!is.null(sm$fairness))
 })
 

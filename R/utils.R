@@ -1,5 +1,5 @@
 get_default_measures = function(task_type, properties = NULL, predict_type = NULL) {
-  keys = if (task_type == "classif") {
+  if (task_type == "classif") {
     if (predict_type == "response") {
       if ("twoclass" %in% properties) {
         mlr_measures$mget(c("classif.acc", "classif.bacc", "classif.fbeta", "classif.mcc"))
@@ -12,7 +12,6 @@ get_default_measures = function(task_type, properties = NULL, predict_type = NUL
       } else if ("multiclass" %in% properties) {
         mlr_measures$mget(c("classif.mauc_aunp", "classif.mbrier"))
       }
-
     }
   } else if (task_type == "regr") {
     mlr_measures$mget(c("regr.rmse", "regr.rsq", "regr.mae", "regr.medae"))
@@ -23,12 +22,15 @@ get_default_measures = function(task_type, properties = NULL, predict_type = NUL
 
 
 get_default_fairness_measures = function(task_type, properties = NULL, predict_type = NULL) {
-  keys = if (task_type == "classif" && properties == "twoclass") {
-    list(msr("fairness.cv", id = "fairness.dp"),
+  if (task_type == "classif" && properties == "twoclass") {
+    list(
+      msr("fairness.cv", id = "fairness.dp"),
       msr("fairness.pp", id = "fairness.cuae"),
-      msr("fairness.eod", id = "fairness.eod"))
+      msr("fairness.eod", id = "fairness.eod")
+    )
   } else if (task_type == "regr") {
-    list(msr("fairness", operation = groupdiff_absdiff, base_measure = msr("regr.rmse")),
+    list(
+      msr("fairness", operation = groupdiff_absdiff, base_measure = msr("regr.rmse")),
       msr("fairness", operation = groupdiff_absdiff, base_measure = msr("regr.mae"))
     )
   } else if (task_type == "classif" && "multiclass" %in% properties) {
@@ -40,7 +42,7 @@ get_default_fairness_measures = function(task_type, properties = NULL, predict_t
 
 get_default_importances = function(task_type, ...) {
   imp = "pdp"
-  keys = if (task_type == "classif") {
+  if (task_type == "classif") {
     c(imp, "pfi.ce")
   } else if (task_type == "regr") {
     c(imp, "pfi.mse")

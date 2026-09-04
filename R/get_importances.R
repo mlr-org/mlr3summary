@@ -1,22 +1,32 @@
 ## inspired by mlr3:::score_measures and mlr3:::score_single_measure
 get_importances = function(obj, importance_measures) {
   tab = get_private(obj)$.data$as_data_table(
-    view = NULL, reassemble_learners = TRUE, convert_predictions = FALSE
+    view = NULL,
+    reassemble_learners = TRUE,
+    convert_predictions = FALSE
   )
-  tmp = unique(tab, by = c("task_hash", "learner_hash"))[,
-    c("task", "learner"), with = FALSE]
-
   # step through importance measures
   imps_list = map(importance_measures, function(imp_msr) {
-
     # step through resample folds
     imps = rbindlist(
-      future_mapply(function(task, learner, resampling, iteration, prediction, ...) {
-        get_single_importance(
-          imp_msr, task, learner, train_set = resampling$train_set(iteration), prediction
-        )
-      }, tab$task, tab$learner, tab$resampling, tab$iteration, tab$prediction,
-      future.seed = NULL, SIMPLIFY = FALSE)
+      future_mapply(
+        function(task, learner, resampling, iteration, prediction, ...) {
+          get_single_importance(
+            imp_msr,
+            task,
+            learner,
+            train_set = resampling$train_set(iteration),
+            prediction
+          )
+        },
+        tab$task,
+        tab$learner,
+        tab$resampling,
+        tab$iteration,
+        tab$prediction,
+        future.seed = NULL,
+        SIMPLIFY = FALSE
+      )
     )
 
     # aggregate results (mean, sd)
@@ -38,7 +48,8 @@ get_single_importance = function(importance_measure, task, learner, train_set, p
     importance_measure = "pfi"
   }
 
-  switch(importance_measure,
+  switch(
+    importance_measure,
     pdp = get_pdp_importance(learner, test_tsk),
     pfi = get_pfi_importance(learner, test_tsk, loss),
     shap = get_shap_importance(learner, test_tsk)
@@ -84,9 +95,11 @@ get_pfi_importance = function(learner, test_tsk, loss) {
     stopf("Package 'iml' needed for this function to work. Please install it.")
   }
   pred = iml::Predictor$new(
-    model = learner, data = test_tsk$data(), y = test_tsk$target_names
+    model = learner,
+    data = test_tsk$data(),
+    y = test_tsk$target_names
   )
-  imp = iml::FeatureImp$new(predictor = pred, loss = loss, compare = "difference")$results[, c("feature", "importance")]
+  iml::FeatureImp$new(predictor = pred, loss = loss, compare = "difference")$results[, c("feature", "importance")]
 }
 
 get_shap_importance = function(learner, test_tsk, loss) {
@@ -111,9 +124,12 @@ get_shap_importance = function(learner, test_tsk, loss) {
         }
       }
     }
-    shap = fastshap::explain(learner, X = test_tsk$data(),
+    shap = fastshap::explain(
+      learner,
+      X = test_tsk$data(),
       feature_names = test_tsk$feature_names,
-      pred_wrapper = pfun, newdata = test_tsk$data(),
+      pred_wrapper = pfun,
+      newdata = test_tsk$data(),
       nsim = 10
     )
     colMeans(abs(shap))
