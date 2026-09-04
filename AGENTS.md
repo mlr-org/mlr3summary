@@ -116,5 +116,5 @@ Rscript -e "devtools::check()"
 
 @extra-rules/commit-messages.md
 @extra-rules/mlr3.md
-
+@extra-rules/yolobox.md
 
