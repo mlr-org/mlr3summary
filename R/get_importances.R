@@ -105,7 +105,10 @@ get_pfi_importance = function(learner, test_tsk, loss) {
 get_shap_importance = function(learner, test_tsk, loss) {
   # based on Lundberg and Lee (2017)
   if (!requireNamespace("fastshap", quietly = TRUE)) {
-    stopf("Package 'fastshap' needed for this measuring importance. Please install it.")
+    stopf(paste(
+      "Package 'fastshap' needed for measuring this importance. Please install it with",
+      "`install.packages(\"fastshap\", repos = \"https://bgreenwell.r-universe.dev\")`."
+    ))
   }
   if (learner$task_type == "regr") {
     outcome_classes = "response"

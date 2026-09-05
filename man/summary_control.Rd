@@ -117,7 +117,9 @@ implemented in \link[iml:FeatureImp]{iml::FeatureImp}. Different loss functions 
 rely on the task at hand.}
 \item{shap: This importance corresponds to the
 mean absolute Shapley values computed with \link[fastshap:explain]{fastshap::explain}.
-Higher values display higher importance.}
+Higher values display higher importance.
+Requires the \code{fastshap} package, which is no longer on CRAN and must be installed from
+\href{https://bgreenwell.r-universe.dev}{r-universe}.}
 }
 NULL is the default, corresponding to importance calculations based on pdp and pfi.
 Because the loss function for pfi relies on the task at hand, the importance measures
