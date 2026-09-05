@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Roboto-0.4.10/font.css" rel="stylesheet"><link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet"><link href="../deps/Roboto_Slab-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Summarizing mlr3 Learners — summary.Learner"><meta name="description" content="summary method for mlr3::Learner.
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Roboto-0.4.10/font.css" rel="stylesheet"><link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet"><link href="../deps/Roboto_Slab-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Summarizing mlr3 Learners — summary.Learner"><meta name="description" content="summary method for mlr3::Learner.
 The output can be tailored via the control argument, see summary_control."><meta property="og:description" content="summary method for mlr3::Learner.
 The output can be tailored via the control argument, see summary_control."><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -15,7 +15,7 @@ The output can be tailored via the control argument, see summary_control."><meta
 
     <a class="navbar-brand me-2" href="../index.html">mlr3summary</a>
 
-    <small class="nav-text text-default me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.0.9000</small>
+    <small class="nav-text text-default me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.2.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,7 +47,7 @@ The output can be tailored via the control argument, see summary_control."><meta
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Summarizing mlr3 Learners</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/mlr-org/mlr3summary/blob/main/R/summary.R" class="external-link"><code>R/summary.R</code></a></small>
       <div class="d-none name"><code>summary.Learner.Rd</code></div>
     </div>
 
@@ -184,11 +184,12 @@ ISBN 9781003402848, <a href="https://mlr3book.mlr-org.com/" class="external-link
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://mlr3.mlr-org.com" class="external-link">"mlr3"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/openmp-utils.html" class="external-link">setDTthreads</a></span><span class="op">(</span><span class="fl">1L</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">tsk_iris</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">tsk</a></span><span class="op">(</span><span class="st">"iris"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">lrn_rpart</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">lrn</a></span><span class="op">(</span><span class="st">"classif.rpart"</span>, predict_type <span class="op">=</span> <span class="st">"prob"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">lrn_rpart</span><span class="op">$</span><span class="fu">train</span><span class="op">(</span>task <span class="op">=</span> <span class="va">tsk_iris</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">rsmp_cv3</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">rsmp</a></span><span class="op">(</span><span class="st">"cv"</span>, folds <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">rr</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/resample.html" class="external-link">resample</a></span><span class="op">(</span><span class="va">tsk_iris</span>, <span class="va">lrn_rpart</span>, <span class="va">rsmp_cv3</span>, store_model <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">rsmp_cv2</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/mlr_sugar.html" class="external-link">rsmp</a></span><span class="op">(</span><span class="st">"cv"</span>, folds <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">rr</span> <span class="op">=</span> <span class="fu"><a href="https://mlr3.mlr-org.com/reference/resample.html" class="external-link">resample</a></span><span class="op">(</span><span class="va">tsk_iris</span>, <span class="va">lrn_rpart</span>, <span class="va">rsmp_cv2</span>, store_model <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">lrn_rpart</span>, <span class="va">rr</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: mlr3</span>
@@ -199,27 +200,27 @@ ISBN 9781003402848, <a href="https://mlr3book.mlr-org.com/" class="external-link
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Target name: Species (setosa, versicolor, and virginica)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Feature names: Petal.Length, Petal.Width, Sepal.Length, and Sepal.Width</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Model type: classif.rpart with xval=0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Resampling: cv with folds=3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Resampling: cv with folds=2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Residuals</span> <span style="color: #00BBBB;">───────────────────────────────────────────────────────────────────</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     Min      1Q  Median    Mean      3Q     Max </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 0.00000 0.00000 0.00000 0.08049 0.08277 1.00000 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.00000 0.00000 0.03704 0.08129 0.04545 1.00000 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Performance [sd]</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ↑classif.mauc_aunp (macro): 0.9689 [0.012] </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ↓classif.mbrier (macro):    0.1002 [0.0246]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ↑classif.mauc_aunp (macro): 0.972 [0.0103] </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ↓classif.mbrier (macro):    0.1025 [0.0338]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Complexity [sd]</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sparsity: 1.6667 [0.5774]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sparsity: 1.5 [0.7071]</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Importance [sd]</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              pdp             pfi.ce         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length 0.35 [0.0931]   0.5333 [0.0924]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  0.1261 [0.1107] 0.1867 [0.1617]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  0 [0]           0 [0]          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length 0 [0]           0 [0]          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              pdp             pfi.ce       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length 0.3683 [0.0993] 0.52 [0.1697]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  0.1006 [0.1422] 0.14 [0.198] </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  0 [0]           0 [0]        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length 0 [0]           0 [0]        </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Effects</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────────────</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -227,7 +228,7 @@ ISBN 9781003402848, <a href="https://mlr3book.mlr-org.com/" class="external-link
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">setosa</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              pdp   ale  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length █▃▁▁▁ █▅▃▃▃</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length █▄▁▁▁ █▅▂▂▂</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  ▃▃▃▃▃ ▄▄▄▄▄</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  ▃▃▃▃▃ ▄▄▄▄▄</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length ▃▃▃▃▃ ▄▄▄▄▄</span>
@@ -235,16 +236,16 @@ ISBN 9781003402848, <a href="https://mlr3book.mlr-org.com/" class="external-link
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">versicolor</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              pdp   ale  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length ▁▄▆▄▄ ▁▄▆▄▄</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length ▁▃▇▄▄ ▁▄▆▄▄</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  ▅▅▅▂▂ ▅▅▅▂▂</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  ▃▃▃▃▃ ▄▄▄▄▄</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length ▃▃▃▃▃ ▄▄▄▄▄</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  ▄▄▄▄▄ ▄▄▄▄▄</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length ▄▄▄▄▄ ▄▄▄▄▄</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">virginica</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              pdp   ale  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length ▁▃▃▅▅ ▃▃▃▅▅</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  ▂▂▂▅▅ ▃▃▃▆▆</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Length ▁▂▂▅▅ ▃▃▃▅▅</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Petal.Width  ▂▂▂▄▄ ▃▃▃▆▆</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width  ▃▃▃▃▃ ▄▄▄▄▄</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length ▃▃▃▃▃ ▄▄▄▄▄</span>
 </code></pre></div>
@@ -258,7 +259,7 @@ ISBN 9781003402848, <a href="https://mlr3book.mlr-org.com/" class="external-link
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

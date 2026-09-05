@@ -163,7 +163,9 @@ which are based on Molnar et al. (2020):
 - shap: This importance corresponds to the mean absolute Shapley values
   computed with
   [fastshap::explain](https://bgreenwell.github.io/fastshap/reference/explain.html).
-  Higher values display higher importance.
+  Higher values display higher importance. Requires the `fastshap`
+  package, which is no longer on CRAN and must be installed from
+  [r-universe](https://bgreenwell.r-universe.dev).
 
 NULL is the default, corresponding to importance calculations based on
 pdp and pfi. Because the loss function for pfi relies on the task at
@@ -213,7 +215,7 @@ Publishing.
 
 Greenwell, M. B, Boehmke, C. B, McCarthy, J. A (2018). “A Simple and
 Effective Model-Based Variable Importance Measure.” arXiv preprint.
-arXiv:1805.04755, <http://arxiv.org/abs/1805.04755>.
+arXiv:1805.04755, <https://arxiv.org/abs/1805.04755>.
 
 Apley, W. D, Zhu, Jingyu (2020). “Visualizing the Effects of Predictor
 Variables in Black Box Supervised Learning Models.” *Journal of the

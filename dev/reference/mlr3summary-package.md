@@ -7,6 +7,14 @@ non-parametric machine learning models, based on generalization
 performance, model complexity, feature importances and effects, and
 fairness metrics.
 
+## See also
+
+Useful links:
+
+- <https://github.com/mlr-org/mlr3summary>
+
+- Report bugs at <https://github.com/mlr-org/mlr3summary/issues>
+
 ## Author
 
 **Maintainer**: Susanne Dandl <dandls.datascience@gmail.com>

@@ -45,7 +45,5 @@ Only a subset of features was selected: "age", "sex", "saving.accounts",
 
 Hofmann, Hans (1994). “Statlog (German Credit Data).” *UCI Machine
 Learning Repository*.
-<https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data>.
 
-Ferreira L (2018). “German credit risk.” Last accessed 10.04.2024,
-<https://www.kaggle.com/datasets/kabure/german-credit-data-with-risk>.
+Ferreira L (2018). “German credit risk.” Last accessed 10.04.2024.

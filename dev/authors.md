@@ -16,13 +16,23 @@
 
 ## Citation
 
-Dandl S, Becker M, Bischl B, Casalicchio G, Bothmann L (2026).
-*mlr3summary: Model and Learner Summaries for 'mlr3'*. R package version
-0.1.0.9000.
+Source:
+[`inst/CITATION`](https://github.com/mlr-org/mlr3summary/blob/main/inst/CITATION)
 
-    @Manual{,
-      title = {mlr3summary: Model and Learner Summaries for 'mlr3'},
+Dandl S, Becker M, Bischl B, Casalicchio G, Bothmann L (2024).
+“mlr3summary: Concise and interpretable summaries for machine learning
+models.” In *Late-breaking Work, Demos and Doctoral Consortium, Joint
+Proceedings of the 2nd World Conference on eXplainable Artificial
+Intelligence (xAI 2024)*, volume 3793 series CEUR Workshop Proceedings.
+<https://ceur-ws.org/Vol-3793/paper_36.pdf>.
+
+    @InProceedings{,
+      title = {{mlr3summary}: {C}oncise and interpretable summaries for machine learning models},
       author = {Susanne Dandl and Marc Becker and Bernd Bischl and Giuseppe Casalicchio and Ludwig Bothmann},
-      year = {2026},
-      note = {R package version 0.1.0.9000},
+      booktitle = {Late-breaking Work, Demos and Doctoral Consortium, Joint Proceedings of the 2nd World Conference on eXplainable Artificial Intelligence (xAI 2024)},
+      year = {2024},
+      publisher = {CEUR-WS.org},
+      series = {CEUR Workshop Proceedings},
+      volume = {3793},
+      url = {https://ceur-ws.org/Vol-3793/paper_36.pdf},
     }

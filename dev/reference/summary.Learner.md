@@ -158,11 +158,12 @@ Bischl, Bernd, Sonabend, Raphael, Kotthoff, Lars, Lang, Michel (2024).
 
 ``` r
 if (require("mlr3")) {
+  data.table::setDTthreads(1L)
   tsk_iris = tsk("iris")
   lrn_rpart = lrn("classif.rpart", predict_type = "prob")
   lrn_rpart$train(task = tsk_iris)
-  rsmp_cv3 = rsmp("cv", folds = 3L)
-  rr = resample(tsk_iris, lrn_rpart, rsmp_cv3, store_model = TRUE)
+  rsmp_cv2 = rsmp("cv", folds = 2L)
+  rr = resample(tsk_iris, lrn_rpart, rsmp_cv2, store_model = TRUE)
   summary(lrn_rpart, rr)
 }
 #> Loading required package: mlr3
@@ -173,27 +174,27 @@ if (require("mlr3")) {
 #> Target name: Species (setosa, versicolor, and virginica)
 #> Feature names: Petal.Length, Petal.Width, Sepal.Length, and Sepal.Width
 #> Model type: classif.rpart with xval=0
-#> Resampling: cv with folds=3
+#> Resampling: cv with folds=2
 #> 
 #> ── Residuals ───────────────────────────────────────────────────────────────────
 #>     Min      1Q  Median    Mean      3Q     Max 
-#> 0.00000 0.00000 0.00000 0.08049 0.08277 1.00000 
+#> 0.00000 0.00000 0.03704 0.08129 0.04545 1.00000 
 #> 
 #> ── Performance [sd] ────────────────────────────────────────────────────────────
 #>                                            
-#> ↑classif.mauc_aunp (macro): 0.9689 [0.012] 
-#> ↓classif.mbrier (macro):    0.1002 [0.0246]
+#> ↑classif.mauc_aunp (macro): 0.972 [0.0103] 
+#> ↓classif.mbrier (macro):    0.1025 [0.0338]
 #> 
 #> ── Complexity [sd] ─────────────────────────────────────────────────────────────
-#>                          
-#> sparsity: 1.6667 [0.5774]
+#>                       
+#> sparsity: 1.5 [0.7071]
 #> 
 #> ── Importance [sd] ─────────────────────────────────────────────────────────────
-#>              pdp             pfi.ce         
-#> Petal.Length 0.35 [0.0931]   0.5333 [0.0924]
-#> Petal.Width  0.1261 [0.1107] 0.1867 [0.1617]
-#> Sepal.Width  0 [0]           0 [0]          
-#> Sepal.Length 0 [0]           0 [0]          
+#>              pdp             pfi.ce       
+#> Petal.Length 0.3683 [0.0993] 0.52 [0.1697]
+#> Petal.Width  0.1006 [0.1422] 0.14 [0.198] 
+#> Sepal.Width  0 [0]           0 [0]        
+#> Sepal.Length 0 [0]           0 [0]        
 #> 
 #> ── Effects ─────────────────────────────────────────────────────────────────────
 #> 
@@ -201,7 +202,7 @@ if (require("mlr3")) {
 #> ── setosa ──
 #> 
 #>              pdp   ale  
-#> Petal.Length █▃▁▁▁ █▅▃▃▃
+#> Petal.Length █▄▁▁▁ █▅▂▂▂
 #> Petal.Width  ▃▃▃▃▃ ▄▄▄▄▄
 #> Sepal.Width  ▃▃▃▃▃ ▄▄▄▄▄
 #> Sepal.Length ▃▃▃▃▃ ▄▄▄▄▄
@@ -209,16 +210,16 @@ if (require("mlr3")) {
 #> ── versicolor ──
 #> 
 #>              pdp   ale  
-#> Petal.Length ▁▄▆▄▄ ▁▄▆▄▄
+#> Petal.Length ▁▃▇▄▄ ▁▄▆▄▄
 #> Petal.Width  ▅▅▅▂▂ ▅▅▅▂▂
-#> Sepal.Width  ▃▃▃▃▃ ▄▄▄▄▄
-#> Sepal.Length ▃▃▃▃▃ ▄▄▄▄▄
+#> Sepal.Width  ▄▄▄▄▄ ▄▄▄▄▄
+#> Sepal.Length ▄▄▄▄▄ ▄▄▄▄▄
 #> 
 #> ── virginica ──
 #> 
 #>              pdp   ale  
-#> Petal.Length ▁▃▃▅▅ ▃▃▃▅▅
-#> Petal.Width  ▂▂▂▅▅ ▃▃▃▆▆
+#> Petal.Length ▁▂▂▅▅ ▃▃▃▅▅
+#> Petal.Width  ▂▂▂▄▄ ▃▃▃▆▆
 #> Sepal.Width  ▃▃▃▃▃ ▄▄▄▄▄
 #> Sepal.Length ▃▃▃▃▃ ▄▄▄▄▄
 ```
